@@ -1,0 +1,342 @@
+/**
+ *
+ * Modern Admin Panel. An extension for the phpBB Forum Software package.
+ *
+ * @copyright (c) 2026, DSR! https://github.com/xchwarze
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+/**
+ * Shell: the sidebar (menu.css) is fixed at the inline start, the page leaves room for it, and the header (header.css) sticks
+ * to the top. Logical properties, so RTL needs no overrides. The sizes are tokens (tokens.css).
+ *
+ * <html data-studio-sidebar="expanded|collapsed"> (pinned open, or the unpinned rail) is set before the first paint
+ * (event/acp_overall_header_head_append.html), together with the colour mode and the class of the sidebar colour;
+ * "studio-ready" marks a page that has started.
+ */
+body {
+	padding-inline-start: var(--studio-sb);
+}
+
+/* The stock layout keeps 210px for its own menu, which the sidebar replaces (base.css resets the LTR ones) */
+.rtl #main,
+.rtl .main {
+	float: none;
+	margin: 0;
+}
+
+/* The page bar (pagebar.html) sits above it, so it gives up its height: the footer still ends the short pages */
+#page-body {
+	min-height: calc(100vh - 2 * var(--studio-header) - var(--studio-item));
+	min-height: calc(100dvh - 2 * var(--studio-header) - var(--studio-item));
+	padding-block: var(--studio-content-block-start) var(--studio-content-block-end);
+	padding-inline: var(--studio-content-inline);
+}
+
+#page-footer {
+	min-height: var(--studio-header);
+	padding: 8px;
+	font-size: 16px;
+	line-height: 24px;
+}
+
+.studio-row {
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.studio-row > * {
+	flex: 1 1 0;
+	min-inline-size: 0;
+}
+
+.studio-row + .studio-row {
+	margin-block-start: 8px;
+}
+
+/*
+ * The page bar (pagebar.html): the breadcrumbs at the inline start, the pin star at the inline end, a slim row at the top of the
+ * content with the same side padding as #page-body. Empty (no crumbs, star hidden): no height at all.
+ */
+.studio-pagebar {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding-inline: var(--studio-content-inline);
+	color: var(--md-on-surface-variant);
+	font-size: 13px;
+}
+
+.studio-crumbs {
+	display: flex;
+	align-items: center;
+	flex: 1;
+	min-inline-size: 0;
+	min-block-size: var(--studio-item);
+}
+
+.studio-crumbs ol {
+	display: flex;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	white-space: nowrap;
+}
+
+.studio-crumbs li {
+	min-inline-size: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-size: inherit;
+}
+
+.studio-crumbs li + li::before {
+	content: "\203A";
+	padding-inline: 6px;
+}
+
+[dir="rtl"] .studio-crumbs li + li::before {
+	content: "\2039";
+}
+
+.studio-crumbs a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.studio-crumbs a:hover {
+	text-decoration: underline;
+}
+
+.studio-crumbs a[aria-current="page"] {
+	color: var(--md-on-surface);
+	font-weight: 700;
+}
+
+.studio-pagebar .studio-pin {
+	margin-inline-start: auto;
+}
+
+.studio-pin[hidden] {
+	display: none;
+}
+
+/* The star of an unpinned module is an outline, of a pinned one it is filled in the accent colour */
+.studio-pin .studio-icon--on,
+.studio-pin[aria-pressed="true"] .studio-icon--off {
+	display: none;
+}
+
+.studio-pin[aria-pressed="true"] {
+	color: var(--md-primary);
+}
+
+.studio-pin[aria-pressed="true"] .studio-icon--on {
+	display: block;
+}
+
+.studio-premium-trigger {
+	color: var(--studio-accent, currentColor);
+}
+
+.studio-premium-trigger[hidden] {
+	display: none;
+}
+
+.studio-premium {
+	position: fixed;
+	inset: 0;
+	margin: auto;
+	width: 720px;
+	max-width: calc(100vw - 32px);
+	max-height: min(88vh, 760px);
+	padding: 0;
+	border: 1px solid var(--studio-outline, #d9dce3);
+	border-radius: 18px;
+	color: var(--studio-on-surface, #20212a);
+	background: var(--studio-surface, #fff);
+	box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+	overflow: hidden;
+}
+
+.studio-premium::backdrop {
+	background: rgba(15, 18, 28, 0.52);
+	backdrop-filter: blur(3px);
+}
+
+.studio-premium__surface {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	max-height: inherit;
+	min-height: 0;
+	padding: 32px;
+}
+
+.studio-premium__eyebrow {
+	margin: 0 0 8px;
+	color: var(--studio-accent, #6554b4);
+	font-size: 12px;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.studio-premium h2 {
+	margin: 0;
+	margin-inline-end: 48px;
+	margin-block-end: 8px;
+	font-size: 26px;
+	line-height: 1.2;
+}
+
+.studio-premium #studio-premium-intro {
+	margin: 0;
+	color: var(--studio-muted, #626575);
+	line-height: 1.5;
+}
+
+.studio-premium__modules {
+	display: grid;
+	flex: 1 1 auto;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px;
+	min-height: 0;
+	margin: 24px 0;
+	padding: 0;
+	overflow: auto;
+	list-style: none;
+}
+
+.studio-premium__modules li {
+	display: flex;
+	gap: 12px;
+	min-width: 0;
+	padding: 14px;
+	border: 1px solid var(--studio-outline, #d9dce3);
+	border-radius: 12px;
+}
+
+.studio-premium__icon {
+	flex: 0 0 24px;
+	color: var(--studio-accent, #6554b4);
+}
+
+.studio-premium__icon .studio-icon {
+	width: 22px;
+	height: 22px;
+}
+
+.studio-premium__modules h3 {
+	margin: 0 0 4px;
+	font-size: 15px;
+}
+
+.studio-premium__modules p {
+	margin: 0;
+	color: var(--studio-muted, #626575);
+	font-size: 13px;
+	line-height: 1.45;
+}
+
+.studio-premium__actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	justify-content: flex-end;
+}
+
+.studio-premium__actions {
+	flex: none;
+}
+
+.studio-premium__action-icon {
+	display: inline-flex;
+	align-items: center;
+	margin-inline-end: 8px;
+}
+
+.studio-premium__action-icon .studio-icon {
+	width: 18px;
+	height: 18px;
+}
+
+.studio-premium button {
+	min-height: 44px;
+}
+
+html:root body dialog.studio-premium .studio-premium__close {
+	position: absolute;
+	inset-block-start: 16px;
+	inset-inline-end: 16px;
+}
+
+html[data-studio-theme="dark"] .studio-premium {
+	--studio-surface: #25262d;
+	--studio-on-surface: #f0f0f4;
+	--studio-muted: #c1c2cc;
+	--studio-outline: #50515b;
+}
+
+@media (max-width: 560px) {
+	.studio-premium {
+		width: calc(100vw - 20px);
+		max-height: calc(100vh - 20px);
+	}
+
+	.studio-premium__surface {
+		padding: 26px 18px 18px;
+	}
+
+	.studio-premium__modules {
+		grid-template-columns: 1fr;
+		gap: 8px;
+		margin: 18px 0;
+	}
+
+	.studio-premium__actions {
+		flex-direction: column;
+	}
+
+	.studio-premium__actions button {
+		width: 100%;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.studio-premium::backdrop {
+		backdrop-filter: none;
+	}
+}
+
+@media (max-width: 800px) {
+	html,
+	html[data-studio-sidebar="collapsed"] {
+		--studio-sb: 0px;
+	}
+
+	.studio-row {
+		flex-wrap: wrap;
+	}
+
+	.studio-row > * {
+		flex-basis: 100%;
+	}
+
+	#page-body {
+		padding-block: var(--studio-content-block-start) var(--studio-content-block-end);
+		padding-inline: var(--studio-content-inline);
+	}
+}
+
+@media (max-width: 600px) {
+	/* Only the page itself */
+	.studio-crumbs li:not(:last-child) {
+		display: none;
+	}
+
+	.studio-crumbs li + li::before {
+		content: none;
+	}
+}

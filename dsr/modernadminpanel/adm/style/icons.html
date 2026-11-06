@@ -1,0 +1,63 @@
+{#-
+	Material icons. The sprite (images/icons.svg) is put in the page once, by event/acp_overall_header_body_before.html,
+	and every icon refers to a symbol of it with a plain #fragment: no extra request, no URL that depends on the
+	admin directory or the cache, and it also works for the icons js/studio.js adds later.
+
+	studio_svg(name, class)                 one icon (24px, painted with the text colour, see css/tokens.css)
+	studio_icon(icons, langname, title, fallback)
+	                                        the icon of a menu entry: STUDIO_MENU_ICONS is the module langname => icon
+	                                        name map (listener::get_menu_icons()); an entry without one gets the icon
+	                                        named by fallback (the menu rows of the sections: a generic one), or without
+	                                        a fallback the first letter of its title as a badge
+	studio_icon_attr(icons, langname)       ' data-icon="name"' when the entry has an icon, else nothing: the command
+	                                        palette reads it for the entries the menu does not draw an icon for
+	studio_here(text)                       the mark of a row of the active path (a tab or a section that holds the current module): a
+	                                        6px dot (css/menu.css shows it while the row is closed) that is hidden from screen readers,
+	                                        and the text that says it for them (visually hidden, hidden too while the row is open; the space
+	                                        in front of it keeps it apart from the name in the name of the button)
+-#}
+{%- macro studio_svg(name, class) -%}
+	<svg class="studio-icon{{ class ? ' ' ~ class }}" aria-hidden="true" focusable="false"><use href="#studio-i-{{ name }}"></use></svg>
+{%- endmacro -%}
+
+{%- macro studio_icon(icons, langname, title, fallback = '') -%}
+	{%- import _self as studio -%}
+	{%- set icon = attribute(icons, langname)|default(fallback) -%}
+	{%- if icon -%}
+		{{ studio.studio_svg(icon, 'studio-menu__icon') }}
+	{%- else -%}
+		<span class="studio-menu__icon studio-menu__badge" aria-hidden="true">{{ title|trim|first|upper }}</span>
+	{%- endif -%}
+{%- endmacro -%}
+
+{#-
+	studio_href(item, tab)                  the URL of a module row. Core puts the selected tab in icat= of every module that is listed in
+	                                        more than one place (includes/functions_module.php, assign_tpl_vars()), so the copy under another
+	                                        tab opens with the wrong tab and breadcrumbs lit. The icat of such a link is the tab it sits under.
+-#}
+{%- macro studio_href(item, tab) -%}
+	{%- if item.IS_DUPLICATE and '&amp;icat=' in item.U_TITLE -%}
+		{%- set studio_parts = item.U_TITLE|split('&amp;icat=', 2) -%}
+		{%- set studio_rest = studio_parts[1]|split('&amp;', 2) -%}
+		{{- studio_parts[0] ~ '&amp;icat=' ~ tab.ID ~ (studio_rest[1] is defined ? '&amp;' ~ studio_rest[1] : '') -}}
+	{%- else -%}
+		{{- item.U_TITLE -}}
+	{%- endif -%}
+{%- endmacro -%}
+
+{#-
+	studio_attr(text)                       a label for a title="" attribute: the text as core gives it (it may hold entities, which the
+	                                        browser reads back), with the one character that would end the attribute escaped
+-#}
+{%- macro studio_attr(text) -%}
+	{{- text|replace({'"': '&quot;'}) -}}
+{%- endmacro -%}
+
+{%- macro studio_here(text) -%}
+	<span class="studio-menu__dot" aria-hidden="true"></span><span class="studio-sr studio-menu__here"> {{ text }}</span>
+{%- endmacro -%}
+
+{%- macro studio_icon_attr(icons, langname) -%}
+	{%- set icon = attribute(icons, langname)|default('') -%}
+	{%- if icon %} data-icon="{{ icon }}"{% endif -%}
+{%- endmacro -%}

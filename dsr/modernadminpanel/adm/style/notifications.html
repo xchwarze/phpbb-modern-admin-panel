@@ -1,0 +1,48 @@
+{% from '@dsr_modernadminpanel/icons.html' import studio_svg %}
+
+<ul id="notification_list">
+	{% for notification in notifications %}
+		<li class="{{ notification.STYLING }}{{ notification.UNREAD ? ' bg2' }}">
+			{% if notification.UNREAD %}
+				<a href="{{ notification.U_MARK_READ }}" class="mark-read icon-mark studio-icon-button" data-ajax="notification.mark_read" title="{{ lang('MARK_READ') }}">
+					{{ studio_svg('check_circle') }}
+				</a>
+			{% endif %}
+
+			{% if notification.URL %}
+				<a class="notification-block studio-state"
+				   href="{{ notification.UNREAD ? notification.U_MARK_READ : notification.URL }}"
+				   {% if notification.UNREAD %} data-real-url="{{ notification.URL }}"{% endif %}>
+			{% endif %}
+
+			{% if notification.AVATAR %}{{ notification.AVATAR }}{% else %}<img class="avatar" src="{{ ADMIN_ROOT_PATH }}images/no_avatar.gif" alt="" />{% endif %}
+			<div class="notification-text">
+				<div class="notification-title">{{ notification.FORMATTED_TITLE }}</div>
+				{% if notification.REFERENCE %}<div class="notification-reference">{{ notification.REFERENCE }}</div>{% endif %}
+				{% if notification.FORUM %}<div class="notification-forum">{{ notification.FORUM }}</div>{% endif %}
+				{% if notification.REASON %}<div class="notification-reason">{{ notification.REASON }}</div>{% endif %}
+				<time class="notification-time">{{ notification.TIME }}</time>
+			</div>
+
+			{% if notification.URL %}</a>{% endif %}
+		</li>
+	{% else %}
+		<li class="no-notifications">
+			{{ lang('NO_NOTIFICATIONS') }}
+		</li>
+	{% endfor %}
+</ul>
+
+<div class="studio-row">
+	<a class="studio-icon-button" href="{{ U_NOTIFICATION_SETTINGS }}" title="{{ lang('SETTINGS') }}" aria-label="{{ lang('SETTINGS') }}">
+		{{ studio_svg('settings') }}
+	</a>
+	<a class="studio-icon-button" href="{{ U_VIEW_ALL_NOTIFICATIONS }}" title="{{ lang('SEE_ALL') }}" aria-label="{{ lang('SEE_ALL') }}">
+		{{ studio_svg('visibility') }}
+	</a>
+	{% if NOTIFICATIONS_COUNT %}
+		<a class="studio-icon-button" id="mark_all_notifications" href="{{ U_MARK_ALL_NOTIFICATIONS }}" data-ajax="notification.mark_all_read" title="{{ lang('MARK_ALL_READ') }}" aria-label="{{ lang('MARK_ALL_READ') }}">
+			{{ studio_svg('done_all') }}
+		</a>
+	{% endif %}
+</div>

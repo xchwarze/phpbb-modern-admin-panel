@@ -1,0 +1,26 @@
+{% from '@dsr_modernadminpanel/icons.html' import studio_svg %}
+
+{#
+	The page bar: the breadcrumbs (navlinks) on the left and the pin-this-page star on the right, a slim row at the top of
+	the page content, above the module's own title. The ACP has no template event inside #page-body, so the bar is the first
+	block of the page flow, right under the sticky header: it scrolls with the page and, on small screens, is inert behind
+	the drawer (js/studio.js). Pins are kept per browser; js/studio.js shows the star, a toggle icon button, on a module page:
+	outlined for a module that is not pinned, filled for one that is (aria-pressed).
+#}
+<div class="studio-pagebar" id="studio-pagebar">
+	{% if navlinks|length %}
+		<nav class="studio-crumbs" aria-label="{{ lang('STUDIO_DASHBOARD_BREADCRUMBS') }}">
+			<ol>
+				{% for crumb in navlinks %}
+					<li><a href="{{ crumb.U_BREADCRUMB }}"{% if loop.last %} aria-current="page"{% endif %}>{{ crumb.BREADCRUMB_NAME }}</a></li>
+				{% endfor %}
+			</ol>
+		</nav>
+	{% endif %}
+
+	<button class="studio-pin studio-icon-button" type="button" aria-pressed="false" title="{{ lang('STUDIO_DASHBOARD_PIN') }}" hidden>
+		{{ studio_svg('star', 'studio-icon--off') }}
+		{{ studio_svg('star-fill', 'studio-icon--on') }}
+		<span class="studio-sr">{{ lang('STUDIO_DASHBOARD_PIN') }}</span>
+	</button>
+</div>

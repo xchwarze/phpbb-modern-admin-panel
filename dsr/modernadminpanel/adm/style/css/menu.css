@@ -1,0 +1,688 @@
+/**
+ *
+ * Modern Admin Panel. An extension for the phpBB Forum Software package.
+ *
+ * @copyright (c) 2026, DSR! https://github.com/xchwarze
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+/**
+ * Sidebar (menu.html): pinned open with labels, or unpinned as a rail of icons with flyouts on a large screen, an off-canvas drawer
+ * on small screens (it is the pinned layout). No transform on large screens: it would trap the position:fixed flyouts. Painted with
+ * the preset of the "sidebar_colour" option and its text colour (colours.css).
+ *
+ * The levels of the menu, the same in the pinned menu and in the flyout of the rail. No level has a painted block: the indentation
+ * is the hierarchy, and a row only has a tint of the preset while it is hovered or current.
+ * 0. Home and 1. a category (a tab): a collapsible row of the item height, its icon (20px in a 24px slot), a bold label and a chevron
+ *    that turns when it opens. One tab is open at a time, Home apart (its children are the pinned modules);
+ * 2. a section (l_block2), indented under its tab: an accordion row, the same icon, its name as a small uppercase label and a smaller
+ *    chevron. One is open at a time in each tab. A section of one module is a row of the section that links to the module: the icon and
+ *    the name of the section (not the generic title of its module), no chevron;
+ * 3. a module (l_block3), its text starting where the name of its section starts, along a thin guide line: plain text, one line.
+ *    The current one has the highlight of the menu: a tint, a bold label and a bar at the inline start.
+ * The active path: the icons of the tab and of the section that hold the current module are in the accent (--nav-accent), and while
+ * such a row is closed it has a small dot in the accent after its name.
+ * Every label is one line, cut with an ellipsis (the title attribute has the whole name). The only motion is the chevron.
+ */
+.studio-skip {
+	position: fixed;
+	z-index: 40;
+	inset-block-start: 8px;
+	inset-inline-start: 8px;
+	padding: 8px 12px;
+	border-radius: 4px;
+	background: var(--md-surface);
+	color: var(--md-on-surface);
+	font-size: 14px;
+	transform: translateY(calc(-100% - 16px));
+}
+
+.studio-skip:link,
+.studio-skip:visited {
+	color: var(--md-on-surface);
+}
+
+.studio-skip:focus {
+	transform: none;
+}
+
+.studio-sidebar {
+	position: fixed;
+	z-index: 20;
+	inset-block: 0;
+	inset-inline-start: 0;
+	display: flex;
+	flex-direction: column;
+	inline-size: var(--studio-sb);
+	box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
+	font-size: 14px;
+}
+
+/* Links take the text colour of the preset (or of the flyout), over the stock "a:link, a:visited" blue */
+.studio-sidebar a:link,
+.studio-sidebar a:visited {
+	color: inherit;
+}
+
+/* Brand */
+.studio-sidebar__head {
+	display: flex;
+	align-items: center;
+	flex: none;
+	block-size: var(--studio-header);
+	padding-inline: 8px;
+	border-block-end: 1px solid var(--studio-tint);
+}
+
+.studio-sidebar__brand {
+	display: flex;
+	align-items: center;
+	flex: 1;
+	gap: 12px;
+	min-inline-size: 0;
+	min-block-size: 40px;
+	padding-inline: 12px 4px;
+	border-radius: 6px;
+	font-size: 15px;
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.studio-sidebar__brand:hover {
+	background: var(--studio-tint);
+	text-decoration: none;
+}
+
+/*
+ * Closes the drawer. Hidden on large screens (pinned or rail) and shown in the drawer media query below. It takes the text
+ * colour of the preset, and the shared focus ring (base.css).
+ */
+.studio-sidebar__close {
+	display: none;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	box-sizing: border-box;
+	min-inline-size: var(--studio-item);
+	min-block-size: var(--studio-item);
+	margin: 0;
+	padding: 0 8px;
+	border: 0;
+	border-radius: 6px;
+	background: none;
+	color: inherit;
+	cursor: pointer;
+}
+
+.studio-sidebar__close:hover {
+	background: var(--studio-tint);
+}
+
+/*
+ * The menu scrolls on its own, between the head and the pin. The rows run from edge to edge, with the insets of the corner option
+ * (--studio-mi and --studio-me, below). --row-pad is where the icon of a tab starts, --sec-pad where the icon of a section does (12px
+ * further in). The element in the selector keeps the reset of its margins and padding ahead of the stock rules for lists (".rtl ul"
+ * and the like).
+ */
+ul.studio-menu {
+	--row-pad: 18px;
+	--sec-pad: 30px;
+	flex: 1;
+	margin: 0;
+	padding: 8px 0;
+	list-style: none;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	scrollbar-width: thin;
+	scrollbar-color: var(--studio-tint) transparent;
+}
+
+.studio-menu ul,
+.studio-menu li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+/* Always in view, below the scrolling menu: without JavaScript it would do nothing, and the drawer has no use for it */
+.studio-sidebar__foot {
+	flex: none;
+	padding-block: 6px;
+	border-block-start: 1px solid var(--studio-tint);
+}
+
+html:not(.studio-js) .studio-sidebar__foot {
+	display: none;
+}
+
+/* Tabs (buttons), Home (a link), modules (links) and the pin: rows that take the width of the menu less the insets of the corner option */
+.studio-menu__toggle,
+.studio-menu__home,
+.studio-menu__link,
+.studio-sidebar__pin {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	box-sizing: border-box;
+	inline-size: calc(100% - var(--studio-mi, 0px) - var(--studio-me, 0px));
+	min-block-size: var(--studio-item);
+	margin-block: 1px;
+	margin-inline: var(--studio-mi, 0px) var(--studio-me, 0px);
+	padding-block: 4px;
+	padding-inline: var(--row-pad, 18px) 12px;
+	border: 0;
+	background: none;
+	color: inherit;
+	font: inherit;
+	line-height: 1.3;
+	text-align: start;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+/* A section (a button): the same row, 12px in from the tabs */
+.studio-menu__group {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	box-sizing: border-box;
+	inline-size: calc(100% - var(--studio-mi, 0px) - var(--studio-me, 0px));
+	min-block-size: var(--studio-item);
+	margin-block: 1px;
+	margin-inline: var(--studio-mi, 0px) var(--studio-me, 0px);
+	padding-block: 4px;
+	padding-inline: var(--sec-pad, 30px) 12px;
+	border: 0;
+	background: none;
+	color: inherit;
+	font: inherit;
+	line-height: 1.3;
+	text-align: start;
+	cursor: pointer;
+}
+
+.studio-menu__toggle,
+.studio-menu__home {
+	font-weight: 600;
+}
+
+.studio-menu__toggle:hover,
+.studio-menu__group:hover,
+.studio-menu__link:hover,
+.studio-sidebar__pin:hover,
+.studio-menu__home:hover {
+	background: var(--studio-tint);
+	text-decoration: none;
+}
+
+/* The icon of a row: the 20px glyph in a 24px slot */
+.studio-menu__icon {
+	flex: none;
+	inline-size: 20px;
+	padding-inline: 2px;
+	text-align: center;
+}
+
+/* A tab without an icon of its own: the first letter of its title, in the same slot */
+.studio-menu__badge {
+	box-sizing: border-box;
+	inline-size: 24px;
+	block-size: 24px;
+	padding: 0;
+	border-radius: 6px;
+	background: var(--studio-tint);
+	font-size: 12px;
+	font-style: normal;
+	font-weight: 700;
+	line-height: 24px;
+}
+
+/* One line, an ellipsis (the title attribute has the whole text) */
+.studio-menu__label,
+.studio-menu__name {
+	flex: 1;
+	min-inline-size: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* The chevron turns when the tab, or the section, opens */
+.studio-menu__caret {
+	flex: none;
+	margin-inline-start: auto;
+}
+
+/* The chevron of a section is smaller, in the same 20px column as the one of a tab */
+.studio-menu__group > .studio-menu__caret {
+	inline-size: 16px;
+	block-size: 16px;
+	padding: 2px;
+}
+
+html.studio-ready .studio-menu__caret {
+	transition: transform var(--md-dur-short) ease;
+}
+
+.studio-menu__cat.is-open > .studio-menu__toggle .studio-menu__caret,
+.studio-menu__cat.is-open > .studio-menu__row .studio-menu__caret,
+.studio-menu__sec.is-open > .studio-menu__group > .studio-menu__caret {
+	transform: rotate(180deg);
+}
+
+/* The current page: the tint of the preset, a bold label and a bar at the inline start */
+.studio-menu__link,
+.studio-menu__home {
+	position: relative;
+}
+
+.studio-menu__link[aria-current="page"],
+.studio-menu__home[aria-current="page"] {
+	background: var(--studio-tint);
+	font-weight: 700;
+}
+
+.studio-menu__link[aria-current="page"]::before,
+.studio-menu__home[aria-current="page"]::before {
+	content: "";
+	position: absolute;
+	inset-block: 6px;
+	inset-inline-start: 4px;
+	inline-size: 3px;
+	border-radius: 3px;
+	background: currentColor;
+}
+
+/* The active path: the icon of the tab, of the section and of the row of one module that hold the current page, in the accent */
+.studio-menu__cat.is-active > .studio-menu__toggle > .studio-menu__icon,
+.studio-menu__cat.is-active > .studio-menu__row > .studio-menu__home > .studio-menu__icon,
+.studio-menu__sec.has-active > .studio-menu__group > .studio-menu__icon,
+.studio-menu__sec > .studio-menu__link[aria-current="page"] > .studio-menu__icon {
+	color: var(--nav-accent);
+}
+
+/*
+ * The dot of the active path: a tab or a section that holds the current module and is closed has a 6px dot in the accent right after its
+ * name (menu.html writes it on those rows only). It is decorative; the visually hidden text beside it says the same to screen readers.
+ * Both hide once the row opens (the current module is in sight then); on the rail the icons have none, the sections of a flyout behave as here (see its media query). The name stops taking the
+ * free width of the row so the dot can follow it; the chevron keeps the end of the row with its own auto margin. The row's gap is 12px
+ * in a tab and 8px in a section: the dot is 8px from the name in both.
+ */
+.studio-menu__dot {
+	flex: none;
+	inline-size: 6px;
+	block-size: 6px;
+	border-radius: 50%;
+	background: var(--nav-accent);
+}
+
+.studio-menu__toggle > .studio-menu__dot {
+	margin-inline-start: -4px;
+}
+
+.studio-menu__cat.is-active:not(.is-open) > .studio-menu__toggle > .studio-menu__label,
+.studio-menu__sec.has-active:not(.is-open) > .studio-menu__group > .studio-menu__name {
+	flex: 0 1 auto;
+}
+
+.studio-menu__cat.is-open > .studio-menu__toggle > .studio-menu__dot,
+.studio-menu__cat.is-open > .studio-menu__toggle > .studio-menu__here,
+.studio-menu__sec.is-open > .studio-menu__group > .studio-menu__dot,
+.studio-menu__sec.is-open > .studio-menu__group > .studio-menu__here {
+	display: none;
+}
+
+/*
+ * Home: its label is a link to the ACP front page and the chevron next to it opens the pinned modules. The row takes the insets of
+ * the corner option and the chevron is a 36px circle at its inline end, in the column of the chevrons of the tabs (its selector is
+ * heavier than the shapes of the corner option, which would give it the pill ends of a row).
+ */
+.studio-menu__row {
+	position: relative;
+	margin-inline: var(--studio-mi, 0px) var(--studio-me, 0px);
+}
+
+.studio-menu__row > .studio-menu__home {
+	inline-size: 100%;
+	margin-inline: 0;
+	padding-inline-end: 56px;
+}
+
+.studio-menu__cat > .studio-menu__row > .studio-menu__toggle--split {
+	position: absolute;
+	inset-block: 0;
+	inset-inline-end: 4px;
+	justify-content: center;
+	inline-size: 36px;
+	min-block-size: 0;
+	block-size: 36px;
+	margin: auto 0;
+	padding: 0;
+	border-radius: 50%;
+}
+
+.studio-menu__toggle--split > .studio-menu__caret {
+	margin-inline-start: 0;
+}
+
+/* The content of a tab: its sections, or the pinned modules of Home. A tab that is not open shows none of it (only with JavaScript: without it, everything stays open) */
+.studio-menu__panel {
+	padding-block: 2px 6px;
+	--sec-text: calc(var(--sec-pad, 30px) + 32px);
+}
+
+.studio-js .studio-menu__cat:not(.is-open) > .studio-menu__panel {
+	display: none;
+}
+
+html:not(.studio-js) .studio-menu__cat--home > .studio-menu__panel,
+html:not(.studio-js) .studio-menu__toggle--split {
+	display: none;
+}
+
+html:not(.studio-js) .studio-menu__row > .studio-menu__home {
+	padding-inline-end: 12px;
+}
+
+/* The name of the tab, only shown in a flyout */
+.studio-menu__title {
+	display: none;
+}
+
+/* ------------------------------------------------------------------ Level 2: a section */
+.studio-menu__sections,
+.studio-menu__pins,
+.studio-menu__items {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+/*
+ * The name of a section: a small uppercase label in the text colour of the preset (no fading: without the block of an open tab behind
+ * it, a quieter colour would fall under 4.5:1 on the lighter presets). It may take two lines, which still fit in the height of the
+ * row (two names that start alike, "Board configuration" and "Board features", have to be told apart), and is cut with an ellipsis
+ * after that.
+ */
+.studio-menu__group > .studio-menu__name {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 1.25;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	white-space: normal;
+}
+
+/* Closed sections hide their modules (only with JavaScript: without it, everything stays open and the chevrons do nothing) */
+.studio-js .studio-menu__sec:not(.is-open) > .studio-menu__items {
+	display: none;
+}
+
+html:not(.studio-js) .studio-menu__caret {
+	display: none;
+}
+
+html:not(.studio-js) .studio-menu__toggle,
+html:not(.studio-js) .studio-menu__group {
+	cursor: default;
+}
+
+/* ------------------------------------------------------------------ Level 3: the modules */
+/* A module, and a pinned module under Home: plain text on one line, starting where the name of a section starts */
+.studio-menu__items .studio-menu__link,
+.studio-menu__pins .studio-menu__link {
+	display: block;
+	padding-block: 4px;
+	padding-inline: var(--sec-text, 62px) 12px;
+	line-height: calc(var(--studio-item) - 8px);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* A thin guide line along the modules of a section, under the icon of its row */
+.studio-menu__items,
+.studio-menu__pins {
+	position: relative;
+}
+
+.studio-menu__items::before,
+.studio-menu__pins::before {
+	content: "";
+	position: absolute;
+	inset-block: 4px;
+	inset-inline-start: calc(var(--studio-mi, 0px) + var(--sec-pad, 30px) + 12px);
+	inline-size: 1px;
+	background: var(--studio-edge);
+}
+
+.studio-menu__pins:empty {
+	display: none;
+}
+
+/* A section of one module is a row of the section that links to the module: the icon and the name of the section, at the level of the sections */
+.studio-menu__link--top {
+	display: flex;
+	gap: 8px;
+	padding-inline-start: var(--sec-pad, 30px);
+}
+
+/* Nothing pinned yet: a hint, with the star it talks about */
+.studio-menu__hint {
+	margin: 4px 0;
+	padding-inline: var(--sec-text, 62px) 12px;
+	font-size: 13px;
+	line-height: 1.4;
+}
+
+.studio-menu__hint[hidden] {
+	display: none;
+}
+
+.studio-menu__hint .studio-icon {
+	inline-size: 16px;
+	block-size: 16px;
+	vertical-align: -4px;
+}
+
+/* ------------------------------------------------------------------ The shape of the rows: sidebar_corner */
+.studio-menu-corner-squared {
+	--studio-mi: 8px;
+	--studio-me: 8px;
+}
+
+.studio-menu-corner-squared .studio-menu__toggle,
+.studio-menu-corner-squared .studio-menu__home,
+.studio-menu-corner-squared .studio-menu__group,
+.studio-menu-corner-squared .studio-menu__link,
+.studio-menu-corner-squared .studio-sidebar__pin {
+	border-radius: 4px;
+}
+
+.studio-menu-corner-rounded {
+	--studio-me: 12px;
+}
+
+.studio-menu-corner-rounded .studio-menu__toggle,
+.studio-menu-corner-rounded .studio-menu__home,
+.studio-menu-corner-rounded .studio-menu__group,
+.studio-menu-corner-rounded .studio-menu__link,
+.studio-menu-corner-rounded .studio-sidebar__pin {
+	border-start-end-radius: 999px;
+	border-end-end-radius: 999px;
+}
+
+/* ------------------------------------------------------------------ The pin of the menu */
+/* The tack is driven by the state on <html>, so it is right from the first paint: tilted when unpinned */
+html[data-studio-sidebar="collapsed"] .studio-sidebar__pin > .studio-icon {
+	transform: rotate(45deg);
+}
+
+html[dir="rtl"][data-studio-sidebar="collapsed"] .studio-sidebar__pin > .studio-icon {
+	transform: rotate(-45deg);
+}
+
+/* ------------------------------------------------------------------ The rail: unpinned on a large screen */
+@media (min-width: 801px) {
+	html[data-studio-sidebar="collapsed"] .studio-sidebar {
+		--studio-mi: 8px;
+		--studio-me: 8px;
+	}
+
+	html[data-studio-sidebar="collapsed"] .studio-sidebar__brand .studio-menu__label,
+	html[data-studio-sidebar="collapsed"] .studio-menu__toggle .studio-menu__label,
+	html[data-studio-sidebar="collapsed"] .studio-menu__home .studio-menu__label,
+	html[data-studio-sidebar="collapsed"] .studio-sidebar__pin .studio-menu__label {
+		position: absolute;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		clip-path: inset(50%);
+		inline-size: 1px;
+		block-size: 1px;
+		white-space: nowrap;
+	}
+
+	html[data-studio-sidebar="collapsed"] .studio-sidebar__brand {
+		flex: none;
+		justify-content: center;
+		inline-size: 48px;
+		padding: 0;
+	}
+
+	html[data-studio-sidebar="collapsed"] .studio-menu__toggle,
+	html[data-studio-sidebar="collapsed"] .studio-menu__home,
+	html[data-studio-sidebar="collapsed"] .studio-sidebar__pin {
+		justify-content: center;
+		padding-inline: 0;
+		border-radius: 8px;
+	}
+
+	html[data-studio-sidebar="collapsed"] .studio-menu__toggle .studio-menu__caret,
+	html[data-studio-sidebar="collapsed"] .studio-menu__toggle > .studio-menu__dot,
+	html[data-studio-sidebar="collapsed"] .studio-menu__toggle > .studio-menu__here,
+	html[data-studio-sidebar="collapsed"] .studio-menu__toggle--split,
+	html[data-studio-sidebar="collapsed"] .studio-menu__home::before,
+	html[data-studio-sidebar="collapsed"] .studio-menu__panel {
+		display: none;
+	}
+
+	html[data-studio-sidebar="collapsed"] .studio-menu__cat.is-active > .studio-menu__toggle,
+	html[data-studio-sidebar="collapsed"] .studio-menu__cat.is-active > .studio-menu__row > .studio-menu__home,
+	html[data-studio-sidebar="collapsed"] .studio-menu__cat.is-flyout > .studio-menu__toggle,
+	html[data-studio-sidebar="collapsed"] .studio-menu__cat.is-flyout > .studio-menu__row > .studio-menu__home {
+		background: var(--studio-tint);
+	}
+
+	html[data-studio-sidebar="collapsed"] .studio-menu__cat.is-flyout > .studio-menu__panel {
+		--studio-mi: 6px;
+		--studio-me: 6px;
+		--sec-pad: 14px;
+		--studio-tint: var(--studio-pop-tint);
+		--nav-accent: var(--md-primary);
+		position: fixed;
+		z-index: 25;
+		inset-block-start: var(--fly-top, 8px);
+		inset-inline-start: calc(var(--studio-rail) - 4px);
+		display: block;
+		box-sizing: border-box;
+		inline-size: 280px;
+		max-block-size: calc(100vh - var(--fly-top, 8px) - 8px);
+		max-block-size: calc(100dvh - var(--fly-top, 8px) - 8px);
+		padding-block: 0 8px;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		border-radius: 8px;
+		background: var(--studio-pop);
+		box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+		color: var(--md-on-surface);
+	}
+
+	html[data-studio-sidebar="collapsed"] .is-flyout .studio-menu__title {
+		display: block;
+		margin: 0 0 4px;
+		padding: 10px 16px 8px;
+		border-block-end: 1px solid var(--studio-pop-tint);
+		font-size: 14px;
+		font-weight: 700;
+	}
+
+	html[data-studio-sidebar="collapsed"] .is-flyout .studio-menu__title a:is(:link, :visited) {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	html[data-studio-sidebar="collapsed"] .is-flyout .studio-menu__title a:hover {
+		text-decoration: underline;
+	}
+
+	html[data-studio-sidebar="collapsed"] .is-flyout .studio-menu__items::before,
+	html[data-studio-sidebar="collapsed"] .is-flyout .studio-menu__pins::before {
+		display: none;
+	}
+
+	html[data-studio-sidebar="collapsed"] .is-flyout .studio-menu__group,
+	html[data-studio-sidebar="collapsed"] .is-flyout .studio-menu__link {
+		border-radius: 6px;
+	}
+
+	html[data-studio-sidebar="collapsed"] .is-flyout .studio-menu__pins .studio-menu__link {
+		padding-inline-start: 14px;
+	}
+
+	html[data-studio-sidebar="collapsed"] .is-flyout .studio-menu__hint {
+		padding-inline-start: 14px;
+	}
+}
+
+/* The drawer: small screens */
+.studio-backdrop {
+	position: fixed;
+	z-index: 15;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.45);
+}
+
+@media (max-width: 800px) {
+	.studio-sidebar {
+		inline-size: min(85vw, 320px);
+		visibility: hidden;
+		translate: -100% 0;
+	}
+
+	[dir="rtl"] .studio-sidebar {
+		translate: 100% 0;
+	}
+
+	html.studio-ready .studio-sidebar {
+		transition: translate var(--studio-speed) ease-out, visibility 0s linear var(--studio-speed);
+	}
+
+	html.studio-drawer-open .studio-sidebar {
+		visibility: visible;
+		translate: 0 0;
+		transition: translate var(--studio-speed) ease-out, visibility 0s;
+	}
+
+	html.studio-drawer-open {
+		overflow: hidden;
+	}
+
+	.studio-sidebar__foot {
+		display: none;
+	}
+
+	html.studio-js .studio-sidebar__close {
+		display: inline-flex;
+	}
+
+	html:not(.studio-js) .studio-sidebar {
+		position: static;
+		inline-size: auto;
+		visibility: visible;
+		translate: none;
+	}
+}

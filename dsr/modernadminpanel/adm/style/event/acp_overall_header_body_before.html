@@ -1,0 +1,22 @@
+{# One INCLUDECSS per file (not @import) so each gets ?assets_version= and changes on cache purge; keep the order: tokens and roles first, the dark layer for the stock content last #}
+{% INCLUDECSS '@dsr_modernadminpanel/css/tokens.css' %}
+{% INCLUDECSS '@dsr_modernadminpanel/css/base.css' %}
+{% INCLUDECSS '@dsr_modernadminpanel/css/colours.css' %}
+{% INCLUDECSS '@dsr_modernadminpanel/css/content.css' %}
+{% INCLUDECSS '@dsr_modernadminpanel/css/layout.css' %}
+{% INCLUDECSS '@dsr_modernadminpanel/css/menu.css' %}
+{% INCLUDECSS '@dsr_modernadminpanel/css/header.css' %}
+{% INCLUDECSS '@dsr_modernadminpanel/css/notifications.css' %}
+{% INCLUDECSS '@dsr_modernadminpanel/css/pages.css' %}
+{% INCLUDECSS '@dsr_modernadminpanel/css/palette.css' %}
+{% INCLUDECSS '@dsr_modernadminpanel/css/dark.css' %}
+{% INCLUDEJS '@dsr_modernadminpanel/js/studio.js' %}
+
+{# The icons: one sprite, inline, once per page. Every icon refers to it with a #fragment (see icons.html) #}
+{{ include('@dsr_modernadminpanel/images/icons.svg') }}
+
+{{ include('@dsr_modernadminpanel/menu.html') }}
+{{ include('@dsr_modernadminpanel/header.html') }}
+{{ include('@dsr_modernadminpanel/pagebar.html') }}
+{{ include('@dsr_modernadminpanel/palette.html') }}
+{% if S_STUDIO_PREMIUM_ENABLED %}{{ include('@dsr_modernadminpanel/premium.html') }}{% endif %}

@@ -1,0 +1,156 @@
+{% from '@dsr_modernadminpanel/icons.html' import studio_svg, studio_icon, studio_icon_attr, studio_href, studio_attr, studio_here %}
+
+{#
+	The ACP menu (l_block1 tabs > l_block2 sections > l_block3 modules, already filtered by permission), in the three levels of core,
+	as a sidebar of one flat list:
+	0. Home: a row like the tabs (the home icon, a bold label, a chevron). Its label goes to the ACP front page and the chevron opens
+	   the administrator's pinned modules (js/studio.js lists them), as children of Home.
+	1. a category (a tab): a collapsible row with its icon, a bold label and a chevron. One tab is open at a time (Home apart); the one
+	   that holds the current page is open on load. Its panel (.studio-menu__panel) is the flyout on the icon rail, where the row is the
+	   button of the flyout, and the flyout's own title (.studio-menu__title, a link to the tab).
+	2. a section (l_block2), indented under its tab: an accordion row with its icon, its name and a smaller chevron. One section is open
+	   at a time in each tab; the one that holds the current module is open on load (is-open) and marks the path (has-active: its icon
+	   in the accent). A section with a single module is a row of the section, with its name and its icon and without a chevron, that
+	   links to the module (its title says "Section > Module": the modules of extensions are all called "Settings" or the like, the
+	   name of the section tells them apart). The palette, the pins and the breadcrumbs still use the title of the module (data-title).
+	3. a module (l_block3), indented under the name of its section: plain text, one line.
+	No level has a painted block: the indentation is the hierarchy. The current module has the highlight of the menu (a tint, a bold
+	label and a bar), and the rows of its section and its tab have their icon in the accent, and a small dot after their name while they
+	are closed (the dot hides when the row opens: the current module is in sight then). The dot is decorative (aria-hidden), and a text
+	only for screen readers says what it means (icons.html, studio_here()).
+	The state is on <html data-studio-sidebar="expanded|collapsed"> (pinned = expanded: the list above; collapsed = a rail of icons with
+	a flyout per category, which holds the same markup), see js/studio.js. The mobile drawer is the pinned layout. The pin at the bottom flips it.
+	data-key ("module basename:mode") identifies a module for recents and pins: URLs carry the sid.
+	Every label is one line; a long one is cut with an ellipsis and its title attribute has the full name.
+	On the ACP front page Home is the open and active entry. The front page module (core puts it in the General tab) is not drawn again: Home is it.
+#}
+{% apply spaceless %}
+	{# Is this the ACP front page? #}
+	{% set studio_on_index = false %}
+	{% for category in l_block1 %}
+		{% for subcategory in category.l_block2 %}
+			{% if subcategory.LANGNAME == 'ACP_INDEX' and subcategory.S_SELECTED %}
+				{% set studio_on_index = true %}
+			{% endif %}
+		{% endfor %}
+	{% endfor %}
+
+	<a class="studio-skip" href="#main">{{ lang('STUDIO_DASHBOARD_SKIP') }}</a>
+
+	<nav class="studio-sidebar studio-bg-{{ T_STUDIO_SIDEBAR_COLOUR }} studio-menu-corner-{{ T_STUDIO_SIDEBAR_CORNER }}" id="studio-sidebar" aria-label="{{ lang('STUDIO_DASHBOARD_MENU') }}" data-uid="{{ STUDIO_USER_ID }}">
+		<div class="studio-sidebar__head">
+			<a class="studio-sidebar__brand" href="{{ U_ADM_INDEX }}" title="{{ lang('ADMIN_INDEX') }}">
+				{{ studio_svg('admin_panel_settings', 'studio-menu__icon') }}
+				<span class="studio-menu__label">{{ STUDIO_SITENAME ?: lang('ADMIN_PANEL') }}</span>
+			</a>
+
+			{# Closes the drawer (js/studio.js). Only shown on small screens and with JavaScript, see css/menu.css #}
+			<button class="studio-sidebar__close" type="button" aria-label="{{ lang('STUDIO_DASHBOARD_MENU_CLOSE') }}" title="{{ lang('STUDIO_DASHBOARD_MENU_CLOSE') }}">
+				{{ studio_svg('close') }}
+			</button>
+		</div>
+
+		<ul class="studio-menu">
+			{# Home: the label goes to the ACP front page, the chevron opens the pinned modules (js/studio.js lists them). On the rail it is an icon, and the panel is its flyout #}
+			<li class="studio-menu__cat studio-menu__cat--home{{ studio_on_index ? ' is-open is-active' }}" data-cat="home">
+				<div class="studio-menu__row">
+					<a class="studio-menu__home" href="{{ U_ADM_INDEX }}"{% if studio_on_index %} aria-current="page"{% endif %}>
+						{{ studio_svg('home', 'studio-menu__icon') }}
+						<span class="studio-menu__label">{{ lang('STUDIO_DASHBOARD_HOME') }}</span>
+					</a>
+					<button class="studio-menu__toggle studio-menu__toggle--split" type="button" aria-expanded="{{ studio_on_index ? 'true' : 'false' }}" aria-controls="studio-p-home" aria-label="{{ lang('STUDIO_DASHBOARD_HOME_TOGGLE') }}" title="{{ lang('STUDIO_DASHBOARD_HOME_TOGGLE') }}">
+						{{ studio_svg('keyboard_arrow_down', 'studio-menu__caret') }}
+					</button>
+				</div>
+
+				<div class="studio-menu__panel" id="studio-p-home">
+					<p class="studio-menu__title"><a href="{{ U_ADM_INDEX }}">{{ lang('STUDIO_DASHBOARD_HOME') }}</a></p>
+					<ul class="studio-menu__pins" aria-label="{{ lang('STUDIO_DASHBOARD_PINNED') }}"></ul>
+					<p class="studio-menu__hint">{{ lang('STUDIO_DASHBOARD_PINS_EMPTY', studio_svg('star')) }}</p>
+				</div>
+			</li>
+
+			{% for category in l_block1 %}
+				{# The section that holds the current module opens on load: the first one, so that one is open per category #}
+				{% set studio_open_id = 0 %}
+				{% for subcategory in category.l_block2 %}
+					{% if studio_open_id == 0 %}
+						{% for item in subcategory.l_block3 %}
+							{% if item.S_SELECTED and studio_open_id == 0 %}
+								{% set studio_open_id = subcategory.ID %}
+							{% endif %}
+						{% endfor %}
+					{% endif %}
+				{% endfor %}
+
+				{% set studio_open = category.S_SELECTED and not studio_on_index %}
+				<li class="studio-menu__cat{{ studio_open ? ' is-open is-active' }}" data-cat="{{ category.LANGNAME|e }}">
+					<button class="studio-menu__toggle" type="button" aria-expanded="{{ studio_open ? 'true' : 'false' }}" aria-controls="studio-p-{{ category.ID }}"{{ studio_icon_attr(STUDIO_MENU_ICONS, category.LANGNAME) }}>
+						{{ studio_icon(STUDIO_MENU_ICONS, category.LANGNAME, category.L_TITLE) }}
+						<span class="studio-menu__label">{{ category.L_TITLE }}</span>
+						{% if studio_open %}{{ studio_here(lang('STUDIO_DASHBOARD_MENU_HERE')) }}{% endif %}
+						{{ studio_svg('keyboard_arrow_down', 'studio-menu__caret') }}
+					</button>
+
+					<div class="studio-menu__panel" id="studio-p-{{ category.ID }}">
+						<p class="studio-menu__title"><a href="{{ category.U_TITLE }}" title="{{ studio_attr(category.L_TITLE) }}">{{ category.L_TITLE }}</a></p>
+
+						<ul class="studio-menu__sections">
+							{% for subcategory in category.l_block2 %}
+								{% set quick_access = subcategory.LANGNAME == 'ACP_QUICK_ACCESS' %}
+								{% if not (quick_access and S_STUDIO_DETACH_QA) and subcategory.LANGNAME != 'ACP_INDEX' %}
+									{% if subcategory.l_block3|length > 1 %}
+										{# A section of modules: an accordion row (icon, name, chevron), then its modules #}
+										{% set studio_is_open = studio_open_id == subcategory.ID %}
+										<li class="studio-menu__sec{{ studio_is_open ? ' is-open has-active' }}"{% if quick_access %} data-studio-qa{% endif %}>
+											<button class="studio-menu__group" type="button" id="studio-g-{{ subcategory.ID }}" aria-expanded="{{ studio_is_open ? 'true' : 'false' }}" aria-controls="studio-m-{{ subcategory.ID }}" title="{{ studio_attr(subcategory.L_TITLE) }}"{{ studio_icon_attr(STUDIO_MENU_ICONS, subcategory.LANGNAME) }}>
+												{{ studio_icon(STUDIO_MENU_ICONS, subcategory.LANGNAME, subcategory.L_TITLE, 'extension') }}
+												<span class="studio-menu__name">{{ subcategory.L_TITLE }}</span>
+												{% if studio_is_open %}{{ studio_here(lang('STUDIO_DASHBOARD_MENU_HERE')) }}{% endif %}
+												{{ studio_svg('keyboard_arrow_down', 'studio-menu__caret') }}
+											</button>
+											<ul class="studio-menu__items" id="studio-m-{{ subcategory.ID }}" aria-labelledby="studio-g-{{ subcategory.ID }}">
+												{% for item in subcategory.l_block3 %}
+													<li><a class="studio-menu__link" href="{{ studio_href(item, category) }}" data-key="{{ item.NAME|e }}:{{ item.MODE|e }}"{{ studio_icon_attr(STUDIO_MENU_ICONS, item.LANGNAME) }}{% if item.S_SELECTED %} aria-current="page"{% endif %} title="{{ studio_attr(item.L_TITLE) }}">{{ item.L_TITLE }}</a></li>
+												{% endfor %}
+											</ul>
+										</li>
+									{% elseif subcategory.l_block3|length == 1 %}
+										{# A section with one module is a row of the section: its icon and its name (that of the extension, not the generic "Settings" of its module), no chevron. It links to the module, whose title is the tooltip's second half and data-title (what the palette and the pins call it) #}
+										{% for item in subcategory.l_block3 %}
+											{% set studio_icon_name = attribute(STUDIO_MENU_ICONS, item.LANGNAME)|default(attribute(STUDIO_MENU_ICONS, subcategory.LANGNAME))|default('') %}
+											<li class="studio-menu__sec studio-menu__sec--link"{% if quick_access %} data-studio-qa{% endif %}>
+												<a class="studio-menu__link studio-menu__link--top" href="{{ studio_href(item, category) }}" data-key="{{ item.NAME|e }}:{{ item.MODE|e }}" data-title="{{ studio_attr(item.L_TITLE) }}"{% if studio_icon_name %} data-icon="{{ studio_icon_name }}"{% endif %}{% if item.S_SELECTED %} aria-current="page"{% endif %} title="{{ studio_attr(subcategory.L_TITLE ~ ' &rsaquo; ' ~ item.L_TITLE) }}">
+													{{ studio_icon(STUDIO_MENU_ICONS, subcategory.LANGNAME, subcategory.L_TITLE, 'extension') }}
+													<span class="studio-menu__name">{{ subcategory.L_TITLE }}</span>
+												</a>
+											</li>
+										{% endfor %}
+									{% else %}
+										{# A module right below the category #}
+										<li class="studio-menu__sec studio-menu__sec--link">
+											<a class="studio-menu__link studio-menu__link--top" href="{{ studio_href(subcategory, category) }}" data-key="{{ subcategory.NAME|e }}:{{ subcategory.MODE|e }}"{{ studio_icon_attr(STUDIO_MENU_ICONS, subcategory.LANGNAME) }}{% if subcategory.S_SELECTED %} aria-current="page"{% endif %} title="{{ studio_attr(subcategory.L_TITLE) }}">
+												{{ studio_icon(STUDIO_MENU_ICONS, subcategory.LANGNAME, subcategory.L_TITLE, 'extension') }}
+												<span class="studio-menu__name">{{ subcategory.L_TITLE }}</span>
+											</a>
+										</li>
+									{% endif %}
+								{% endif %}
+							{% endfor %}
+						</ul>
+					</div>
+				</li>
+			{% endfor %}
+		</ul>
+
+		{# The last row, always in view below the scrolling menu. Hidden without JavaScript and on small screens (the drawer) #}
+		<div class="studio-sidebar__foot">
+			<button class="studio-sidebar__pin" type="button" aria-pressed="false" title="{{ lang('STUDIO_DASHBOARD_MENU_PIN_KEEP') }}" aria-keyshortcuts="Control+B Meta+B" data-l-keep="{{ lang('STUDIO_DASHBOARD_MENU_PIN_KEEP') }}" data-l-release="{{ lang('STUDIO_DASHBOARD_MENU_PIN_RELEASE') }}">
+				{{ studio_svg('keep', 'studio-menu__icon') }}
+				<span class="studio-menu__label">{{ lang('STUDIO_DASHBOARD_MENU_PIN') }}</span>
+			</button>
+		</div>
+	</nav>
+
+	<div class="studio-backdrop" hidden></div>
+{% endapply %}

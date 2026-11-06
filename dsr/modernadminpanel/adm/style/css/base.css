@@ -1,0 +1,104 @@
+/**
+ *
+ * Modern Admin Panel. An extension for the phpBB Forum Software package.
+ *
+ * @copyright (c) 2020, phpBB Studio, https://www.phpbbstudio.com
+ * @copyright (c) 2026, DSR! https://github.com/xchwarze
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+/*
+ * The ground of every ACP page: box model, the stock header, tabs and menu (replaced by the sidebar and the header
+ * of the extension) taken out of the way, and the focus ring of the controls of the extension.
+ */
+body *,
+body *:after,
+body *:before {
+	box-sizing: border-box;
+}
+
+html,
+body,
+#wrap,
+#page-header,
+#page-body,
+#page-footer,
+#content,
+#tabs,
+#menu,
+#main,
+.main {
+	float: none;
+	margin: 0;
+	padding: 0;
+}
+
+h1 + p,
+h2 + p {
+	margin-top: 5px;
+}
+
+#acp {
+	top: unset;
+	margin: 0;
+	padding: 0;
+	border: none;
+	border-radius: 0;
+	background: none;
+	box-shadow: none;
+}
+
+#page-header,
+#tabs,
+#menu {
+	display: none;
+	width: 0;
+	height: 0;
+}
+
+fieldset dt {
+	padding-inline-end: 8px;
+	border-inline-end: none;
+}
+
+.copyright {
+	text-align: end;
+}
+
+/* The selection: the primary colour of the theme, which no card of the dashboard is painted in */
+::selection {
+	background: var(--md-primary);
+	color: var(--md-on-primary);
+}
+
+/* Small screens: the label goes over the field, with a gap, and the stock divider goes */
+@media (max-width: 800px) {
+	fieldset dt {
+		padding-inline-end: 0;
+		padding-bottom: 8px;
+	}
+}
+
+/*
+ * The focus ring. In the sidebar and the header the text colour of the preset has at least 4.5:1 on the background, so a ring
+ * of that colour always shows. Elsewhere it is the accent (the primary role, derived from the sidebar colour), which has at
+ * least 3:1 on every surface of both schemes.
+ */
+.studio-sidebar :focus-visible,
+.studio-header :focus-visible {
+	outline: 2px solid currentColor;
+	outline-offset: -2px;
+}
+
+.studio-pagebar :focus-visible,
+.studio-palette :focus-visible,
+.studio-skip:focus-visible,
+.studio-dropdown-contents :focus-visible,
+.studio-settings-form .studio-btn:focus-visible,
+.studio-notes-form .studio-btn:focus-visible,
+.studio-pending-item:focus-visible,
+.studio-actions a:focus-visible,
+.studio-qa a:focus-visible {
+	outline: 2px solid var(--md-primary);
+	outline-offset: 2px;
+}

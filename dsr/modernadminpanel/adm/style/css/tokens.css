@@ -1,0 +1,145 @@
+/**
+ *
+ * Modern Admin Panel. An extension for the phpBB Forum Software package.
+ *
+ * @copyright (c) 2026, DSR! https://github.com/xchwarze
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+/*
+ * Design tokens of the extension's own UI: type, shape, elevation, motion, state layers and the sizes of the shell. The colours
+ * are in colours.css. The motion is short and plain on purpose: the drawer slides in 200ms, the chevrons turn, controls change
+ * colour in 120ms, and nothing else moves (prefers-reduced-motion switches all of it off).
+ */
+:root {
+	/* Type: the board's own font stack (the body rule of the stock ACP stylesheet) */
+	--md-font: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	--md-label-large: 500 14px/20px var(--md-font);
+	--md-body-medium: 400 14px/20px var(--md-font);
+	--md-title-small: 600 14px/20px var(--md-font);
+	--md-title-medium: 600 16px/24px var(--md-font);
+	/* Icons: Material Symbols, drawn at 20px (in the 24px slot of a row of the menu, see menu.css) */
+	--md-icon: 20px;
+	/* Shape */
+	--md-shape-full: 999px;
+	--md-shape-card: 8px;
+	--md-shape-menu: 8px;
+	--md-shape-drawer: 12px;
+	--md-shape-control: 6px;
+	/* Elevation, levels 0 to 3 */
+	--md-elev-0: none;
+	--md-elev-1: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+	--md-elev-2: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+	--md-elev-3: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px 3px rgba(0, 0, 0, 0.15);
+	/* Motion */
+	--md-ease: cubic-bezier(0.2, 0, 0, 1);
+	--md-dur-short: 120ms;
+	--md-dur-drawer: 200ms;
+	/* State layers: the opacity of the content colour over the element (hover; focus and press) */
+	--md-state-hover: 0.08;
+	--md-state-focus: 0.1;
+	/* The shell: the sidebar (a pinned menu, or a rail of icons when it is not pinned) and the header */
+	--studio-wide: 264px;
+	--studio-rail: 64px;
+	--studio-sb: var(--studio-wide);
+	--studio-header: 56px;
+	--studio-item: 40px;
+	--studio-content-inline: 32px;
+	--studio-content-block-start: 24px;
+	--studio-content-block-end: 32px;
+	--studio-row: 40px;
+	--studio-target: 40px;
+	--studio-speed: var(--md-dur-drawer);
+}
+
+@media (min-width: 801px) and (max-width: 1199px) {
+	:root {
+		--studio-content-inline: 24px;
+	}
+}
+
+@media (max-width: 800px) {
+	:root {
+		--studio-content-inline: 16px;
+		--studio-content-block-start: 16px;
+		--studio-content-block-end: 24px;
+	}
+}
+
+html[data-studio-sidebar="collapsed"] {
+	--studio-sb: var(--studio-rail);
+}
+
+/* Rows and buttons are 40px high, 44px on touch screens */
+@media (pointer: coarse) {
+	:root {
+		--studio-item: 44px;
+		--studio-row: 44px;
+		--studio-target: 44px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--md-dur-short: 0s;
+		--md-dur-drawer: 0s;
+	}
+}
+
+/*
+ * The icons (images/icons.svg, one <svg class="studio-icon"><use href="#studio-i-name"></use></svg> each):
+ * painted with the text colour, never in the way of a click.
+ */
+.studio-icon {
+	flex: none;
+	box-sizing: content-box;
+	inline-size: var(--md-icon);
+	block-size: var(--md-icon);
+	fill: currentColor;
+	pointer-events: none;
+}
+
+/* Arrows and chevrons point the other way in right-to-left */
+[dir="rtl"] .studio-icon--flip {
+	transform: scaleX(-1);
+}
+
+/*
+ * The state layer of the controls of the content (the dashboard, the notification menu, the palette): the content colour over the
+ * element, 8% on hover and 10% on focus and press.
+ */
+.studio-state {
+	position: relative;
+}
+
+.studio-state::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: currentColor;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity var(--md-dur-short) linear;
+}
+
+.studio-state:hover::before {
+	opacity: var(--md-state-hover);
+}
+
+.studio-state:focus-visible::before,
+.studio-state:active::before {
+	opacity: var(--md-state-focus);
+}
+
+/* Only visually hidden: still read out, still a name for its control */
+.studio-sr {
+	position: absolute;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	inline-size: 1px;
+	block-size: 1px;
+	margin: -1px;
+	white-space: nowrap;
+}

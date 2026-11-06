@@ -1,0 +1,21 @@
+{% from '@dsr_modernadminpanel/icons.html' import studio_svg %}
+<dialog class="studio-premium" id="studio-premium-dialog" aria-labelledby="studio-premium-title" aria-describedby="studio-premium-intro" data-contact="{{ STUDIO_PREMIUM_CONTACT_TOKEN }}">
+	<div class="studio-premium__surface">
+		<button class="studio-icon-button studio-premium__close" type="button" aria-label="{{ lang('STUDIO_PREMIUM_CLOSE') }}" title="{{ lang('STUDIO_PREMIUM_CLOSE') }}">{{ studio_svg('close') }}</button>
+		<p class="studio-premium__eyebrow">{{ lang('STUDIO_PREMIUM_EYEBROW') }}</p>
+		<h2 id="studio-premium-title">{{ lang('STUDIO_PREMIUM_TITLE') }}</h2>
+		<p id="studio-premium-intro">{{ lang('STUDIO_PREMIUM_INTRO') }}</p>
+		<ul class="studio-premium__modules">
+			<li><span class="studio-premium__icon">{{ studio_svg('login') }}</span><div><h3>{{ lang('STUDIO_PREMIUM_OAUTH_TITLE') }}</h3><p>{{ lang('STUDIO_PREMIUM_OAUTH_TEXT') }}</p></div></li>
+			<li><span class="studio-premium__icon">{{ studio_svg('shield') }}</span><div><h3>{{ lang('STUDIO_PREMIUM_SPAM_TITLE') }}</h3><p>{{ lang('STUDIO_PREMIUM_SPAM_TEXT') }}</p></div></li>
+			<li><span class="studio-premium__icon">{{ studio_svg('schedule') }}</span><div><h3>{{ lang('STUDIO_PREMIUM_ASYNC_TITLE') }}</h3><p>{{ lang('STUDIO_PREMIUM_ASYNC_TEXT') }}</p></div></li>
+			<li><span class="studio-premium__icon">{{ studio_svg('notifications') }}</span><div><h3>{{ lang('STUDIO_PREMIUM_PUSH_TITLE') }}</h3><p>{{ lang('STUDIO_PREMIUM_PUSH_TEXT') }}</p></div></li>
+			<li><span class="studio-premium__icon">{{ studio_svg('smartphone') }}</span><div><h3>{{ lang('STUDIO_PREMIUM_APPS_TITLE') }}</h3><p>{{ lang('STUDIO_PREMIUM_APPS_TEXT') }}</p></div></li>
+			<li><span class="studio-premium__icon">{{ studio_svg('build') }}</span><div><h3>{{ lang('STUDIO_PREMIUM_CUSTOM_TITLE') }}</h3><p>{{ lang('STUDIO_PREMIUM_CUSTOM_TEXT') }}</p></div></li>
+		</ul>
+		<div class="studio-premium__actions">
+			<button class="studio-btn studio-btn--filled studio-premium__contact" type="button" data-subject="{{ lang('STUDIO_PREMIUM_SUBJECT') }}" data-body="{{ lang('STUDIO_PREMIUM_BODY') }}"><span class="studio-premium__action-icon">{{ studio_svg('mail') }}</span>{{ lang('STUDIO_PREMIUM_CONTACT') }}</button>
+			<button class="studio-btn studio-btn--tonal studio-premium__dismiss" type="button"><span class="studio-premium__action-icon">{{ studio_svg('close') }}</span>{{ lang('STUDIO_PREMIUM_CLOSE') }}</button>
+		</div>
+	</div>
+</dialog>

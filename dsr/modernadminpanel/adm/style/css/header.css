@@ -1,0 +1,286 @@
+/**
+ *
+ * Modern Admin Panel. An extension for the phpBB Forum Software package.
+ *
+ * @copyright (c) 2026, DSR! https://github.com/xchwarze
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+/**
+ * Header (header.html): always sticky, only the essentials. Painted with the preset of the "header_colour" option and its text
+ * colour (colours.css). Three columns, 1fr auto 1fr, so the search box is centred in the whole header whatever the sides hold (the search
+ * column is 40% of the window, between 240px and 720px, the widest search bar of Material 3):
+ * the menu button (small screens only) at the start; the colour mode button, the notifications and the account at the end.
+ */
+.studio-header {
+	position: sticky;
+	z-index: 10;
+	inset-block-start: 0;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) clamp(240px, 40vw, 720px) minmax(0, 1fr);
+	align-items: center;
+	column-gap: 8px;
+	block-size: var(--studio-header);
+	padding-inline: 16px 8px;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+	font-size: 14px;
+}
+
+html.studio-ready .studio-header {
+	transition: background-color var(--md-dur-short) linear;
+}
+
+.studio-header.is-scrolled {
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+}
+
+/* In the dark scheme a white header would be the one bright thing: it has its own edge there (colours.css) */
+html[data-studio-theme="dark"] .studio-header.studio-bg-white {
+	box-shadow: 0 1px 0 var(--md-outline-variant);
+}
+
+.studio-header__start {
+	display: flex;
+	align-items: center;
+	justify-self: start;
+}
+
+/* Square icon buttons: menu, colour mode, notifications, account (and the star of the page bar, layout.css) */
+.studio-icon-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	flex: none;
+	min-inline-size: var(--studio-item);
+	block-size: var(--studio-item);
+	margin: 0;
+	padding: 0 8px;
+	border: 0;
+	border-radius: 6px;
+	background: none;
+	color: inherit;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.studio-header .studio-icon-button:hover,
+.studio-header .studio-icon-button[aria-expanded="true"],
+.studio-pagebar .studio-icon-button:hover {
+	background: var(--studio-tint, rgba(0, 0, 0, 0.07));
+	text-decoration: none;
+}
+
+.studio-pagebar {
+	--studio-tint: rgba(0, 0, 0, 0.07);
+}
+
+html[data-studio-theme="dark"] .studio-pagebar {
+	--studio-tint: rgba(255, 255, 255, 0.1);
+}
+
+.studio-icon-button .avatar {
+	inline-size: 26px;
+	block-size: 26px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+/* Only on small screens, where the sidebar is a drawer */
+.studio-header__menu {
+	display: none;
+}
+
+/* Search: the trigger of the command palette (palette.css). A white box with dark text on every preset */
+.studio-search {
+	position: relative;
+	justify-self: center;
+	inline-size: 100%;
+	max-inline-size: 100%;
+}
+
+.studio-search > .studio-icon {
+	position: absolute;
+	inset-block-start: 50%;
+	inset-inline-start: 11px;
+	color: #555555;
+	transform: translateY(-50%);
+}
+
+.studio-search > input[type="text"],
+.studio-search > input[type="text"]:focus {
+	box-sizing: border-box;
+	inline-size: 100%;
+	block-size: 36px;
+	margin: 0;
+	padding-block: 0 !important;
+	padding-inline: 38px 60px !important;
+	border: 1px solid rgba(0, 0, 0, 0.18);
+	border-radius: 6px;
+	box-shadow: none;
+	background: #ffffff;
+	color: #1f1f1f;
+	font-size: 14px;
+	cursor: text;
+}
+
+.studio-search > input[type="text"]::placeholder {
+	color: #6b6b6b;
+	opacity: 1;
+}
+
+/* A white header in the dark scheme takes the dark surface (colours.css): its search box does too */
+html[data-studio-theme="dark"] .studio-header.studio-bg-white .studio-search > input[type="text"],
+html[data-studio-theme="dark"] .studio-header.studio-bg-white .studio-search > input[type="text"]:focus {
+	border-color: var(--md-outline-variant);
+	background: var(--md-surface-container-high);
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] .studio-header.studio-bg-white .studio-search > input[type="text"]::placeholder,
+html[data-studio-theme="dark"] .studio-header.studio-bg-white .studio-search > .studio-icon {
+	color: var(--md-on-surface-variant);
+}
+
+html[data-studio-theme="dark"] .studio-header.studio-bg-white .studio-search__kbd {
+	border-color: var(--md-outline-variant);
+	background: var(--md-surface-container);
+	color: var(--md-on-surface-variant);
+}
+
+.studio-search__kbd {
+	position: absolute;
+	inset-block-start: 50%;
+	inset-inline-end: 8px;
+	padding: 3px 5px;
+	border: 1px solid #c8c8c8;
+	border-radius: 4px;
+	background: #f4f4f4;
+	color: #4a4a4a;
+	font: 11px/1 monospace;
+	pointer-events: none;
+	transform: translateY(-50%);
+}
+
+.studio-nav {
+	display: flex;
+	align-items: center;
+	justify-self: end;
+	gap: 2px;
+}
+
+/* Dropdowns: notifications and account */
+.studio-dropdown {
+	position: relative;
+}
+
+.studio-dropdown-contents {
+	--studio-tint: var(--studio-pop-tint);
+	position: absolute;
+	z-index: 12;
+	inset-block-start: calc(100% + 6px);
+	inset-inline-end: 0;
+	min-inline-size: 220px;
+	max-inline-size: min(400px, 92vw);
+	border-radius: 8px;
+	background: var(--studio-pop);
+	box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+	color: var(--md-on-surface);
+	font-size: 13px;
+	overflow: hidden;
+}
+
+.studio-dropdown-contents ul {
+	margin: 0;
+	list-style: none;
+}
+
+/* The stock sheet sets a size on every list item: keep the one of the menu */
+.studio-dropdown-contents li {
+	font-size: inherit;
+}
+
+.studio-dropdown-contents a:link,
+.studio-dropdown-contents a:visited {
+	display: block;
+	color: var(--md-on-surface);
+	text-decoration: none;
+}
+
+.studio-dropdown-contents a:hover {
+	text-decoration: none;
+}
+
+.studio-dropdown-contents a.studio-icon-button {
+	display: inline-flex;
+}
+
+.studio-panel > ul > li > a,
+.studio-panel__user {
+	padding: 10px 14px;
+}
+
+.studio-panel > ul > li > a:hover {
+	background: var(--studio-pop-tint);
+}
+
+.studio-panel__user {
+	border-block-end: 1px solid var(--md-outline-variant);
+	font-weight: 700;
+}
+
+@media (max-width: 800px) {
+	.studio-header {
+		grid-template-columns: auto minmax(0, 1fr) auto;
+		column-gap: 4px;
+		padding-inline: 4px;
+	}
+
+	.studio-header__menu {
+		display: inline-flex;
+	}
+
+	.studio-search {
+		justify-self: stretch;
+	}
+
+	.studio-search__kbd {
+		display: none;
+	}
+
+	.studio-search > input[type="text"],
+	.studio-search > input[type="text"]:focus {
+		padding-inline-end: 8px !important;
+	}
+
+	.studio-nav {
+		gap: 0;
+	}
+
+	.studio-dropdown-contents {
+		position: fixed;
+		inset-block-start: calc(var(--studio-header) + 4px);
+		inset-inline: 8px;
+		max-inline-size: none;
+	}
+}
+
+/*
+ * The colour mode button: one icon, the one of the mode in use (system, light or dark). The head script puts the choice on
+ * <html data-studio-choice> before the first paint, so the icon is right at once. Without JavaScript the button would do
+ * nothing, so it is not shown.
+ */
+.studio-mode__icon {
+	display: none;
+}
+
+html:not([data-studio-choice]) .studio-mode__system,
+html[data-studio-choice="system"] .studio-mode__system,
+html[data-studio-choice="light"] .studio-mode__light,
+html[data-studio-choice="dark"] .studio-mode__dark {
+	display: block;
+}
+
+html:not(.studio-js) .studio-mode {
+	display: none;
+}

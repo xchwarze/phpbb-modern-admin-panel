@@ -1,0 +1,182 @@
+/**
+ *
+ * Modern Admin Panel. An extension for the phpBB Forum Software package.
+ *
+ * @copyright (c) 2026, DSR! https://github.com/xchwarze
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+/**
+ * Command palette (palette.html, js/studio.js): a dialog with a search bar as its header and a list of 56px items, each with a
+ * leading icon and a supporting line for the path of the module. It is tinted with the sidebar colour: a 4px strip painted with the
+ * preset itself, a surface that is a tint of its hue, and the accent for the search icon and the selected row (all of them in
+ * colours.css, from the class studio-hue-<colour> of <html>).
+ */
+.studio-palette {
+	inline-size: min(640px, calc(100vw - 32px));
+	max-inline-size: none;
+	max-block-size: min(70vh, 560px);
+	margin: 12vh auto auto;
+	border: 0;
+	border-radius: 16px;
+	background: var(--studio-palette);
+	box-shadow: var(--md-elev-3);
+	color: var(--md-on-surface);
+	font: var(--md-body-medium);
+	overflow: hidden;
+}
+
+.studio-palette[open] {
+	display: flex;
+}
+
+.studio-palette::backdrop {
+	background: rgba(0, 0, 0, 0.32);
+}
+
+.studio-palette__box {
+	display: flex;
+	flex-direction: column;
+	inline-size: 100%;
+	min-block-size: 0;
+}
+
+/* The strip painted with the preset of the sidebar */
+.studio-palette__box::before {
+	content: "";
+	flex: none;
+	block-size: 4px;
+	background: var(--studio-bg, var(--md-primary));
+}
+
+/* The search bar: icon and box, 56px, a divider under it */
+.studio-palette__bar {
+	display: flex;
+	align-items: center;
+	flex: none;
+	gap: 16px;
+	block-size: 56px;
+	padding-inline: 16px;
+	border-block-end: 1px solid var(--md-outline-variant);
+	color: var(--md-primary);
+}
+
+/* Over the ACP's own text input styles (content.css) */
+.studio-palette .studio-palette__input {
+	flex: 1;
+	min-inline-size: 0;
+	block-size: 100%;
+	padding: 0 !important;
+	border: 0;
+	border-radius: 0;
+	box-shadow: none;
+	background: transparent;
+	color: var(--md-on-surface);
+	font: var(--md-body-medium);
+}
+
+.studio-palette .studio-palette__input::placeholder {
+	color: var(--md-on-surface-variant);
+	opacity: 1;
+}
+
+.studio-palette .studio-palette__input:focus {
+	box-shadow: none;
+	background: transparent;
+	outline: none;
+}
+
+.studio-palette__list {
+	flex: 1;
+	min-block-size: 0;
+	margin: 0;
+	padding: 8px;
+	list-style: none;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+}
+
+.studio-palette__section {
+	padding: 12px 16px 8px;
+	color: var(--md-on-surface-variant);
+	font: var(--md-title-small);
+}
+
+.studio-palette__option {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	min-block-size: 56px;
+	padding: 8px 16px;
+	border-radius: 10px;
+	cursor: pointer;
+}
+
+.studio-palette__option > .studio-icon,
+.studio-palette__option > .studio-menu__badge {
+	color: var(--md-on-surface-variant);
+}
+
+/* The selected row (aria-activedescendant: focus stays in the input) */
+.studio-palette__option.is-active {
+	background: var(--md-primary-container);
+	color: var(--md-on-primary-container);
+}
+
+.studio-palette__option.is-active > .studio-icon,
+.studio-palette__option.is-active .studio-palette__path {
+	color: var(--md-on-primary-container);
+}
+
+.studio-palette__text {
+	display: flex;
+	flex-direction: column;
+	min-inline-size: 0;
+}
+
+.studio-palette__title {
+	font: var(--md-label-large);
+}
+
+.studio-palette__path {
+	overflow: hidden;
+	color: var(--md-on-surface-variant);
+	font: var(--md-body-medium);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.studio-palette__empty {
+	padding: 24px 16px;
+	color: var(--md-on-surface-variant);
+	font: var(--md-body-medium);
+	text-align: center;
+}
+
+.studio-palette__hint {
+	flex: none;
+	margin: 0;
+	padding: 12px 24px;
+	border-block-start: 1px solid var(--md-outline-variant);
+	color: var(--md-on-surface-variant);
+	font: var(--md-body-medium);
+}
+
+@media (max-width: 700px) {
+	.studio-palette {
+		max-block-size: calc(100vh - 16px);
+		max-block-size: calc(100dvh - 16px);
+		margin-block-start: 8px;
+	}
+
+	.studio-palette__hint {
+		display: none;
+	}
+}
+
+/* A line of the settings group while they are asked for (or when the request failed) */
+.studio-palette__status {
+	padding: 8px 16px 12px;
+	color: var(--md-on-surface-variant);
+	font: var(--md-body-medium);
+}

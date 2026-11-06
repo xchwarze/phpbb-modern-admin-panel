@@ -1,0 +1,7 @@
+{# If js/studio.js did not start (blocked, a script error, a bad cache), the page must not stay in the layout that needs it: "studio-js" is
+   taken off <html>, and the rules for a page without JavaScript (a plain menu above the page, the header search as a form) apply.
+   The script of studio.js comes after this event, so the check waits for the load event. #}
+<!-- GENERATED INLINE: acp-footer.js:BEGIN -->
+<script>window.addEventListener("load",function(){window.dsrAdmin||document.documentElement.classList.remove("studio-js")});
+</script>
+<!-- GENERATED INLINE: acp-footer.js:END -->

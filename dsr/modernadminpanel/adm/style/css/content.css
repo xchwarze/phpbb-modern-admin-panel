@@ -1,0 +1,1777 @@
+/**
+ *
+ * Modern Admin Panel. An extension for the phpBB Forum Software package.
+ *
+ * @copyright (c) 2020, phpBB Studio, https://www.phpbbstudio.com
+ * @copyright (c) 2026, DSR! https://github.com/xchwarze
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+/*
+ * The content area of the ACP, the stock markup of every page: page titles, panels, form rows, fields, buttons, tables, tabs,
+ * pagination, message boxes and alerts. Restyled with a modern rhythm: an 8px grid, panels as cards with a thin edge and one heading
+ * line, form rows that are a label and a field divided by hairlines, quiet fields with a clear focus ring, tables with a header row
+ * and soft rows, one filled button per form and the others outlined.
+ *
+ * Every colour is a role (colours.css), so the same code is right in the light and in the dark scheme and has the contrast of the
+ * roles. The accent (links, the main button, focus rings, the active tab, the header line of the tables) is derived from the
+ * sidebar colour. The dark layer (dark.css) only holds what the stock sheet paints that a role cannot reach.
+ *
+ * "html:root" in front of a selector gives it the weight of the stock selectors it has to beat, the way the dark layer's
+ * html[data-studio-theme="dark"] does. The link rule is scoped with :where(), so that it never beats a rule of the
+ * extension's own widgets (the sidebar, the cards, the message boxes).
+ */
+/* ===== Page: titles, text, links ===== */
+#content h1,
+#content h2 {
+	color: var(--md-on-surface);
+	font-weight: 600;
+}
+
+#content h1 {
+	margin: 0 0 4px;
+	font-size: 1.5rem;
+	line-height: 1.3;
+}
+
+#content h2 {
+	margin: 24px 0 8px;
+	padding: 0;
+	border: 0;
+	font-size: 1.2rem;
+	line-height: 1.35;
+}
+
+#content h1 + p,
+#content h2 + p {
+	margin-block: 0 16px;
+	color: var(--md-on-surface-variant);
+	font-size: 14px;
+	line-height: 20px;
+}
+
+#content h3 {
+	color: var(--md-on-surface);
+	font-weight: 600;
+}
+
+/* The links of the content take the accent; over the stock "a:link, a:visited" blue and its pink hover */
+html:root :where(#wrap) a:link,
+html:root :where(#wrap) a:visited {
+	color: var(--md-primary);
+}
+
+html:root :where(#wrap) a:hover {
+	text-decoration: underline;
+}
+
+#page-footer {
+	font-size: 14px;
+}
+
+/* ===== Message boxes =====
+ * A container colour with the text colour of that container, a thin edge and a 4px stripe at the inline start, so that the four kinds
+ * do not rest on the hue alone. Links are the text colour of the box, bold and underlined. */
+html:root .errorbox,
+html:root .errorbox.notice,
+html:root .successbox,
+html:root .warningbox {
+	margin: 16px 0;
+	padding: 12px 16px;
+	border: 1px solid transparent;
+	border-inline-start-width: 4px;
+	border-radius: var(--md-shape-card);
+	box-shadow: none;
+}
+
+html:root .errorbox {
+	border-color: var(--md-error);
+	background: var(--md-error-container);
+	color: var(--md-on-error-container);
+}
+
+html:root .errorbox.notice {
+	border-color: var(--md-on-secondary-container);
+	background: var(--md-secondary-container);
+	color: var(--md-on-secondary-container);
+}
+
+html:root .successbox {
+	border-color: var(--md-primary);
+	background: var(--md-primary-container);
+	color: var(--md-on-primary-container);
+}
+
+html:root .warningbox {
+	border-color: var(--md-on-tertiary-container);
+	background: var(--md-tertiary-container);
+	color: var(--md-on-tertiary-container);
+}
+
+html:root .errorbox h3,
+html:root .errorbox p,
+html:root .successbox h3,
+html:root .successbox p,
+html:root .warningbox h3,
+html:root .warningbox p {
+	color: inherit;
+}
+
+.errorbox h3,
+.successbox h3,
+.warningbox h3 {
+	margin: 0 0 4px;
+	font-size: 16px;
+}
+
+.errorbox p,
+.successbox p,
+.warningbox p {
+	margin: 0;
+	font-size: 14px;
+	line-height: 20px;
+}
+
+/* The :link, :visited, :hover and :active forms beat the stock rules of the same weight (.errorbox a:link, ...) */
+html:root .errorbox a,
+html:root .errorbox a:link,
+html:root .errorbox a:visited,
+html:root .errorbox a:hover,
+html:root .errorbox a:active {
+	color: var(--md-on-error-container);
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+html:root .errorbox.notice a,
+html:root .errorbox.notice a:link,
+html:root .errorbox.notice a:visited,
+html:root .errorbox.notice a:hover,
+html:root .errorbox.notice a:active {
+	color: var(--md-on-secondary-container);
+}
+
+html:root .successbox a,
+html:root .successbox a:link,
+html:root .successbox a:visited,
+html:root .successbox a:hover,
+html:root .successbox a:active {
+	color: var(--md-on-primary-container);
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+html:root .warningbox a,
+html:root .warningbox a:link,
+html:root .warningbox a:visited,
+html:root .warningbox a:hover,
+html:root .warningbox a:active {
+	color: var(--md-on-tertiary-container);
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+/* ===== Alerts and confirmations ===== */
+.phpbb_alert {
+	margin: 0;
+	padding: 32px;
+	border: 1px solid var(--md-outline-variant);
+	border-radius: 12px;
+	background: var(--md-surface);
+	box-shadow: var(--md-elev-3);
+	color: var(--md-on-surface);
+	top: 45%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.alert_title,
+#phpbb_confirm > .alert_text > h3 {
+	margin: 0 0 16px;
+	padding: 0;
+	color: var(--md-on-surface);
+	font-size: 24px;
+	font-weight: 600;
+	text-align: center;
+}
+
+#phpbb_alert > .alert_text,
+#phpbb_confirm > .alert_text > p {
+	margin: 0;
+	padding: 0;
+	color: var(--md-on-surface-variant);
+	font-size: 16px;
+	text-align: center;
+}
+
+.phpbb_alert .submit-buttons {
+	margin: 32px 0 0;
+	padding: 0;
+}
+
+/* The close cross is a Font Awesome glyph of the core page. It does not move: only its colour changes */
+.phpbb_alert .alert_close {
+	width: 18px;
+	height: 18px;
+	margin: 0;
+	padding: 0;
+	background: none;
+	color: var(--md-outline);
+	font-family: FontAwesome;
+	font-size: 24px;
+	font-weight: bold;
+	line-height: 18px;
+	text-align: center;
+}
+
+.phpbb_alert .alert_close:before {
+	content: "\f00d";
+}
+
+.phpbb_alert .alert_close:hover {
+	color: var(--md-error);
+}
+
+/* ===== Panels =====
+ * A fieldset is a card: a thin edge, 12px corners, and its legend as the heading line of the card (a rule under it). The legend is
+ * floated over the whole width and what follows clears it, so a long heading wraps instead of running over the content. The
+ * transparent fieldsets of the stock sheet (quick, display-options, submit-buttons, nobg, tabulated) are not panels. */
+fieldset:not(.display-options):not(.submit-buttons):not(.quick):not(.nobg):not(.tabulated) {
+	position: relative;
+	margin: 16px 0;
+	padding: 20px 24px 8px;
+	border: 1px solid var(--md-outline-variant);
+	border-radius: 12px;
+	background: var(--md-surface);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+	color: var(--md-on-surface);
+}
+
+fieldset > legend {
+	position: static;
+	float: inline-start;
+	box-sizing: border-box;
+	inline-size: 100%;
+	block-size: auto;
+	margin: 0 0 8px;
+	padding: 0 0 12px;
+	border-block-end: 1px solid var(--md-outline-variant);
+	color: var(--md-on-surface);
+	font-size: 16px;
+	font-weight: 600;
+	line-height: 24px;
+}
+
+fieldset:not(.submit-buttons) > legend + * {
+	clear: both;
+	margin-block-start: 0;
+}
+
+fieldset p {
+	color: var(--md-on-surface-variant);
+}
+
+/* ===== Form rows =====
+ * The stock layout (a label of 45% and the field beside it) with the vertical rules of the stock sheet replaced by one hairline
+ * between the rows. The label is bold, its explanation under it is small and muted. */
+fieldset dl {
+	margin: 0;
+	padding: 16px 0;
+	border-block-start: 1px solid var(--md-outline-variant);
+	font-size: 14px;
+}
+
+fieldset > legend + dl,
+fieldset > legend + form > dl:first-child,
+fieldset > dl:first-child,
+fieldset > form:first-child > dl:first-child {
+	border-block-start: 0;
+	padding-block-start: 8px;
+}
+
+fieldset dt {
+	padding-inline-end: 16px;
+	padding-block-start: 6px;
+	border: 0;
+}
+
+fieldset dt label {
+	color: var(--md-on-surface);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+fieldset dt span {
+	display: block;
+	margin-block-start: 2px;
+	padding: 0;
+	color: var(--md-on-surface-variant);
+	font-size: 14px;
+	line-height: 20px;
+}
+
+.rtl fieldset dt,
+.rtl fieldset dd {
+	border: 0;
+}
+
+fieldset dd {
+	padding-inline-start: 0;
+	border: 0;
+	color: var(--md-on-surface-variant);
+	font-size: 14px;
+}
+
+fieldset dd label {
+	color: var(--md-on-surface);
+	font-size: 14px;
+	line-height: 36px;
+}
+
+html:root fieldset dl:hover dt label,
+html:root fieldset dl dd label:hover {
+	color: var(--md-primary);
+}
+
+fieldset > dl:last-child,
+fieldset > form > dl:last-child {
+	padding-block-end: 12px;
+}
+
+/* ===== Fields and buttons =====
+ * Text fields, selects and buttons share one box: 36px, 6px corners, a thin edge in the outline colour (the !important of the
+ * padding beats the padding that the stock rules give the fields of a settings row). A field has a clear focus: a 2px ring in
+ * the accent. The buttons: the main action is filled with the accent, the others are outlined, a destructive one in the error
+ * colour, preview in the tertiary tone. */
+select,
+dd select,
+textarea,
+dd textarea,
+input[type="text"],
+dd input[type="text"],
+input[type="email"],
+dd input[type="email"],
+input[type="url"],
+dd input[type="url"],
+input[type="number"],
+dd input[type="number"],
+input[type="password"],
+dd input[type="password"],
+a.button1,
+a.button2,
+input.button1,
+input.button2,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+a[onclick*="marklist"],
+.studio-bool + .studio-bool-no,
+.studio-bool + .studio-bool-yes {
+	display: inline-block;
+	box-sizing: border-box;
+	min-height: 36px;
+	padding: 6px 12px !important;
+	border: 1px solid var(--md-outline);
+	border-radius: 6px;
+	background-image: none;
+	box-shadow: none;
+	font-family: inherit;
+	font-size: 14px;
+	line-height: 22px;
+	transition: border-color var(--md-dur-short) linear, background-color var(--md-dur-short) linear;
+}
+
+select,
+dd select,
+input[type="text"],
+dd input[type="text"],
+input[type="email"],
+dd input[type="email"],
+input[type="url"],
+dd input[type="url"],
+input[type="number"],
+dd input[type="number"],
+input[type="password"],
+dd input[type="password"] {
+	height: 36px;
+}
+
+/* The fields: the surface of the card, a quiet edge that darkens on hover and takes the accent on focus */
+select,
+dd select,
+textarea,
+dd textarea,
+input[type="text"],
+dd input[type="text"],
+input[type="email"],
+dd input[type="email"],
+input[type="url"],
+dd input[type="url"],
+input[type="number"],
+dd input[type="number"],
+input[type="password"],
+dd input[type="password"] {
+	border-color: var(--md-outline);
+	background-color: var(--md-surface-container-low);
+	color: var(--md-on-surface);
+}
+
+select:hover,
+textarea:hover,
+input[type="text"]:hover,
+input[type="email"]:hover,
+input[type="url"]:hover,
+input[type="number"]:hover,
+input[type="password"]:hover {
+	border-color: var(--md-on-surface-variant);
+}
+
+select:focus,
+textarea:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus {
+	border-color: var(--md-primary);
+	background-color: var(--md-surface);
+	outline: none;
+	box-shadow: 0 0 0 1px var(--md-primary);
+}
+
+input[type="number"] {
+	width: auto;
+	min-width: 75px;
+}
+
+textarea,
+select[multiple] {
+	height: auto;
+	min-height: 102px;
+}
+
+select,
+dd select,
+textarea,
+dd textarea {
+	margin-inline-start: 0;
+}
+
+dd label {
+	height: auto;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+	accent-color: var(--md-primary);
+}
+
+/* ===== Checkboxes, radios and selects =====
+ * The native controls drawn the Material 3 way, in CSS only, on the stock markup (the inputs stay the inputs: same name, value,
+ * keyboard and form behaviour). A checkbox is an 18px box with a 2px edge, filled with the accent when it is checked (a check
+ * in the "on" colour) or indeterminate (a dash); a radio is a 20px ring with a 10px dot. Hover, focus and press show as a 40px
+ * round layer of the accent (8% and 12%) that takes no room in the layout (it is a ::before, out of the flow), the focus also has
+ * the ring of the rest of the extension. Disabled: 38%. The edge and the fill are roles, so they are the right colours in the
+ * light and in the dark scheme and in every preset (the contrast is checked in suite/t_controls.js).
+ *
+ * What is not touched: the Yes/No toggles and the switches and swatches of the settings page (their radios are hidden on purpose),
+ * the checkbox of core's statistics widget (.send-stats-settings, drawn with a glyph), the controls of the extension's own widgets
+ * and any input that is [hidden]. A select with [multiple] or a size is a list box: it keeps the native rendering and has the
+ * border of the fields (above). "html:root" gives the weight that beats the stock rules and the dark layer. */
+html:root :is(input[type="checkbox"], input[type="radio"]):not([hidden], .studio-bool, :where(.studio-switch, .studio-swatch, .send-stats-settings, .studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *) {
+	appearance: none;
+	position: relative;
+	flex: none;
+	box-sizing: border-box;
+	margin-block: 0;
+	margin-inline: 0 4px;
+	padding: 0;
+	border: 2px solid var(--md-on-surface-variant);
+	background-color: transparent;
+	background-image: none;
+	box-shadow: none;
+	vertical-align: middle;
+	cursor: pointer;
+	transition: border-color var(--md-dur-short) linear, background-color var(--md-dur-short) linear;
+}
+
+html:root input[type="checkbox"]:not([hidden], .studio-bool, :where(.studio-switch, .studio-swatch, .send-stats-settings, .studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *) {
+	inline-size: 18px !important;
+	block-size: 18px;
+	border-radius: 2px;
+}
+
+html:root input[type="radio"]:not([hidden], .studio-bool, :where(.studio-switch, .studio-swatch, .send-stats-settings, .studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *) {
+	inline-size: 20px !important;
+	block-size: 20px;
+	border-radius: 50%;
+}
+
+/* The state layer */
+html:root :is(input[type="checkbox"], input[type="radio"]):not([hidden], .studio-bool, :where(.studio-switch, .studio-swatch, .send-stats-settings, .studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *)::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	inline-size: 40px;
+	block-size: 40px;
+	border-radius: 50%;
+	background: var(--md-primary);
+	opacity: 0;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+	transition: opacity var(--md-dur-short) linear;
+}
+
+html:root :is(input[type="checkbox"], input[type="radio"]):not([hidden], .studio-bool, :where(.studio-switch, .studio-swatch, .send-stats-settings, .studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *):enabled:hover::before {
+	opacity: var(--md-state-hover);
+}
+
+html:root :is(input[type="checkbox"], input[type="radio"]):not([hidden], .studio-bool, :where(.studio-switch, .studio-swatch, .send-stats-settings, .studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *):enabled:active::before,
+html:root :is(input[type="checkbox"], input[type="radio"]):not([hidden], .studio-bool, :where(.studio-switch, .studio-swatch, .send-stats-settings, .studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *):focus-visible::before {
+	opacity: 0.12;
+}
+
+html:root :is(input[type="checkbox"], input[type="radio"]):not([hidden], .studio-bool, :where(.studio-switch, .studio-swatch, .send-stats-settings, .studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *):focus-visible {
+	outline: 2px solid var(--md-primary);
+	outline-offset: 2px;
+}
+
+/* Checked and indeterminate: the box is the accent, the mark is the "on" colour of it */
+html:root input[type="checkbox"]:not([hidden], .studio-bool, :where(.studio-switch, .studio-swatch, .send-stats-settings, .studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *):is(:checked, :indeterminate) {
+	border-color: var(--md-primary);
+	background-color: var(--md-primary);
+}
+
+html:root input[type="checkbox"]:not([hidden], .studio-bool, :where(.studio-switch, .studio-swatch, .send-stats-settings, .studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *):checked::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	inline-size: 12px;
+	block-size: 9px;
+	background: var(--md-on-primary);
+	transform: translate(-50%, -50%);
+	mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 9'%3E%3Cpath d='M1.3 4.6l3.3 3.2L10.7 1.6' fill='none' stroke='%23000' stroke-width='2'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+
+html:root input[type="checkbox"]:not([hidden], .studio-bool, :where(.studio-switch, .studio-swatch, .send-stats-settings, .studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *):indeterminate::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	inline-size: 10px;
+	block-size: 2px;
+	background: var(--md-on-primary);
+	transform: translate(-50%, -50%);
+}
+
+/* A radio that is chosen: the ring and the dot in the accent */
+html:root input[type="radio"]:not([hidden], .studio-bool, :where(.studio-switch, .studio-swatch, .send-stats-settings, .studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *):checked {
+	border-color: var(--md-primary);
+}
+
+html:root input[type="radio"]:not([hidden], .studio-bool, :where(.studio-switch, .studio-swatch, .send-stats-settings, .studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *):checked::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	inline-size: 10px;
+	block-size: 10px;
+	border-radius: 50%;
+	background: var(--md-primary);
+	transform: translate(-50%, -50%);
+}
+
+/* Not available: 38%, no layer. (The disabled colours of the dark layer paint a box, and the checked rules above are heavier.) */
+html:root :is(input[type="checkbox"], input[type="radio"]):not([hidden], .studio-bool, :where(.studio-switch, .studio-swatch, .send-stats-settings, .studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *):disabled {
+	opacity: 0.38;
+	cursor: not-allowed;
+}
+
+/* Selects: the box of the fields (above) without the native arrow, and a chevron at the inline end (the left in right-to-left) */
+html:root select:not([multiple], [size], :where(.studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *) {
+	appearance: none;
+	padding-inline-end: 36px !important;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%234a5058'%3E%3Cpath d='M480-344 240-584l43-43 197 197 197-197 43 43-240 240Z'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 8px center;
+	background-size: 20px 20px;
+	cursor: pointer;
+}
+
+html:root select:not([multiple], [size], :where(.studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *):dir(rtl) {
+	background-position: left 8px center;
+}
+
+/* The buttons: neutral outlined ones, then one that says what the button does */
+html:root a.button1,
+html:root a.button1:link,
+html:root a.button1:visited,
+html:root a.button1:active,
+html:root a.button2,
+html:root a.button2:link,
+html:root a.button2:visited,
+html:root a.button2:active,
+html:root input.button1,
+html:root input.button2,
+html:root input[type="button"],
+html:root input[type="submit"],
+html:root input[type="reset"],
+html:root a[onclick*="marklist"],
+html:root a[onclick*="marklist"]:link,
+html:root a[onclick*="marklist"]:visited,
+html:root a[onclick*="marklist"]:active,
+html:root .studio-bool + .studio-bool-no,
+html:root .studio-bool + .studio-bool-yes {
+	border-color: var(--md-outline);
+	background-color: transparent;
+	color: var(--md-on-surface);
+	font-weight: 500;
+	cursor: pointer;
+}
+
+html:root a.button1:hover,
+html:root a.button2:hover,
+html:root input.button1:hover,
+html:root input.button2:hover,
+html:root input[type="button"]:hover,
+html:root input[type="reset"]:hover,
+html:root a[onclick*="marklist"]:hover {
+	border-color: var(--md-on-surface);
+	background-color: var(--md-surface-container);
+	background-image: none;
+	color: var(--md-on-surface);
+	text-decoration: none;
+}
+
+/* Main action: filled with the accent */
+html:root input[type="submit"],
+html:root input[name="confirm"],
+html:root .studio-bool:checked + .studio-bool-yes {
+	border-color: var(--md-primary);
+	background-color: var(--md-primary);
+	color: var(--md-on-primary);
+}
+
+html:root input[type="submit"]:hover,
+html:root input[name="confirm"]:hover {
+	border-color: var(--md-primary);
+	background-color: var(--md-primary);
+	box-shadow: inset 0 0 0 999px rgba(0, 0, 0, 0.14);
+	color: var(--md-on-primary);
+}
+
+/* The marking links and the "yes" that is not chosen: outlined in the accent */
+html:root a[onclick*="marklist"],
+html:root a[onclick*="marklist"]:link,
+html:root a[onclick*="marklist"]:visited,
+html:root a[onclick*="marklist"]:active,
+html:root .studio-bool + .studio-bool-yes {
+	border-color: var(--md-primary);
+	color: var(--md-primary);
+}
+
+html:root a[onclick*="marklist"]:hover {
+	border-color: var(--md-primary);
+	background-color: var(--md-primary-container);
+	color: var(--md-on-primary-container);
+}
+
+/* Cancel, delete and preview are outlined, also when they are a submit button (the filled rule above is for those) */
+html:root input[name="cancel"],
+html:root input[name="delall"],
+html:root input[name="delmarked"],
+html:root input[name="action[delete]"],
+html:root input[name="preview"] {
+	background-color: transparent;
+}
+
+/* Cancel and delete: error */
+html:root input[name="cancel"]:not([type="reset"]),
+html:root input[name="delall"],
+html:root input[name="delmarked"],
+html:root input[name="action[delete]"],
+html:root .studio-bool + .studio-bool-no {
+	border-color: var(--md-error);
+	color: var(--md-error);
+}
+
+html:root input[name="cancel"]:not([type="reset"]):hover,
+html:root input[name="delall"]:hover,
+html:root input[name="delmarked"]:hover,
+html:root input[name="action[delete]"]:hover,
+html:root .studio-bool:checked + .studio-bool-no {
+	border-color: var(--md-error);
+	background-color: var(--md-error);
+	color: var(--md-on-error);
+}
+
+/* Destructive actions use the same error fill as their error-colored icons, including scoped submit buttons. */
+html:root input:is([type="submit"], [type="button"], [type="reset"])[name="delete"]:not(:disabled),
+html:root input:is([type="submit"], [type="button"], [type="reset"])[name="delete_data"]:not(:disabled),
+html:root input:is([type="submit"], [type="button"], [type="reset"])[name="uninstall"]:not(:disabled),
+html:root input:is([type="submit"], [type="button"], [type="reset"])[name="unsecuresubmit"]:not(:disabled),
+html:root input:is([type="submit"], [type="button"], [type="reset"])[name="bansubmit"]:not(:disabled),
+html:root input:is([type="submit"], [type="button"], [type="reset"])[name="disallow"]:not(:disabled),
+html:root form#attachments input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(:disabled),
+html:root form[id^="acp_search_index_"]:has(input[name="action"][value="delete"]) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(:disabled) {
+	border-color: var(--md-error);
+	background-color: transparent;
+	color: var(--md-error);
+}
+
+html:root input:is([type="submit"], [type="button"], [type="reset"])[name="delete"]:not(:disabled):hover,
+html:root input:is([type="submit"], [type="button"], [type="reset"])[name="delete_data"]:not(:disabled):hover,
+html:root input:is([type="submit"], [type="button"], [type="reset"])[name="uninstall"]:not(:disabled):hover,
+html:root input:is([type="submit"], [type="button"], [type="reset"])[name="unsecuresubmit"]:not(:disabled):hover,
+html:root input:is([type="submit"], [type="button"], [type="reset"])[name="bansubmit"]:not(:disabled):hover,
+html:root input:is([type="submit"], [type="button"], [type="reset"])[name="disallow"]:not(:disabled):hover,
+html:root form#attachments input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(:disabled):hover,
+html:root form[id^="acp_search_index_"]:has(input[name="action"][value="delete"]) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(:disabled):hover {
+	border-color: var(--md-error);
+	background-color: var(--md-error);
+	color: var(--md-on-error);
+}
+
+/* Preview: the tertiary tone. Reset: the secondary tone */
+html:root input[name="preview"] {
+	border-color: var(--md-on-tertiary-container);
+	color: var(--md-on-tertiary-container);
+}
+
+html:root input[name="preview"]:hover {
+	border-color: var(--md-on-tertiary-container);
+	background-color: var(--md-tertiary-container);
+	color: var(--md-on-tertiary-container);
+}
+
+html:root input[type="reset"] {
+	border-color: var(--md-outline);
+	color: var(--md-on-surface);
+}
+
+/*
+ * The icons of the buttons of the forms. An input cannot have a pseudo element, so the icon is a background image at the inline start
+ * (18px, 12px from the edge, 36px of padding so that there are 6px before the text): Material Symbols, chosen by the name (or the
+ * type) of the button. check: submit, update, save and the "yes" of the confirm box; restart_alt: reset; close: cancel (the "no" of the
+ * confirm box); delete; visibility: preview; search; add; send: the test buttons of the extensions (the names test, send, test_*,
+ * *_test). A button that is not in the list has no icon, and neither has a button of the extension (.studio-btn).
+ * The colour of an image cannot follow the text colour, so each colour a button can have is one rule (generated): the on-primary colour
+ * of a filled button, the text colour of an outlined one, the error colour of cancel and delete and on-error when they are hovered.
+ * The preview button keeps the text colour of the outlined ones over its own tertiary text, which would need one image per preset.
+ * The dark colours are in dark.css. Each icon has at least 3:1 on its fill or on the surface in every preset (suite/t_controls.js).
+ * The rules are made from tools/button-icons.json (which button has which icon and colour) by npm run icons:buttons, which writes
+ * scss/generated/_button-icons.scss, and by scss/abstracts/_button-icons.scss.
+ * The weight of "body" in the selectors beats the hover rules of the buttons above, which would take the image away.
+ */
+html:root body input:is([type="submit"], [type="button"], [type="reset"]):where([type="submit"][name="submit"].button1):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="update"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="save"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="confirm"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="update_details"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="main_submit"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="submituser"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="add"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="addforum"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="addmodule"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="addreason"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="quickadd"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="create"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="add_extension_check"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="securesubmit"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="submit_add_options"]:not(.studio-btn),
+html:root body form[id^="acp_search_index_"]:has(input[name="action"][value="create"]) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body form#acp_bbcodes input:is([type="submit"], [type="button"], [type="reset"]):not(#submit):not(.studio-btn),
+html:root body form#profile_fields input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body form[id^="add_group_position"] input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="search"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="filter"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="test"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="send"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="send_test_email"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name^="test_"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name$="_test"]:not(.studio-btn),
+html:root body form#acp_email input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body form#questionnaire-form input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="delall"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="delmarked"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="action[delete]"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="delete"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="unsecuresubmit"]:not(.studio-btn),
+html:root body form#attachments input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body form[id^="acp_search_index_"]:has(input[name="action"][value="delete"]) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="delete_data"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="uninstall"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="cancel"]:not([type="reset"]):not(#reset):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="preview"]:not(.studio-btn),
+html:root body form#users input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body form#add_user input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body form#groups input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body form#group input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[type="reset"]:not(.studio-btn),
+html:root body form#set-permissions input:is([type="submit"], [type="button"], [type="reset"])#reset[name="cancel"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="install"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="edit"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="submit_edit_options"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="enable"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="activate"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name$="_enable"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="disable"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="deactivate"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name$="_disable"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="action[apply_all_permissions]"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name^="action_"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="next"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="select"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="avatar_local_go"]:not(.studio-btn),
+html:root body form#pselect input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[value="Go"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="prev"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="sort"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="configure"]:not(.studio-btn),
+html:root body form#acp_backup:has(select#file) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="bansubmit"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="disallow"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="unbansubmit"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="import"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="addusers"]:not(.studio-btn) {
+	padding-inline-start: 36px !important;
+	background-repeat: no-repeat;
+	background-position: left 12px center;
+	background-size: 18px 18px;
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"]):where([type="submit"][name="submit"].button1):not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="update"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="save"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="confirm"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="update_details"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="main_submit"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="submituser"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="add"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="addforum"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="addmodule"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="addreason"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="quickadd"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="create"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="add_extension_check"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="securesubmit"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="submit_add_options"]:not(.studio-btn):dir(rtl),
+html:root body form[id^="acp_search_index_"]:has(input[name="action"][value="create"]) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl),
+html:root body form#acp_bbcodes input:is([type="submit"], [type="button"], [type="reset"]):not(#submit):not(.studio-btn):dir(rtl),
+html:root body form#profile_fields input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl),
+html:root body form[id^="add_group_position"] input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="search"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="filter"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="test"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="send"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="send_test_email"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name^="test_"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name$="_test"]:not(.studio-btn):dir(rtl),
+html:root body form#acp_email input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl),
+html:root body form#questionnaire-form input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="delall"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="delmarked"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="action[delete]"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="delete"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="unsecuresubmit"]:not(.studio-btn):dir(rtl),
+html:root body form#attachments input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl),
+html:root body form[id^="acp_search_index_"]:has(input[name="action"][value="delete"]) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="delete_data"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="uninstall"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="cancel"]:not([type="reset"]):not(#reset):not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="preview"]:not(.studio-btn):dir(rtl),
+html:root body form#users input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl),
+html:root body form#add_user input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl),
+html:root body form#groups input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl),
+html:root body form#group input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[type="reset"]:not(.studio-btn):dir(rtl),
+html:root body form#set-permissions input:is([type="submit"], [type="button"], [type="reset"])#reset[name="cancel"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="install"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="edit"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="submit_edit_options"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="enable"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="activate"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name$="_enable"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="disable"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="deactivate"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name$="_disable"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="action[apply_all_permissions]"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name^="action_"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="next"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="select"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="avatar_local_go"]:not(.studio-btn):dir(rtl),
+html:root body form#pselect input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[value="Go"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="prev"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="sort"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="configure"]:not(.studio-btn):dir(rtl),
+html:root body form#acp_backup:has(select#file) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="bansubmit"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="disallow"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="unbansubmit"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="import"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="addusers"]:not(.studio-btn):dir(rtl) {
+	background-position: right 12px center;
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"]):where([type="submit"][name="submit"].button1):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="update"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="save"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="confirm"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="update_details"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="main_submit"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="submituser"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='M378-246 154-470l43-43 181 181 384-384 43 43-427 427Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="add"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="addforum"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="addmodule"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="addreason"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="quickadd"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="create"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="add_extension_check"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="securesubmit"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="submit_add_options"]:not(.studio-btn),
+html:root body form[id^="acp_search_index_"]:has(input[name="action"][value="create"]) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body form#acp_bbcodes input:is([type="submit"], [type="button"], [type="reset"]):not(#submit):not(.studio-btn),
+html:root body form#profile_fields input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body form[id^="add_group_position"] input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='M450-450H200v-60h250v-250h60v250h250v60H510v250h-60v-250Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="search"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="filter"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='M796-121 533-384q-30 26-69.96 40.5Q423.08-329 378-329q-108.16 0-183.08-75Q120-479 120-585t75-181q75-75 181.5-75t181 75Q632-691 632-584.85 632-542 618-502q-14 40-42 75l264 262-44 44ZM377-389q81.25 0 138.13-57.5Q572-504 572-585t-56.87-138.5Q458.25-781 377-781q-82.08 0-139.54 57.5Q180-666 180-585t57.46 138.5Q294.92-389 377-389Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="test"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="send"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="send_test_email"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name^="test_"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name$="_test"]:not(.studio-btn),
+html:root body form#acp_email input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body form#questionnaire-form input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='M120-160v-640l760 320-760 320Zm60-93 544-227-544-230v168l242 62-242 60v167Zm0 0v-457 457Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="preview"]:not(.studio-btn),
+html:root body form#users input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body form#add_user input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body form#groups input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body form#group input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='M480.12-330q70.88 0 120.38-49.62t49.5-120.5q0-70.88-49.62-120.38T479.88-670Q409-670 359.5-620.38T310-499.88q0 70.88 49.62 120.38t120.5 49.5Zm-.36-58q-46.76 0-79.26-32.74-32.5-32.73-32.5-79.5 0-46.76 32.74-79.26 32.73-32.5 79.5-32.5 46.76 0 79.26 32.74 32.5 32.73 32.5 79.5 0 46.76-32.74 79.26-32.73 32.5-79.5 32.5Zm.24 188q-146 0-264-83T40-500q58-134 176-217t264-83q146 0 264 83t176 217q-58 134-176 217t-264 83Zm0-300Zm-.17 240Q601-260 702.5-325.5 804-391 857-500q-53-109-154.33-174.5Q601.34-740 480.17-740T257.5-674.5Q156-609 102-500q54 109 155.33 174.5Q358.66-260 479.83-260Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[type="reset"]:not(.studio-btn),
+html:root body form#set-permissions input:is([type="submit"], [type="button"], [type="reset"])#reset[name="cancel"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='M451-122q-123-10-207-101t-84-216q0-77 35.5-145T295-695l43 43q-56 33-87 90.5T220-439q0 100 66 173t165 84v60Zm60 0v-60q100-12 165-84.5T741-439q0-109-75.5-184.5T481-699h-20l60 60-43 43-133-133 133-133 43 43-60 60h20q134 0 227 93.5T801-439q0 125-83.5 216T511-122Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="install"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='M480-313 287-506l43-43 120 120v-371h60v371l120-120 43 43-193 193ZM220-160q-24 0-42-18t-18-42v-143h60v143h520v-143h60v143q0 24-18 42t-42 18H220Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="edit"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="submit_edit_options"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='M180-180h44l472-471-44-44-472 471v44Zm-60 60v-128l575-574q8-8 19-12.5t23-4.5q11 0 22 4.5t20 12.5l44 44q9 9 13 20t4 22q0 11-4.5 22.5T823-694L248-120H120Zm659-617-41-41 41 41Zm-105 64-22-22 44 44-22-22Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="enable"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="activate"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name$="_enable"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='m421-298 283-283-46-45-237 237-120-120-45 45 165 166Zm59 218q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-156t86-127Q252-817 325-848.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 82-31.5 155T763-197.5q-54 54.5-127 86T480-80Zm0-60q142 0 241-99.5T820-480q0-142-99-241t-241-99q-141 0-240.5 99T140-480q0 141 99.5 240.5T480-140Zm0-340Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="disable"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="deactivate"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name$="_disable"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-60q61.01 0 117.51-20.5Q654-181 699-220L220-699q-38 46-59 102.17T140-480q0 142.37 98.81 241.19Q337.63-140 480-140Zm259-121q37-45 59-101.49 22-56.5 22-117.51 0-142.38-98.81-241.19T480-820q-60.66 0-116.83 21T261-739l478 478Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="action[apply_all_permissions]"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='M294-242 70-466l43-43 181 181 43 43-43 43Zm170 0L240-466l43-43 181 181 384-384 43 43-427 427Zm0-170-43-43 257-257 43 43-257 257Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name^="action_"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='M320-203v-560l440 280-440 280Zm60-280Zm0 171 269-171-269-171v342Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="next"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="select"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="avatar_local_go"]:not(.studio-btn),
+html:root body form#pselect input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[value="Go"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='M686-450H160v-60h526L438-758l42-42 320 320-320 320-42-42 248-248Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="prev"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='m274-450 248 248-42 42-320-320 320-320 42 42-248 248h526v60H274Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="sort"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='M120-240v-60h240v60H120Zm0-210v-60h480v60H120Zm0-210v-60h720v60H120Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="configure"]:not(.studio-btn),
+html:root body form#acp_backup:has(select#file) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='m388-80-20-126q-19-7-40-19t-37-25l-118 54-93-164 108-79q-2-9-2.5-20.5T185-480q0-9 .5-20.5T188-521L80-600l93-164 118 54q16-13 37-25t40-18l20-127h184l20 126q19 7 40.5 18.5T669-710l118-54 93 164-108 77q2 10 2.5 21.5t.5 21.5q0 10-.5 21t-2.5 21l108 78-93 164-118-54q-16 13-36.5 25.5T592-206L572-80H388Zm48-60h88l14-112q33-8 62.5-25t53.5-41l106 46 40-72-94-69q4-17 6.5-33.5T715-480q0-17-2-33.5t-7-33.5l94-69-40-72-106 46q-23-26-52-43.5T538-708l-14-112h-88l-14 112q-34 7-63.5 24T306-642l-106-46-40 72 94 69q-4 17-6.5 33.5T245-480q0 17 2.5 33.5T254-413l-94 69 40 72 106-46q24 24 53.5 41t62.5 25l14 112Zm44-210q54 0 92-38t38-92q0-54-38-92t-92-38q-54 0-92 38t-38 92q0 54 38 92t92 38Zm0-130Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="unbansubmit"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='M220-634h390v-96q0-54.17-37.88-92.08-37.88-37.92-92-37.92T388-822.08q-38 37.91-38 92.08h-60q0-79 55.61-134.5 55.6-55.5 134.5-55.5 78.89 0 134.39 55.58Q670-808.85 670-730v96h70q24.75 0 42.38 17.62Q800-598.75 800-574v434q0 24.75-17.62 42.37Q764.75-80 740-80H220q-24.75 0-42.37-17.63Q160-115.25 160-140v-434q0-24.75 17.63-42.38Q195.25-634 220-634Zm0 494h520v-434H220v434Zm260.17-140q31.83 0 54.33-22.03T557-355q0-30-22.67-54.5t-54.5-24.5q-31.83 0-54.33 24.5t-22.5 55q0 30.5 22.67 52.5t54.5 22ZM220-140v-434 434Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="import"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='M450-313v-371L330-564l-43-43 193-193 193 193-43 43-120-120v371h-60ZM220-160q-24 0-42-18t-18-42v-143h60v143h520v-143h60v143q0 24-18 42t-42 18H220Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="addusers"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cpath d='M730-400v-130H600v-60h130v-130h60v130h130v60H790v130h-60Zm-370-81q-66 0-108-42t-42-108q0-66 42-108t108-42q66 0 108 42t42 108q0 66-42 108t-108 42ZM40-160v-94q0-35 17.5-63.5T108-360q75-33 133.34-46.5t118.5-13.5Q420-420 478-406.5T611-360q33 15 51 43t18 63v94H40Zm60-60h520v-34q0-16-9-30.5T587-306q-71-33-120-43.5T360-360q-58 0-107.5 10.5T132-306q-15 7-23.5 21.5T100-254v34Zm260-321q39 0 64.5-25.5T450-631q0-39-25.5-64.5T360-721q-39 0-64.5 25.5T270-631q0 39 25.5 64.5T360-541Zm0-90Zm0 411Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="test"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="send"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="send_test_email"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name^="test_"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name$="_test"]:not(.studio-btn):dir(rtl),
+html:root body form#acp_email input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl),
+html:root body form#questionnaire-form input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cg transform='matrix(-1 0 0 1 960 0)'%3E%3Cpath d='M120-160v-640l760 320-760 320Zm60-93 544-227-544-230v168l242 62-242 60v167Zm0 0v-457 457Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="next"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="select"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="avatar_local_go"]:not(.studio-btn):dir(rtl),
+html:root body form#pselect input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[value="Go"]:not(.studio-btn):dir(rtl) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cg transform='matrix(-1 0 0 1 960 0)'%3E%3Cpath d='M686-450H160v-60h526L438-758l42-42 320 320-320 320-42-42 248-248Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="prev"]:not(.studio-btn):dir(rtl) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231f2328'%3E%3Cg transform='matrix(-1 0 0 1 960 0)'%3E%3Cpath d='m274-450 248 248-42 42-320-320 320-320 42 42-248 248h526v60H274Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"]):where([type="submit"][name="submit"].button1):is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="update"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="save"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="confirm"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="update_details"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="main_submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="submituser"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='M378-246 154-470l43-43 181 181 384-384 43 43-427 427Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="add"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="addforum"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="addmodule"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="addreason"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="quickadd"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="create"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="add_extension_check"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="securesubmit"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="submit_add_options"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body form[id^="acp_search_index_"]:has(input[name="action"][value="create"]) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body form#acp_bbcodes input:is([type="submit"], [type="button"], [type="reset"]):not(#submit):is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body form#profile_fields input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body form[id^="add_group_position"] input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='M450-450H200v-60h250v-250h60v250h250v60H510v250h-60v-250Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="search"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="filter"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='M796-121 533-384q-30 26-69.96 40.5Q423.08-329 378-329q-108.16 0-183.08-75Q120-479 120-585t75-181q75-75 181.5-75t181 75Q632-691 632-584.85 632-542 618-502q-14 40-42 75l264 262-44 44ZM377-389q81.25 0 138.13-57.5Q572-504 572-585t-56.87-138.5Q458.25-781 377-781q-82.08 0-139.54 57.5Q180-666 180-585t57.46 138.5Q294.92-389 377-389Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="test"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="send"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="send_test_email"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name^="test_"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name$="_test"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body form#acp_email input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body form#questionnaire-form input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='M120-160v-640l760 320-760 320Zm60-93 544-227-544-230v168l242 62-242 60v167Zm0 0v-457 457Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="install"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='M480-313 287-506l43-43 120 120v-371h60v371l120-120 43 43-193 193ZM220-160q-24 0-42-18t-18-42v-143h60v143h520v-143h60v143q0 24-18 42t-42 18H220Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="edit"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="submit_edit_options"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='M180-180h44l472-471-44-44-472 471v44Zm-60 60v-128l575-574q8-8 19-12.5t23-4.5q11 0 22 4.5t20 12.5l44 44q9 9 13 20t4 22q0 11-4.5 22.5T823-694L248-120H120Zm659-617-41-41 41 41Zm-105 64-22-22 44 44-22-22Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="enable"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="activate"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name$="_enable"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='m421-298 283-283-46-45-237 237-120-120-45 45 165 166Zm59 218q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-156t86-127Q252-817 325-848.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 82-31.5 155T763-197.5q-54 54.5-127 86T480-80Zm0-60q142 0 241-99.5T820-480q0-142-99-241t-241-99q-141 0-240.5 99T140-480q0 141 99.5 240.5T480-140Zm0-340Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="disable"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="deactivate"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name$="_disable"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-60q61.01 0 117.51-20.5Q654-181 699-220L220-699q-38 46-59 102.17T140-480q0 142.37 98.81 241.19Q337.63-140 480-140Zm259-121q37-45 59-101.49 22-56.5 22-117.51 0-142.38-98.81-241.19T480-820q-60.66 0-116.83 21T261-739l478 478Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="action[apply_all_permissions]"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='M294-242 70-466l43-43 181 181 43 43-43 43Zm170 0L240-466l43-43 181 181 384-384 43 43-427 427Zm0-170-43-43 257-257 43 43-257 257Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name^="action_"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='M320-203v-560l440 280-440 280Zm60-280Zm0 171 269-171-269-171v342Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="next"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="select"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="avatar_local_go"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body form#pselect input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[value="Go"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='M686-450H160v-60h526L438-758l42-42 320 320-320 320-42-42 248-248Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="prev"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='m274-450 248 248-42 42-320-320 320-320 42 42-248 248h526v60H274Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="sort"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='M120-240v-60h240v60H120Zm0-210v-60h480v60H120Zm0-210v-60h720v60H120Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="configure"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html:root body form#acp_backup:has(select#file) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='m388-80-20-126q-19-7-40-19t-37-25l-118 54-93-164 108-79q-2-9-2.5-20.5T185-480q0-9 .5-20.5T188-521L80-600l93-164 118 54q16-13 37-25t40-18l20-127h184l20 126q19 7 40.5 18.5T669-710l118-54 93 164-108 77q2 10 2.5 21.5t.5 21.5q0 10-.5 21t-2.5 21l108 78-93 164-118-54q-16 13-36.5 25.5T592-206L572-80H388Zm48-60h88l14-112q33-8 62.5-25t53.5-41l106 46 40-72-94-69q4-17 6.5-33.5T715-480q0-17-2-33.5t-7-33.5l94-69-40-72-106 46q-23-26-52-43.5T538-708l-14-112h-88l-14 112q-34 7-63.5 24T306-642l-106-46-40 72 94 69q-4 17-6.5 33.5T245-480q0 17 2.5 33.5T254-413l-94 69 40 72 106-46q24 24 53.5 41t62.5 25l14 112Zm44-210q54 0 92-38t38-92q0-54-38-92t-92-38q-54 0-92 38t-38 92q0 54 38 92t92 38Zm0-130Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="unbansubmit"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='M220-634h390v-96q0-54.17-37.88-92.08-37.88-37.92-92-37.92T388-822.08q-38 37.91-38 92.08h-60q0-79 55.61-134.5 55.6-55.5 134.5-55.5 78.89 0 134.39 55.58Q670-808.85 670-730v96h70q24.75 0 42.38 17.62Q800-598.75 800-574v434q0 24.75-17.62 42.37Q764.75-80 740-80H220q-24.75 0-42.37-17.63Q160-115.25 160-140v-434q0-24.75 17.63-42.38Q195.25-634 220-634Zm0 494h520v-434H220v434Zm260.17-140q31.83 0 54.33-22.03T557-355q0-30-22.67-54.5t-54.5-24.5q-31.83 0-54.33 24.5t-22.5 55q0 30.5 22.67 52.5t54.5 22ZM220-140v-434 434Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="import"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='M450-313v-371L330-564l-43-43 193-193 193 193-43 43-120-120v371h-60ZM220-160q-24 0-42-18t-18-42v-143h60v143h520v-143h60v143q0 24-18 42t-42 18H220Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="addusers"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='M730-400v-130H600v-60h130v-130h60v130h130v60H790v130h-60Zm-370-81q-66 0-108-42t-42-108q0-66 42-108t108-42q66 0 108 42t42 108q0 66-42 108t-108 42ZM40-160v-94q0-35 17.5-63.5T108-360q75-33 133.34-46.5t118.5-13.5Q420-420 478-406.5T611-360q33 15 51 43t18 63v94H40Zm60-60h520v-34q0-16-9-30.5T587-306q-71-33-120-43.5T360-360q-58 0-107.5 10.5T132-306q-15 7-23.5 21.5T100-254v34Zm260-321q39 0 64.5-25.5T450-631q0-39-25.5-64.5T360-721q-39 0-64.5 25.5T270-631q0 39 25.5 64.5T360-541Zm0-90Zm0 411Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="test"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="send"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="send_test_email"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name^="test_"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name$="_test"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html:root body form#acp_email input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html:root body form#questionnaire-form input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cg transform='matrix(-1 0 0 1 960 0)'%3E%3Cpath d='M120-160v-640l760 320-760 320Zm60-93 544-227-544-230v168l242 62-242 60v167Zm0 0v-457 457Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="next"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="select"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="avatar_local_go"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html:root body form#pselect input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[value="Go"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cg transform='matrix(-1 0 0 1 960 0)'%3E%3Cpath d='M686-450H160v-60h526L438-758l42-42 320 320-320 320-42-42 248-248Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="prev"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cg transform='matrix(-1 0 0 1 960 0)'%3E%3Cpath d='m274-450 248 248-42 42-320-320 320-320 42 42-248 248h526v60H274Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="cancel"]:not([type="reset"]):not(#reset):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ba1a1a'%3E%3Cpath d='m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="cancel"]:not([type="reset"]):not(#reset):not(.studio-btn):hover {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="bansubmit"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="disallow"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ba1a1a'%3E%3Cpath d='M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-60q61.01 0 117.51-20.5Q654-181 699-220L220-699q-38 46-59 102.17T140-480q0 142.37 98.81 241.19Q337.63-140 480-140Zm259-121q37-45 59-101.49 22-56.5 22-117.51 0-142.38-98.81-241.19T480-820q-60.66 0-116.83 21T261-739l478 478Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="bansubmit"]:not(.studio-btn):hover,
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="disallow"]:not(.studio-btn):hover {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-60q61.01 0 117.51-20.5Q654-181 699-220L220-699q-38 46-59 102.17T140-480q0 142.37 98.81 241.19Q337.63-140 480-140Zm259-121q37-45 59-101.49 22-56.5 22-117.51 0-142.38-98.81-241.19T480-820q-60.66 0-116.83 21T261-739l478 478Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="delall"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="delmarked"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="action[delete]"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="delete"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="unsecuresubmit"]:not(.studio-btn),
+html:root body form#attachments input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html:root body form[id^="acp_search_index_"]:has(input[name="action"][value="delete"]) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ba1a1a'%3E%3Cpath d='M261-120q-24.75 0-42.37-17.63Q201-155.25 201-180v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438v-570ZM367-266h60v-399h-60v399Zm166 0h60v-399h-60v399ZM261-750v570-570Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="delall"]:not(.studio-btn):hover,
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="delmarked"]:not(.studio-btn):hover,
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="action[delete]"]:not(.studio-btn):hover,
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="delete"]:not(.studio-btn):hover,
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="unsecuresubmit"]:not(.studio-btn):hover,
+html:root body form#attachments input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):hover,
+html:root body form[id^="acp_search_index_"]:has(input[name="action"][value="delete"]) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):hover {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='M261-120q-24.75 0-42.37-17.63Q201-155.25 201-180v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438v-570ZM367-266h60v-399h-60v399Zm166 0h60v-399h-60v399ZM261-750v570-570Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="delete_data"]:not(.studio-btn),
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="uninstall"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ba1a1a'%3E%3Cpath d='m361-299 119-121 120 121 47-48-119-121 119-121-47-48-120 121-119-121-48 48 120 121-120 121 48 48ZM261-120q-24 0-42-18t-18-42v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438v-570Zm-438 0v570-570Z'/%3E%3C/svg%3E");
+}
+
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="delete_data"]:not(.studio-btn):hover,
+html:root body input:is([type="submit"], [type="button"], [type="reset"])[name="uninstall"]:not(.studio-btn):hover {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffffff'%3E%3Cpath d='m361-299 119-121 120 121 47-48-119-121 119-121-47-48-120 121-119-121-48 48 120 121-120 121 48 48ZM261-120q-24 0-42-18t-18-42v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438v-570Zm-438 0v570-570Z'/%3E%3C/svg%3E");
+}
+
+a[onclick*="marklist"] {
+	margin-top: 8px;
+}
+
+/* The buttons of a form sit together, centred, with room above them */
+fieldset.submit-buttons {
+	margin: 0;
+	padding: 8px 0 16px;
+	text-align: center;
+}
+
+fieldset.submit-buttons input {
+	margin-inline: 4px;
+}
+
+/* The yes/no radios (event listener, settings page): hidden to the eye only, so the keyboard reaches them and the label shows the focus */
+.studio-bool {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: 0;
+	opacity: 0;
+}
+
+.studio-bool + span {
+	cursor: pointer;
+}
+
+.studio-bool:focus-visible + span {
+	outline: 2px solid var(--md-primary);
+	outline-offset: 2px;
+}
+
+/* The icon of the toggles: check on Yes, close on No (Material Symbols). A mask painted with the text colour, so it follows every state
+ * (outlined, chosen, hovered) and every preset. 18px, 6px before the text, at the inline start. */
+html:root .studio-bool + .studio-bool-yes::before,
+html:root .studio-bool + .studio-bool-no::before {
+	content: "";
+	display: inline-block;
+	inline-size: 18px;
+	block-size: 18px;
+	margin-inline-end: 6px;
+	vertical-align: middle;
+	background-color: currentColor;
+	mask-repeat: no-repeat;
+	mask-position: center;
+	mask-size: contain;
+}
+
+html:root .studio-bool + .studio-bool-yes::before {
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23000000'%3E%3Cpath d='M378-246 154-470l43-43 181 181 384-384 43 43-427 427Z'/%3E%3C/svg%3E");
+}
+
+html:root .studio-bool + .studio-bool-no::before {
+	mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23000000'%3E%3Cpath d='m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z'/%3E%3C/svg%3E");
+}
+
+/* A field has a muted placeholder, and a field that cannot be used a quiet face */
+input::placeholder,
+textarea::placeholder {
+	color: var(--md-on-surface-variant);
+	opacity: 1;
+}
+
+:is(input, select, textarea):disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+
+/* Small screens: the quick forms, the display options and the buttons in them wrap, with a gap; the fields grow and the
+ * buttons take the whole row */
+@media (max-width: 800px) {
+	fieldset:not(.display-options):not(.submit-buttons):not(.quick):not(.nobg):not(.tabulated) {
+		padding: 16px 16px 4px;
+	}
+
+	fieldset.quick,
+	p.quick,
+	fieldset.display-options {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 8px;
+	}
+
+	fieldset.quick > :is(input:not([type="submit"], [type="reset"], [type="button"], [type="checkbox"], [type="radio"], [type="hidden"]), select, textarea),
+	p.quick > :is(input:not([type="submit"], [type="reset"], [type="button"], [type="checkbox"], [type="radio"], [type="hidden"]), select, textarea),
+	fieldset.display-options > :is(input:not([type="submit"], [type="reset"], [type="button"], [type="checkbox"], [type="radio"], [type="hidden"]), select, textarea) {
+		flex: 1 1 8em;
+		min-width: 0;
+		margin: 0;
+	}
+
+	fieldset.quick > :is(input[type="submit"], input[type="reset"], input[type="button"], a.button1, a.button2),
+	p.quick > :is(input[type="submit"], input[type="reset"], input[type="button"], a.button1, a.button2),
+	fieldset.display-options > :is(input[type="submit"], input[type="reset"], input[type="button"], a.button1, a.button2) {
+		flex: 1 1 100%;
+		margin: 0;
+	}
+
+	fieldset dl {
+		margin: 0;
+		padding: 12px 0;
+		border-bottom: 0;
+	}
+
+	fieldset dt {
+		padding-inline-end: 0;
+		padding-block-end: 4px;
+	}
+}
+
+@media (pointer: coarse) {
+	select,
+	dd select,
+	textarea,
+	dd textarea,
+	input[type="text"],
+	input[type="email"],
+	input[type="url"],
+	input[type="number"],
+	input[type="password"],
+	input[type="button"],
+	input[type="submit"],
+	input[type="reset"],
+	a.button1,
+	a.button2 {
+		min-height: 44px;
+	}
+}
+
+/* ===== Pagination ===== */
+.pagination > a,
+.pagination > ul > li > a,
+.pagination > ul > li > a:link,
+.pagination > ul > li > a:visited,
+.pagination > ul > .active > span {
+	display: inline-block;
+	min-width: 32px;
+	height: 32px;
+	padding: 5px 10px;
+	border: 1px solid var(--md-outline-variant);
+	border-radius: 6px;
+	background: var(--md-surface);
+	color: var(--md-on-surface);
+	font-size: 13px;
+	line-height: 20px;
+	text-align: center;
+	text-decoration: none;
+	transition: border-color var(--md-dur-short) linear, background-color var(--md-dur-short) linear;
+}
+
+.pagination > a:hover,
+.pagination > ul > li > a:hover,
+.pagination > ul > li > a:link:hover,
+.pagination > ul > li > a:visited:hover {
+	border-color: var(--md-outline);
+	background: var(--md-surface-container);
+	text-decoration: none;
+}
+
+html:root .pagination > ul > .active > span {
+	border-color: var(--md-primary);
+	background: var(--md-primary);
+	color: var(--md-on-primary);
+	cursor: default;
+}
+
+.pagination > ul > .ellipsis > span {
+	font-weight: bold;
+}
+
+/* ===== Tables =====
+ * A table is a card as well: a thin edge and rounded corners (--studio-radius, the card radius; the table clips what is in it to the
+ * corners, so the header row at the top and the last row at the bottom follow them). Its header row is a neutral surface with legible labels,
+ * rows are divided by hairlines (on the cells: the rows of a table with separate borders have
+ * no border of their own) and light up on hover. The zebra of the stock sheet is kept where it asks for it. A table is as wide as its
+ * content needs, so the clipping hides nothing of a wide one. */
+table,
+.table1,
+.table2 {
+	border: 1px solid var(--md-outline-variant);
+	border-collapse: separate;
+	border-spacing: 0;
+	border-radius: var(--studio-radius, var(--md-shape-card));
+	overflow: hidden;
+	background: var(--md-surface);
+	font-size: 14px;
+}
+
+table tr {
+	background: var(--md-surface);
+}
+
+table td {
+	border-bottom: 1px solid var(--md-outline-variant);
+}
+
+/* Stock admin.css assigns td, p, small and label a relative .85em size. Give ordinary content a readable
+ * explicit size without changing permission grids, palettes, phpinfo, or nested tables. */
+#main > .main > table.table1:not(.permissions-panel):not(.type2):not(.type3) > tbody > tr > td:not(.spacer),
+#main > .main > table.table1:not(.permissions-panel):not(.type2):not(.type3) > thead > tr > th,
+#main > .main > form > table.table1:not(.permissions-panel):not(.type2):not(.type3) > tbody > tr > td:not(.spacer),
+#main > .main > form > table.table1:not(.permissions-panel):not(.type2):not(.type3) > thead > tr > th,
+#main > .main > fieldset.tabulated > table.table1:not(.permissions-panel):not(.type2):not(.type3) > tbody > tr > td:not(.spacer),
+#main > .main > fieldset.tabulated > table.table1:not(.permissions-panel):not(.type2):not(.type3) > thead > tr > th,
+#main > .main > form > fieldset.tabulated > table.table1:not(.permissions-panel):not(.type2):not(.type3) > tbody > tr > td:not(.spacer),
+#main > .main > form > fieldset.tabulated > table.table1:not(.permissions-panel):not(.type2):not(.type3) > thead > tr > th {
+	font-family: var(--md-font);
+	font-size: 15px;
+	line-height: 22px;
+}
+
+#main > .main > table.table1:not(.permissions-panel):not(.type2):not(.type3) > tbody > tr > td:not(.spacer),
+#main > .main > form > table.table1:not(.permissions-panel):not(.type2):not(.type3) > tbody > tr > td:not(.spacer),
+#main > .main > fieldset.tabulated > table.table1:not(.permissions-panel):not(.type2):not(.type3) > tbody > tr > td:not(.spacer),
+#main > .main > form > fieldset.tabulated > table.table1:not(.permissions-panel):not(.type2):not(.type3) > tbody > tr > td:not(.spacer) {
+	padding: 12px 16px;
+}
+
+#main > .main > table.table1:not(.permissions-panel):not(.type2):not(.type3) > thead > tr > th,
+#main > .main > form > table.table1:not(.permissions-panel):not(.type2):not(.type3) > thead > tr > th,
+#main > .main > fieldset.tabulated > table.table1:not(.permissions-panel):not(.type2):not(.type3) > thead > tr > th,
+#main > .main > form > fieldset.tabulated > table.table1:not(.permissions-panel):not(.type2):not(.type3) > thead > tr > th {
+	padding: 12px 16px;
+}
+
+#main > .main > table.table1:not(.permissions-panel):not(.type2):not(.type3) > thead > tr > th,
+#main > .main > form > table.table1:not(.permissions-panel):not(.type2):not(.type3) > thead > tr > th,
+#main > .main > fieldset.tabulated > table.table1:not(.permissions-panel):not(.type2):not(.type3) > thead > tr > th,
+#main > .main > form > fieldset.tabulated > table.table1:not(.permissions-panel):not(.type2):not(.type3) > thead > tr > th {
+	font-size: 14px;
+	line-height: 20px;
+	text-transform: none;
+}
+
+#main > .main :is(p, ul, ol, label) {
+	font-size: 15px;
+	line-height: 23px;
+}
+
+#main > .main .permissions-panel label {
+	font-size: 14px;
+	line-height: 20px;
+}
+
+#main > .main :is(small, .small, .gensmall),
+fieldset dt span {
+	font-size: 14px;
+	line-height: 20px;
+}
+
+/* Role and similar definition lists place summary text after a strong title and line break. */
+#main > .main > table.table1 td > strong + br + span,
+#main > .main > form > table.table1 td > strong + br + span,
+#main > .main > fieldset.tabulated > table.table1 td > strong + br + span,
+#main > .main > form > fieldset.tabulated > table.table1 td > strong + br + span {
+	font-size: 14px;
+	line-height: 20px;
+	color: var(--md-on-surface-variant);
+}
+
+#main > .main > table.table1 > tbody > tr > td > strong,
+#main > .main > form > table.table1 > tbody > tr > td > strong,
+#main > .main > fieldset.tabulated > table.table1 > tbody > tr > td > strong,
+#main > .main > form > fieldset.tabulated > table.table1 > tbody > tr > td > strong {
+	font-weight: 600;
+}
+
+.permissions-panel table.table1 > tbody > tr > td {
+	font-family: var(--md-font);
+	font-size: 14px;
+	line-height: 20px;
+}
+
+#main > .main table.table1 td.actions a {
+	display: inline-flex;
+	min-inline-size: 32px;
+	min-block-size: 32px;
+	align-items: center;
+	justify-content: center;
+	vertical-align: middle;
+}
+
+table tr:last-child > td {
+	border-bottom: none;
+}
+
+table.table1 th {
+	padding: 10px 12px;
+	border-top: none;
+	border-bottom: 1px solid var(--md-outline-variant);
+	background: var(--md-table-header);
+	color: var(--md-on-surface);
+	font-size: 14px;
+	line-height: 20px;
+	font-weight: 600;
+}
+
+table.table1 th[style="width: 50px;"] {
+	width: 100px !important;
+}
+
+table td {
+	padding: 10px 12px;
+}
+
+/* Clear decorative cell fills, then restore stock semantic groups and permission states with theme roles. */
+table.table1 td:not(.yes):not(.never):not(.spacer):not(.row1):not(.row2):not(.row3):not(.row4):not(.row1a):not(.row1b):not(.row2a):not(.row2b):not(.col1):not(.col2),
+table.table2 td:not(.yes):not(.never):not(.spacer):not(.row1):not(.row2):not(.row3):not(.row4):not(.row1a):not(.row1b):not(.row2a):not(.row2b):not(.col1):not(.col2) {
+	background: unset;
+}
+
+table.table1 td.yes {
+	background-color: var(--md-primary-container);
+	color: var(--md-on-primary-container);
+}
+
+table.table1 td.never {
+	background-color: var(--md-error);
+	color: var(--md-on-error);
+}
+
+table.table1 td.row3 {
+	background-color: var(--md-surface-container);
+}
+
+table.table1 td.row4 {
+	background-color: var(--md-surface-container-high);
+}
+
+table.table1 th.row3 {
+	background-color: var(--md-surface-container);
+	color: var(--md-on-surface);
+}
+
+table.table1 th.row4 {
+	background-color: var(--md-surface-container-high);
+	color: var(--md-on-surface);
+}
+
+table.table1 td.row1,
+table.table1 td.row1a,
+table.table1 td.col1 {
+	background-color: var(--md-surface);
+}
+
+table.table1 td.row2,
+table.table1 td.row1b,
+table.table1 td.col2,
+table.table1 td.row2a {
+	background-color: var(--md-table-column);
+}
+
+table.table1 td.row2b {
+	background-color: var(--md-surface-container-high);
+}
+
+/* phpBB groups extension-list rows inside one table; give the full-width band priority over row3 and column fills. */
+table.table1 tr.big-column > td {
+	background: var(--md-table-section);
+	border-top: 1px solid var(--md-outline-variant);
+	border-bottom: 1px solid var(--md-outline-variant);
+}
+
+table.table1 tr.big-column > td strong {
+	font-weight: 600;
+}
+
+table.table1 td.spacer {
+	padding: 0;
+	line-height: 1px;
+}
+
+/* Only confirmed independent, full-width top-level lists need section separation. */
+#main > .main > table.table1 + table.table1 {
+	margin-block-start: 16px;
+}
+
+#main > .main > form > table.table1 + fieldset.quick,
+#main > .main > table.table1 + form > fieldset.quick,
+#main > .main > form > fieldset.tabulated > table.table1 + :is(fieldset.quick, p.quick) {
+	margin-block-start: 8px;
+}
+
+#main > .main > form + h1 {
+	margin-block-start: 24px;
+}
+
+table.zebra-table tbody tr:nth-child(odd) {
+	background: var(--md-surface-container-low);
+}
+
+table.zebra-table tbody tr:nth-child(even) {
+	background: var(--md-surface);
+}
+
+table.table1 tbody tr:not(.row3):not(.row4):hover,
+table.table1 tbody tr:not(.row3):not(.row4):focus-within {
+	background: var(--md-surface-container);
+}
+
+/* The caption of a responsive table, and the stock table types that have no card */
+table.type2,
+table.type3 {
+	border: 0;
+	border-radius: 0;
+	overflow: visible;
+	background: none;
+}
+
+table.type2 th,
+table.type3 thead th {
+	border-bottom-color: var(--md-outline-variant);
+	background: none;
+	color: var(--md-on-surface);
+	text-transform: none;
+}
+
+/* The responsive tables of a small screen are a card per row (the stock sheet), rounded like the others, with no hairlines between the
+ * stacked cells */
+@media only screen and (max-width: 700px), only screen and (max-device-width: 700px) {
+	table.responsive {
+		border-radius: 0;
+		overflow: visible;
+	}
+
+	table.responsive tr {
+		border-radius: var(--studio-radius, var(--md-shape-card));
+	}
+
+	table.responsive td {
+		border-bottom: none;
+	}
+
+	#main > .main > table.table1:not(.permissions-panel):not(.type2):not(.type3) > tbody > tr > td:not(.spacer),
+	#main > .main > form > table.table1:not(.permissions-panel):not(.type2):not(.type3) > tbody > tr > td:not(.spacer),
+	#main > .main > fieldset.tabulated > table.table1:not(.permissions-panel):not(.type2):not(.type3) > tbody > tr > td:not(.spacer),
+	#main > .main > form > fieldset.tabulated > table.table1:not(.permissions-panel):not(.type2):not(.type3) > tbody > tr > td:not(.spacer) {
+		padding: 10px 12px;
+	}
+
+	table.responsive caption {
+		background: var(--md-surface-container);
+		color: var(--md-on-surface);
+	}
+}
+
+/* ===== Other surfaces =====
+ * The boxes of the stock sheet that were still square, with the radius of the tables: the panel of the permission matrix (5px in the
+ * stock sheet), the box of the requirements that are not met, the log of the installer-like pages, the tooltip of the roles and the
+ * progress bar (they clip what is in them), the tiles of the avatar gallery and the colour dots of the permission tabs. */
+.permissions-panel,
+.requirements_not_met,
+#log-container.show_log_container,
+.tooltip,
+#progress-bar {
+	border-radius: var(--studio-radius, var(--md-shape-card));
+}
+
+.tooltip,
+#progress-bar {
+	overflow: hidden;
+}
+
+#gallery li {
+	border-radius: var(--md-shape-control);
+}
+
+.permissions-category a span.colour {
+	border-radius: 2px;
+}
+
+/* ===== In-content tabs: the categories of the permission pages =====
+ * The stock sheet draws them with GIF sprites. Flat chips instead, same size and place: the current one in the accent container
+ * with a 2px line under it. */
+html:root .permissions-category {
+	border-bottom: 1px solid var(--md-outline-variant);
+}
+
+html:root .permissions-category a {
+	background: none;
+	padding: 0;
+}
+
+html:root .permissions-category a:link,
+html:root .permissions-category a:visited,
+html:root .permissions-category a:hover,
+html:root .permissions-category a:active {
+	color: var(--md-on-surface-variant);
+	text-decoration: none;
+}
+
+html:root .permissions-category a span.tabbg {
+	padding-inline-start: 12px;
+	border-bottom: 2px solid transparent;
+	border-radius: 8px 8px 0 0;
+	background: none;
+	color: inherit;
+}
+
+html:root .permissions-category a:hover span.tabbg {
+	background: var(--md-surface-container);
+	color: var(--md-on-surface);
+}
+
+html:root .permissions-category .activetab a:link,
+html:root .permissions-category .activetab a:visited,
+html:root .permissions-category .activetab a:hover,
+html:root .permissions-category .activetab a:active {
+	background: none;
+	color: var(--md-on-primary-container);
+}
+
+html:root .permissions-category .activetab a span.tabbg,
+html:root .permissions-category .activetab a:hover span.tabbg {
+	border-bottom-color: var(--md-primary);
+	background: var(--md-primary-container);
+	color: inherit;
+}
+
+/* ===== The error page: the stock sheet colours its headings pink and dark grey ===== */
+html:root #errorpage #content h1 {
+	color: var(--md-error);
+}
+
+html:root #errorpage #content h2 {
+	border-bottom-color: var(--md-outline-variant);
+	color: var(--md-on-surface);
+}
+
+/* The permission matrix: the stock sheet writes the links of its header in white, on a head that the rule above painted a tint
+ * too, and its two header rows in a blue grey that has 4.1:1 on their background */
+html:root .permissions-panel th a:link,
+html:root .permissions-panel th a:visited,
+html:root .permissions-panel th a:hover {
+	color: var(--md-primary);
+}
+
+html:root .permissions-panel th.row3,
+html:root .permissions-panel th.row4 {
+	color: var(--md-on-surface);
+}
+
+/* A table of phpinfo() can be wider than the page */
+.phpinfo {
+	overflow: auto;
+}

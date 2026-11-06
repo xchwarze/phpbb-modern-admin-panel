@@ -1,0 +1,834 @@
+/**
+ *
+ * Modern Admin Panel. An extension for the phpBB Forum Software package.
+ *
+ * @copyright (c) 2026, DSR! https://github.com/xchwarze
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+/*
+ * Colours, three layers:
+ * 1. The stock ACP (page, footer, the colours the stock sheet has): plain values, --stock-*.
+ * 2. The presets of the two board options "header_colour" and "sidebar_colour": a gradient or a colour each (--bg-*), the
+ *    class studio-bg-<name> that paints the sidebar or the header with it, and the text colour that has at least 4.5:1 on
+ *    every stop of it (--studio-on), with the tint that marks a hovered or current entry (--studio-tint), the colour of the thin
+ *    lines of the menu (--studio-edge) and the accent of the active path (--nav-accent).
+ * 3. The roles of everything else the extension draws (the content area, cards, buttons, the palette, the dashboard): neutral
+ *    surfaces in a light and a dark scheme (html[data-studio-theme="dark"], set by the head script and the colour mode button),
+ *    and an accent set derived from the sidebar colour: the class studio-hue-<sidebar colour> on <html>, set by the head script.
+ *    The accent sets are generated, with the contrast checked (suite t_contrast.js): primary on the surfaces, the "on" colour
+ *    on each container.
+ */
+:root {
+	--stock-page: #f9f9f9;
+	--stock-text: #313131;
+	--stock-surface: #ffffff;
+	--stock-focus: #2188ff;
+	--stock-red: #d31141;
+	--stock-accent: #12a3eb;
+	--stock-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+}
+
+html,
+body {
+	background: var(--stock-page);
+	color: var(--stock-text);
+}
+
+#page-footer {
+	border-top: 1px solid #d2d2d2;
+	background: var(--stock-surface);
+}
+
+#page-footer .copyright a {
+	color: #0b6aa2;
+}
+
+/* The presets. Each one has a text colour (below) with at least 4.5:1 contrast on every stop */
+:root {
+	--bg-phpbb: linear-gradient(45deg, #105289, #0f6fa8);
+	--bg-blue-light: linear-gradient(45deg, #29b6f6, #26c6da);
+	--bg-dark-blue: linear-gradient(45deg, #303f9f, #1976d2);
+	--bg-purple-indigo: linear-gradient(45deg, #6200ea, #1976d2);
+	--bg-purple-dark: linear-gradient(45deg, #7b1fa2, #7c4dff);
+	--bg-purple-orange: linear-gradient(45deg, #8e24aa, #c43e00);
+	--bg-pink-orange: linear-gradient(45deg, #e040fb, #ffa000);
+	--bg-orange-light: linear-gradient(45deg, #ff7043, #ffa726);
+	--bg-pink-light: linear-gradient(45deg, #ff5252, #f48fb1);
+	--bg-green-cyan: linear-gradient(45deg, #43a047, #1de9b6);
+	--bg-red: #d32f2f;
+	--bg-purple: #9c27b0;
+	--bg-violet: #d81b60;
+	--bg-indigo: #673ab7;
+	--bg-cyan: #00bcd4;
+	--bg-teal: #00796b;
+	--bg-blue: #03a9f4;
+	--bg-orange: #ff8f00;
+	--bg-white: #ffffff;
+	--bg-black: #313131;
+}
+
+/* Colours (sidebar, header) */
+.studio-bg-phpbb {
+	background: var(--bg-phpbb) !important;
+}
+
+.studio-bg-blue-light {
+	background: var(--bg-blue-light) !important;
+}
+
+.studio-bg-dark-blue {
+	background: var(--bg-dark-blue) !important;
+}
+
+.studio-bg-purple-indigo {
+	background: var(--bg-purple-indigo) !important;
+}
+
+.studio-bg-purple-dark {
+	background: var(--bg-purple-dark) !important;
+}
+
+.studio-bg-purple-orange {
+	background: var(--bg-purple-orange) !important;
+}
+
+.studio-bg-pink-orange {
+	background: var(--bg-pink-orange) !important;
+}
+
+.studio-bg-orange-light {
+	background: var(--bg-orange-light) !important;
+}
+
+.studio-bg-pink-light {
+	background: var(--bg-pink-light) !important;
+}
+
+.studio-bg-green-cyan {
+	background: var(--bg-green-cyan) !important;
+}
+
+.studio-bg-red {
+	background: var(--bg-red) !important;
+}
+
+.studio-bg-purple {
+	background: var(--bg-purple) !important;
+}
+
+.studio-bg-violet {
+	background: var(--bg-violet) !important;
+}
+
+.studio-bg-indigo {
+	background: var(--bg-indigo) !important;
+}
+
+.studio-bg-cyan {
+	background: var(--bg-cyan) !important;
+}
+
+.studio-bg-teal {
+	background: var(--bg-teal) !important;
+}
+
+.studio-bg-blue {
+	background: var(--bg-blue) !important;
+}
+
+.studio-bg-orange {
+	background: var(--bg-orange) !important;
+}
+
+.studio-bg-white {
+	background: var(--bg-white) !important;
+}
+
+.studio-bg-black {
+	background: var(--bg-black) !important;
+}
+
+/*
+ * Text on a preset: --studio-on is the text colour (at least 4.5:1 on every stop of the preset); --studio-tint darkens or lightens a
+ * hovered or current entry in the direction that keeps (or raises) the contrast; --studio-edge is the colour of the thin lines inside
+ * the sidebar (the guide line of the modules). The colours of --nav-accent, below, are generated from the accent of each preset.
+ */
+.studio-bg-phpbb,
+.studio-bg-dark-blue,
+.studio-bg-purple-indigo,
+.studio-bg-purple-dark,
+.studio-bg-purple-orange,
+.studio-bg-red,
+.studio-bg-purple,
+.studio-bg-violet,
+.studio-bg-indigo,
+.studio-bg-teal,
+.studio-bg-black {
+	--studio-on: #ffffff;
+	--studio-tint: rgba(0, 0, 0, 0.2);
+	--studio-edge: rgba(255, 255, 255, 0.3);
+	color: var(--studio-on);
+}
+
+.studio-bg-blue-light,
+.studio-bg-pink-orange,
+.studio-bg-orange-light,
+.studio-bg-pink-light,
+.studio-bg-green-cyan,
+.studio-bg-cyan,
+.studio-bg-blue,
+.studio-bg-orange,
+.studio-bg-white {
+	--studio-on: #1f1f1f;
+	--studio-tint: rgba(255, 255, 255, 0.45);
+	--studio-edge: rgba(0, 0, 0, 0.25);
+	color: var(--studio-on);
+}
+
+/* The accent of each preset (generated) */
+.studio-bg-phpbb {
+	--nav-accent: #dceefb;
+}
+
+.studio-bg-blue-light {
+	--nav-accent: #1c4453;
+}
+
+.studio-bg-dark-blue {
+	--nav-accent: #fdfeff;
+}
+
+.studio-bg-purple-indigo {
+	--nav-accent: #fefeff;
+}
+
+.studio-bg-purple-dark {
+	--nav-accent: #faf8fd;
+}
+
+.studio-bg-purple-orange {
+	--nav-accent: #f8edfb;
+}
+
+.studio-bg-pink-orange {
+	--nav-accent: #30212d;
+}
+
+.studio-bg-orange-light {
+	--nav-accent: #4b2c1f;
+}
+
+.studio-bg-pink-light {
+	--nav-accent: #3f2026;
+}
+
+.studio-bg-green-cyan {
+	--nav-accent: #1f2823;
+}
+
+.studio-bg-red {
+	--nav-accent: #fdf3f3;
+}
+
+.studio-bg-purple {
+	--nav-accent: #f0d2f5;
+}
+
+.studio-bg-violet {
+	--nav-accent: #fdf3f6;
+}
+
+.studio-bg-indigo {
+	--nav-accent: #d5c5f1;
+}
+
+.studio-bg-cyan {
+	--nav-accent: #1a454b;
+}
+
+.studio-bg-teal {
+	--nav-accent: #c1f8f2;
+}
+
+.studio-bg-blue {
+	--nav-accent: #1e3948;
+}
+
+.studio-bg-orange {
+	--nav-accent: #58391a;
+}
+
+.studio-bg-black {
+	--nav-accent: #a9bad1;
+}
+
+/* White on white would not show: the accent is the role of the page, deep on the white bar */
+.studio-bg-white {
+	--studio-tint: rgba(0, 0, 0, 0.07);
+	--studio-edge: rgba(0, 0, 0, 0.16);
+	--nav-accent: var(--md-primary);
+}
+
+/* In the dark scheme a white bar would be the one bright thing on the page: it takes the dark surface of the scheme. The other
+ * presets stay as chosen. */
+html[data-studio-theme="dark"] .studio-bg-white {
+	--studio-on: var(--md-on-surface);
+	--studio-tint: rgba(255, 255, 255, 0.1);
+	--studio-edge: rgba(255, 255, 255, 0.2);
+	background: var(--md-surface-container) !important;
+}
+
+/* Neutral roles of the content, the cards and the dialogs: a light and a dark scheme */
+:root {
+	--md-error: #ba1a1a;
+	--md-on-error: #ffffff;
+	--md-error-container: #fdeceb;
+	--md-on-error-container: #8c1d18;
+	--md-surface: #ffffff;
+	--md-surface-container-low: #fafafa;
+	--md-surface-container: #f3f4f6;
+	--md-surface-container-high: #eceef1;
+	--md-surface-container-highest: #e4e7eb;
+	--md-table-header: #d6d9de;
+	--md-table-section: #c8cdd4;
+	--md-table-column: #e4e7eb;
+	--md-on-surface: #1f2328;
+	--md-on-surface-variant: #4a5058;
+	--md-outline: #6b7178;
+	--md-outline-variant: #cfd3d8;
+	/* Popups over the page: the flyout of the rail, the menus of the header */
+	--studio-pop: #ffffff;
+	--studio-pop-tint: rgba(0, 0, 0, 0.07);
+	--studio-pop-open: rgba(0, 0, 0, 0.1);
+	color-scheme: light;
+}
+
+html[data-studio-theme="dark"] {
+	--md-error: #ffb4ab;
+	--md-on-error: #690005;
+	--md-error-container: #4a1f1c;
+	--md-on-error-container: #ffdad6;
+	--md-surface: #121316;
+	/* One step below the page: the sidebar and the rail (dark.css) */
+	--md-surface-container-lowest: #0b0c0e;
+	--md-surface-container-low: #1a1c20;
+	--md-surface-container: #1e2025;
+	--md-surface-container-high: #272a2f;
+	--md-surface-container-highest: #32353b;
+	--md-table-header: #3c4047;
+	--md-table-section: #484d55;
+	--md-table-column: #32353b;
+	--md-on-surface: #e3e5e8;
+	--md-on-surface-variant: #c3c7cc;
+	--md-outline: #8c9197;
+	--md-outline-variant: #43474d;
+	--studio-pop: #272a2f;
+	--studio-pop-tint: rgba(255, 255, 255, 0.1);
+	--studio-pop-open: rgba(255, 255, 255, 0.12);
+	color-scheme: dark;
+}
+
+/* The accent roles, one set per sidebar colour (generated). The first block is also the default: a page without the class
+ * (a popup of a page that did not run the page header, a browser without JavaScript) has the colour of the default setting. */
+:root,
+.studio-hue-purple-indigo {
+	--md-primary: #4a29ae;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #e3dcf9;
+	--md-on-primary-container: #361f7a;
+	--md-secondary-container: #e5e2ee;
+	--md-on-secondary-container: #45396a;
+	--md-tertiary-container: #f1daf0;
+	--md-on-tertiary-container: #60295e;
+	--studio-palette: #f6f4fb;
+	--studio-bg: var(--bg-purple-indigo);
+}
+
+.studio-hue-phpbb {
+	--md-primary: #1d6aa5;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #dcedf9;
+	--md-on-primary-container: #1b486a;
+	--md-secondary-container: #e2e9ee;
+	--md-on-secondary-container: #2e4556;
+	--md-tertiary-container: #dfdaf1;
+	--md-on-tertiary-container: #3c2e6b;
+	--studio-palette: #f4f8fb;
+	--studio-bg: var(--bg-phpbb);
+}
+
+html[data-studio-theme="dark"].studio-hue-phpbb {
+	--md-primary: #88c4f2;
+	--md-on-primary: #193143;
+	--md-primary-container: #243e51;
+	--md-on-primary-container: #cbe3f6;
+	--md-secondary-container: #303c45;
+	--md-on-secondary-container: #d7e2ea;
+	--md-tertiary-container: #2e2843;
+	--md-on-tertiary-container: #d9d3ee;
+	--studio-palette: #252c31;
+}
+
+.studio-hue-blue-light {
+	--md-primary: #196e8f;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #dcf1f9;
+	--md-on-primary-container: #174a5e;
+	--md-secondary-container: #e2ebee;
+	--md-on-secondary-container: #2d4853;
+	--md-tertiary-container: #dcdaf1;
+	--md-on-tertiary-container: #332e6b;
+	--studio-palette: #f4f9fb;
+	--studio-bg: var(--bg-blue-light);
+}
+
+html[data-studio-theme="dark"].studio-hue-blue-light {
+	--md-primary: #88d4f2;
+	--md-on-primary: #1c3d4a;
+	--md-primary-container: #244451;
+	--md-on-primary-container: #cbeaf6;
+	--md-secondary-container: #303f45;
+	--md-on-secondary-container: #d7e4ea;
+	--md-tertiary-container: #2a2843;
+	--md-on-tertiary-container: #d5d3ee;
+	--studio-palette: #252e31;
+}
+
+.studio-hue-dark-blue {
+	--md-primary: #2948ae;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #dce3f9;
+	--md-on-primary-container: #1f347a;
+	--md-secondary-container: #e2e5ee;
+	--md-on-secondary-container: #364063;
+	--md-tertiary-container: #e7daf1;
+	--md-on-tertiary-container: #512e6b;
+	--studio-palette: #f4f6fb;
+	--studio-bg: var(--bg-dark-blue);
+}
+
+html[data-studio-theme="dark"].studio-hue-dark-blue {
+	--md-primary: #a3b5f0;
+	--md-on-primary: #1c274a;
+	--md-primary-container: #242f51;
+	--md-on-primary-container: #cbd5f6;
+	--md-secondary-container: #303545;
+	--md-on-secondary-container: #d7dcea;
+	--md-tertiary-container: #372843;
+	--md-on-tertiary-container: #e2d3ee;
+	--studio-palette: #252831;
+}
+
+html[data-studio-theme="dark"],
+html[data-studio-theme="dark"].studio-hue-purple-indigo {
+	--md-primary: #bdacf1;
+	--md-on-primary: #281c4a;
+	--md-primary-container: #302451;
+	--md-on-primary-container: #d6cbf6;
+	--md-secondary-container: #353045;
+	--md-on-secondary-container: #dcd7ea;
+	--md-tertiary-container: #432842;
+	--md-on-tertiary-container: #eed3ed;
+	--studio-palette: #282531;
+}
+
+.studio-hue-purple-dark {
+	--md-primary: #6b30a6;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #ebdcf9;
+	--md-on-primary-container: #4d1f7a;
+	--md-secondary-container: #e8e2ee;
+	--md-on-secondary-container: #4d3663;
+	--md-tertiary-container: #f1daea;
+	--md-on-tertiary-container: #602950;
+	--studio-palette: #f7f4fb;
+	--studio-bg: var(--bg-purple-dark);
+}
+
+html[data-studio-theme="dark"].studio-hue-purple-dark {
+	--md-primary: #c9a7ec;
+	--md-on-primary: #331c4a;
+	--md-primary-container: #3b2451;
+	--md-on-primary-container: #e0cbf6;
+	--md-secondary-container: #3b3045;
+	--md-on-secondary-container: #e0d7ea;
+	--md-tertiary-container: #43283b;
+	--md-on-tertiary-container: #eed3e6;
+	--studio-palette: #2b2531;
+}
+
+.studio-hue-purple-orange {
+	--md-primary: #8930a6;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #f2dcf9;
+	--md-on-primary-container: #631f7a;
+	--md-secondary-container: #ebe2ee;
+	--md-on-secondary-container: #553460;
+	--md-tertiary-container: #f1dae4;
+	--md-on-tertiary-container: #642b45;
+	--studio-palette: #f9f4fb;
+	--studio-bg: var(--bg-purple-orange);
+}
+
+html[data-studio-theme="dark"].studio-hue-purple-orange {
+	--md-primary: #d9a2eb;
+	--md-on-primary: #3e1c4a;
+	--md-primary-container: #462451;
+	--md-on-primary-container: #ebcbf6;
+	--md-secondary-container: #403045;
+	--md-on-secondary-container: #e5d7ea;
+	--md-tertiary-container: #432834;
+	--md-on-tertiary-container: #eed3df;
+	--studio-palette: #2e2531;
+}
+
+.studio-hue-pink-orange {
+	--md-primary: #a6308e;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #f9dcf3;
+	--md-on-primary-container: #721d61;
+	--md-secondary-container: #eee2ec;
+	--md-on-secondary-container: #5d3254;
+	--md-tertiary-container: #f1dada;
+	--md-on-tertiary-container: #642b2b;
+	--studio-palette: #fbf4f9;
+	--studio-bg: var(--bg-pink-orange);
+}
+
+html[data-studio-theme="dark"].studio-hue-pink-orange {
+	--md-primary: #ea9edb;
+	--md-on-primary: #461b3e;
+	--md-primary-container: #512448;
+	--md-on-primary-container: #f6cbed;
+	--md-secondary-container: #453041;
+	--md-on-secondary-container: #ead7e6;
+	--md-tertiary-container: #432828;
+	--md-on-tertiary-container: #eed3d3;
+	--studio-palette: #31252f;
+}
+
+.studio-hue-orange-light {
+	--md-primary: #a9481e;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #f9e5dc;
+	--md-on-primary-container: #6a321b;
+	--md-secondary-container: #eee5e2;
+	--md-on-secondary-container: #563a2e;
+	--md-tertiary-container: #eff1da;
+	--md-on-tertiary-container: #43471f;
+	--studio-palette: #fbf6f4;
+	--studio-bg: var(--bg-orange-light);
+}
+
+html[data-studio-theme="dark"].studio-hue-orange-light {
+	--md-primary: #f2a788;
+	--md-on-primary: #3f2418;
+	--md-primary-container: #513224;
+	--md-on-primary-container: #f6d8cb;
+	--md-secondary-container: #453630;
+	--md-on-secondary-container: #eaddd7;
+	--md-tertiary-container: #414328;
+	--md-on-tertiary-container: #ebeed3;
+	--studio-palette: #312925;
+}
+
+.studio-hue-pink-light {
+	--md-primary: #b1253d;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #f9dce1;
+	--md-on-primary-container: #761e2c;
+	--md-secondary-container: #eee2e4;
+	--md-on-secondary-container: #60343b;
+	--md-tertiary-container: #f1e9da;
+	--md-on-tertiary-container: #524123;
+	--studio-palette: #fbf4f5;
+	--studio-bg: var(--bg-pink-light);
+}
+
+html[data-studio-theme="dark"].studio-hue-pink-light {
+	--md-primary: #f2a1af;
+	--md-on-primary: #4a1c24;
+	--md-primary-container: #51242c;
+	--md-on-primary-container: #f6cbd2;
+	--md-secondary-container: #453034;
+	--md-on-secondary-container: #ead7da;
+	--md-tertiary-container: #433928;
+	--md-on-tertiary-container: #eee4d3;
+	--studio-palette: #312527;
+}
+
+.studio-hue-green-cyan {
+	--md-primary: #1d7247;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #dcf9eb;
+	--md-on-primary-container: #145233;
+	--md-secondary-container: #e2eee8;
+	--md-on-secondary-container: #294c3b;
+	--md-tertiary-container: #daeaf1;
+	--md-on-tertiary-container: #254756;
+	--studio-palette: #f4fbf7;
+	--studio-bg: var(--bg-green-cyan);
+}
+
+html[data-studio-theme="dark"].studio-hue-green-cyan {
+	--md-primary: #8eebbd;
+	--md-on-primary: #1c4a33;
+	--md-primary-container: #24513b;
+	--md-on-primary-container: #dcf9eb;
+	--md-secondary-container: #30453b;
+	--md-on-secondary-container: #d7eae0;
+	--md-tertiary-container: #283b43;
+	--md-on-tertiary-container: #d3e6ee;
+	--studio-palette: #25312b;
+}
+
+.studio-hue-red {
+	--md-primary: #ae2d29;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #f9dddc;
+	--md-on-primary-container: #76211e;
+	--md-secondary-container: #eee2e2;
+	--md-on-secondary-container: #603534;
+	--md-tertiary-container: #f1edda;
+	--md-on-tertiary-container: #4b4420;
+	--studio-palette: #fbf4f4;
+	--studio-bg: var(--bg-red);
+}
+
+html[data-studio-theme="dark"].studio-hue-red {
+	--md-primary: #efa19f;
+	--md-on-primary: #461c1b;
+	--md-primary-container: #512624;
+	--md-on-primary-container: #f6cccb;
+	--md-secondary-container: #453130;
+	--md-on-secondary-container: #ead8d7;
+	--md-tertiary-container: #433f28;
+	--md-on-tertiary-container: #eeead3;
+	--studio-palette: #312625;
+}
+
+.studio-hue-purple {
+	--md-primary: #9430a6;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #f5dcf9;
+	--md-on-primary-container: #691e76;
+	--md-secondary-container: #ede2ee;
+	--md-on-secondary-container: #593460;
+	--md-tertiary-container: #f1dae2;
+	--md-on-tertiary-container: #642b3f;
+	--studio-palette: #faf4fb;
+	--studio-bg: var(--bg-purple);
+}
+
+html[data-studio-theme="dark"].studio-hue-purple {
+	--md-primary: #df9eea;
+	--md-on-primary: #3c1943;
+	--md-primary-container: #4a2451;
+	--md-on-primary-container: #efcbf6;
+	--md-secondary-container: #423045;
+	--md-on-secondary-container: #e7d7ea;
+	--md-tertiary-container: #432831;
+	--md-on-tertiary-container: #eed3dc;
+	--studio-palette: #302531;
+}
+
+.studio-hue-violet {
+	--md-primary: #ae2959;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #f9dce7;
+	--md-on-primary-container: #761e3e;
+	--md-secondary-container: #eee2e6;
+	--md-on-secondary-container: #603444;
+	--md-tertiary-container: #f1e4da;
+	--md-on-tertiary-container: #593c26;
+	--studio-palette: #fbf4f6;
+	--studio-bg: var(--bg-violet);
+}
+
+html[data-studio-theme="dark"].studio-hue-violet {
+	--md-primary: #ef9fbc;
+	--md-on-primary: #461b2b;
+	--md-primary-container: #512435;
+	--md-on-primary-container: #f6cbdb;
+	--md-secondary-container: #453038;
+	--md-on-secondary-container: #ead7de;
+	--md-tertiary-container: #433428;
+	--md-on-tertiary-container: #eedfd3;
+	--studio-palette: #31252a;
+}
+
+.studio-hue-indigo {
+	--md-primary: #5d36a1;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #e7dcf9;
+	--md-on-primary-container: #401f7a;
+	--md-secondary-container: #e6e2ee;
+	--md-on-secondary-container: #493767;
+	--md-tertiary-container: #f1daed;
+	--md-on-tertiary-container: #602957;
+	--studio-palette: #f6f4fb;
+	--studio-bg: var(--bg-indigo);
+}
+
+html[data-studio-theme="dark"].studio-hue-indigo {
+	--md-primary: #c4adeb;
+	--md-on-primary: #2d1c4a;
+	--md-primary-container: #352451;
+	--md-on-primary-container: #dbcbf6;
+	--md-secondary-container: #383045;
+	--md-on-secondary-container: #ded7ea;
+	--md-tertiary-container: #43283f;
+	--md-on-tertiary-container: #eed3ea;
+	--studio-palette: #2a2531;
+}
+
+.studio-hue-cyan {
+	--md-primary: #156e79;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #dcf6f9;
+	--md-on-primary-container: #154e56;
+	--md-secondary-container: #e2edee;
+	--md-on-secondary-container: #29484c;
+	--md-tertiary-container: #dadcf1;
+	--md-on-tertiary-container: #2e336b;
+	--studio-palette: #f4fafb;
+	--studio-bg: var(--bg-cyan);
+}
+
+html[data-studio-theme="dark"].studio-hue-cyan {
+	--md-primary: #88e5f2;
+	--md-on-primary: #1c454a;
+	--md-primary-container: #244c51;
+	--md-on-primary-container: #d4f3f7;
+	--md-secondary-container: #304345;
+	--md-on-secondary-container: #d7e7ea;
+	--md-tertiary-container: #282a43;
+	--md-on-tertiary-container: #d3d5ee;
+	--studio-palette: #253031;
+}
+
+.studio-hue-teal {
+	--md-primary: #147167;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #dcf9f6;
+	--md-on-primary-container: #14524b;
+	--md-secondary-container: #e2eeed;
+	--md-on-secondary-container: #274946;
+	--md-tertiary-container: #dae1f1;
+	--md-on-tertiary-container: #2c3e68;
+	--studio-palette: #f4fbfa;
+	--studio-bg: var(--bg-teal);
+}
+
+html[data-studio-theme="dark"].studio-hue-teal {
+	--md-primary: #88f2e7;
+	--md-on-primary: #1c4a45;
+	--md-primary-container: #24514c;
+	--md-on-primary-container: #dcf9f6;
+	--md-secondary-container: #304543;
+	--md-on-secondary-container: #d7eae8;
+	--md-tertiary-container: #283043;
+	--md-on-tertiary-container: #d3dbee;
+	--studio-palette: #253130;
+}
+
+.studio-hue-blue {
+	--md-primary: #1b6c98;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #dceff9;
+	--md-on-primary-container: #184862;
+	--md-secondary-container: #e2eaee;
+	--md-on-secondary-container: #2d4553;
+	--md-tertiary-container: #dddaf1;
+	--md-on-tertiary-container: #372e6b;
+	--studio-palette: #f4f8fb;
+	--studio-bg: var(--bg-blue);
+}
+
+html[data-studio-theme="dark"].studio-hue-blue {
+	--md-primary: #88cdf2;
+	--md-on-primary: #1b3746;
+	--md-primary-container: #244151;
+	--md-on-primary-container: #cbe7f6;
+	--md-secondary-container: #303e45;
+	--md-on-secondary-container: #d7e3ea;
+	--md-tertiary-container: #2c2843;
+	--md-on-tertiary-container: #d7d3ee;
+	--studio-palette: #252d31;
+}
+
+.studio-hue-orange {
+	--md-primary: #935415;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #f9ebdc;
+	--md-on-primary-container: #623d18;
+	--md-secondary-container: #eee8e2;
+	--md-on-secondary-container: #53402d;
+	--md-tertiary-container: #eaf1da;
+	--md-on-tertiary-container: #3e4b20;
+	--studio-palette: #fbf7f4;
+	--studio-bg: var(--bg-orange);
+}
+
+html[data-studio-theme="dark"].studio-hue-orange {
+	--md-primary: #f2bd88;
+	--md-on-primary: #46301b;
+	--md-primary-container: #513b24;
+	--md-on-primary-container: #f6e0cb;
+	--md-secondary-container: #453b30;
+	--md-on-secondary-container: #eae0d7;
+	--md-tertiary-container: #3b4328;
+	--md-on-tertiary-container: #e6eed3;
+	--studio-palette: #312b25;
+}
+
+.studio-hue-white {
+	--md-primary: #49678d;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #dce9f9;
+	--md-on-primary-container: #1d4272;
+	--md-secondary-container: #e2e7ee;
+	--md-on-secondary-container: #30425a;
+	--md-tertiary-container: #e2daf1;
+	--md-on-tertiary-container: #442e6b;
+	--studio-palette: #f4f7fb;
+	--studio-bg: var(--bg-white);
+}
+
+html[data-studio-theme="dark"].studio-hue-white {
+	--md-primary: #a1b9d9;
+	--md-on-primary: #192b43;
+	--md-primary-container: #243851;
+	--md-on-primary-container: #cbdef6;
+	--md-secondary-container: #303945;
+	--md-on-secondary-container: #d7dfea;
+	--md-tertiary-container: #322843;
+	--md-on-tertiary-container: #ddd3ee;
+	--studio-palette: #252b31;
+}
+
+.studio-hue-black {
+	--md-primary: #54667d;
+	--md-on-primary: #ffffff;
+	--md-primary-container: #dce9f9;
+	--md-on-primary-container: #1d4272;
+	--md-secondary-container: #e2e7ee;
+	--md-on-secondary-container: #30425a;
+	--md-tertiary-container: #e2daf1;
+	--md-on-tertiary-container: #442e6b;
+	--studio-palette: #f4f7fb;
+	--studio-bg: var(--bg-black);
+}
+
+html[data-studio-theme="dark"].studio-hue-black {
+	--md-primary: #a9bad1;
+	--md-on-primary: #192b43;
+	--md-primary-container: #243851;
+	--md-on-primary-container: #cbdef6;
+	--md-secondary-container: #303945;
+	--md-on-secondary-container: #d7dfea;
+	--md-tertiary-container: #322843;
+	--md-on-tertiary-container: #ddd3ee;
+	--studio-palette: #252b31;
+}

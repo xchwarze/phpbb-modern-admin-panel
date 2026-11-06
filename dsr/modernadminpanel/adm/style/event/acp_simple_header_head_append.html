@@ -1,0 +1,13 @@
+{# The popups of the ACP (whois, permission trace, progress bar, ...) use simple_header.html: no sidebar, no header, no script of the
+   extension. They get the colour mode, so that they are not white on a dark ACP: the same two attributes the head script of the other
+   pages sets before the first paint, and the stylesheets that hold the colour roles and the dark layer for the stock content.
+   The sidebar colour (the accent) is only known on the pages that run adm_page_header(): the other popups use the default colour (purple-indigo).
+   The colour mode is read the way the head script of the other pages does, including the move of the key stored under the old
+   name of the extension to dsr.ad.theme. #}
+<!-- GENERATED INLINE: acp-simple-header.js:BEGIN -->
+<script>(function(a){var d=window,e,i="dsr.ad.theme",r="phpbbstudio.ad.theme";try{var t=d.localStorage;e=t.getItem(i),t.getItem(r)!==null&&(e===null&&(e=t.getItem(r),t.setItem(i,e)),t.removeItem(r))}catch(s){}e!=="light"&&e!=="dark"&&(e="system");var m=e;if(e==="system"){var c=d.matchMedia&&d.matchMedia("(prefers-color-scheme:dark)").matches;m=c?"dark":"light"}a.setAttribute("data-studio-choice",e),a.setAttribute("data-studio-theme",m),a.className+=" studio-hue-{{ T_STUDIO_SIDEBAR_COLOUR|default('purple-indigo') }}"})(document.documentElement);
+</script>
+<!-- GENERATED INLINE: acp-simple-header.js:END -->
+{% INCLUDECSS '@dsr_modernadminpanel/css/tokens.css' %}
+{% INCLUDECSS '@dsr_modernadminpanel/css/colours.css' %}
+{% INCLUDECSS '@dsr_modernadminpanel/css/dark.css' %}

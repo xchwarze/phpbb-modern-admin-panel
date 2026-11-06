@@ -1,0 +1,51 @@
+{% from '@dsr_modernadminpanel/icons.html' import studio_svg %}
+
+{#
+	Command palette (Ctrl/Cmd+K, "/" or typing in the header search box), a dialog filled by js/studio.js from the
+	sidebar links: no request leaves the page for the modules, and only modules this admin can open are listed.
+	- data-endpoint (only when a search is on for this admin, see listener::assign_palette()): after 250ms and 3 or more
+	  characters (or "@" and 2 for users, data-users) a read-only JSON request asks the board for matching settings, forums,
+	  groups and users; the answer only holds what this admin may open.
+	- data-no-pins (the option "Show the pinned modules in the search"): without pins, the group of pinned modules is not listed when
+	  nothing is typed (js/studio.js). The pins themselves stay in the sidebar, under Home; the recent modules are not affected.
+	- The actions below the box (studio_actions) are plain links to ACP pages, each one listed only for an admin who may use it;
+	  the palette only follows them. The last row runs the board settings search page (the header form).
+	Rows are built with textContent; the strings below are plain text.
+#}
+{# Pins are on unless the option is off: a page that never assigned it (S_STUDIO_PALETTE_PINS undefined) lists them #}
+{% set studio_no_pins = S_STUDIO_PALETTE_PINS is defined and not S_STUDIO_PALETTE_PINS %}
+
+<dialog class="studio-palette" id="studio-palette" aria-label="{{ lang('STUDIO_DASHBOARD_PALETTE') }}"
+	data-l-pinned="{{ lang('STUDIO_DASHBOARD_PINNED') }}"
+	data-l-recent="{{ lang('STUDIO_DASHBOARD_RECENT') }}"
+	data-l-modules="{{ lang('STUDIO_DASHBOARD_MODULES') }}"
+	data-l-empty="{{ lang('STUDIO_DASHBOARD_PALETTE_EMPTY') }}"
+	data-l-start="{{ lang(S_STUDIO_PALETTE_USERS ? (studio_no_pins ? 'STUDIO_DASHBOARD_PALETTE_START_USERS_NO_PINS' : 'STUDIO_DASHBOARD_PALETTE_START_USERS') : (studio_no_pins ? 'STUDIO_DASHBOARD_PALETTE_START_NO_PINS' : 'STUDIO_DASHBOARD_PALETTE_START')) }}"
+	data-l-users-hint="{{ lang('STUDIO_DASHBOARD_PALETTE_USERS_HINT') }}"
+	data-l-settings="{{ lang('STUDIO_DASHBOARD_PALETTE_SEARCH_PAGE') }}"
+	data-l-sec-settings="{{ lang('STUDIO_DASHBOARD_PALETTE_SETTINGS_GROUP') }}"
+	data-l-sec-forums="{{ lang('STUDIO_DASHBOARD_PALETTE_FORUMS_GROUP') }}"
+	data-l-sec-groups="{{ lang('STUDIO_DASHBOARD_PALETTE_GROUPS_GROUP') }}"
+	data-l-sec-users="{{ lang('STUDIO_DASHBOARD_PALETTE_USERS_GROUP') }}"
+	data-l-sec-actions="{{ lang('STUDIO_DASHBOARD_PALETTE_ACTIONS_GROUP') }}"
+	data-l-loading="{{ lang('STUDIO_DASHBOARD_PALETTE_LOADING') }}"
+	data-l-error="{{ lang('STUDIO_DASHBOARD_PALETTE_ERROR') }}"
+	{%- if U_STUDIO_PALETTE_SEARCH %} data-endpoint="{{ U_STUDIO_PALETTE_SEARCH }}"{% endif %}
+	{%- if S_STUDIO_PALETTE_USERS %} data-users{% endif %}
+	{%- if studio_no_pins %} data-no-pins{% endif %}>
+	<div class="studio-palette__box">
+		<div class="studio-palette__bar">
+			{{ studio_svg('search') }}
+			<input class="studio-palette__input" type="text" role="combobox" aria-expanded="true" aria-controls="studio-palette-list" aria-autocomplete="list" aria-label="{{ lang('STUDIO_DASHBOARD_PALETTE') }}" placeholder="{{ lang(S_STUDIO_PALETTE_USERS ? 'STUDIO_DASHBOARD_PALETTE_PLACEHOLDER_USERS' : 'STUDIO_DASHBOARD_PALETTE_PLACEHOLDER') }}" autocomplete="off" spellcheck="false">
+		</div>
+		<ul class="studio-palette__list" id="studio-palette-list" role="listbox" aria-label="{{ lang('STUDIO_DASHBOARD_PALETTE') }}"></ul>
+		<p class="studio-palette__hint" aria-hidden="true">{{ lang('STUDIO_DASHBOARD_PALETTE_HINT') }}</p>
+	</div>
+	{% if studio_actions|length %}
+		<ul class="studio-palette__actions" hidden>
+			{% for action in studio_actions %}
+				<li><a href="{{ action.U_ACTION }}" data-icon="{{ action.ICON|e('html_attr') }}" data-hint="{{ action.HINT|e('html_attr') }}">{{ action.TITLE|e }}</a></li>
+			{% endfor %}
+		</ul>
+	{% endif %}
+</dialog>

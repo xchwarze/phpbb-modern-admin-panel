@@ -1,0 +1,133 @@
+{% import _self as studio %}
+
+{#
+	Yes/No as a switch. The two radios of the pair are what posts (value 1 and 0, like before); the track is drawn
+	after them and the label of the one that is not checked covers it, so a click flips the pair (css/pages.css). The labels
+	are the names of the radios, only visually hidden.
+#}
+{% macro yes_no(name, value) %}
+	<span class="studio-switch">
+		<input class="studio-bool" id="{{ name }}" name="{{ name }}" type="radio" value="1"{{ value ? ' checked' }}>
+		<input class="studio-bool" id="{{ name }}_no" name="{{ name }}" type="radio" value="0"{{ not value ? ' checked' }}>
+		<span class="studio-switch__track"></span>
+		<label class="studio-switch__label studio-switch__on" for="{{ name }}"><span class="studio-sr">{{ lang('YES') }}</span></label>
+		<label class="studio-switch__label studio-switch__off" for="{{ name }}_no"><span class="studio-sr">{{ lang('NO') }}</span></label>
+	</span>
+{% endmacro %}
+
+{#
+	A colour preset as a round swatch (the preset itself, as the header or the sidebar is painted with it); the radio underneath
+	posts the value. The label of the group is the one of the setting, which names the radios.
+#}
+{% macro swatches(name, choices, current) %}
+	<div class="studio-swatches" role="radiogroup" aria-labelledby="{{ name }}_label">
+		{% for choice in choices %}
+			<label class="studio-swatch" title="{{ choice.TITLE }}">
+				<input name="{{ name }}" type="radio" value="{{ choice.VALUE }}"{% if loop.first %} id="{{ name }}"{% endif %} aria-label="{{ choice.TITLE }}"{{ choice.VALUE == current ? ' checked' }}>
+				<span class="studio-bg-{{ choice.VALUE }}"></span>
+			</label>
+		{% endfor %}
+	</div>
+{% endmacro %}
+
+{% macro select(name, choices, current) %}
+	<select id="{{ name }}" name="{{ name }}">
+		{% for choice in choices %}
+			<option value="{{ choice.VALUE }}"{{ choice.VALUE == current ? ' selected' }}>{{ choice.TITLE }}</option>
+		{% endfor %}
+	</select>
+{% endmacro %}
+
+{% include 'overall_header.html' %}
+
+<h1>{{ lang('STUDIO_DASHBOARD_SETTINGS_TITLE') }}</h1>
+
+<p>{{ lang('STUDIO_DASHBOARD_SETTINGS_EXPLAIN') }}</p>
+
+{% if S_ERROR %}
+	<div class="errorbox">
+		<h3>{{ lang('WARNING') }}</h3>
+		<p>{{ ERROR_MSG }}</p>
+	</div>
+{% endif %}
+
+<form class="studio-settings-form" id="studio_admindashboard_settings" method="post" action="{{ U_ACTION }}">
+	<fieldset>
+		<legend>{{ lang('STUDIO_DASHBOARD_APPEARANCE') }}</legend>
+
+		<dl>
+			<dt><label id="header_colour_label" for="header_colour">{{ lang('STUDIO_DASHBOARD_HEADER_COLOUR') ~ lang('COLON') }}</label><br><span>{{ lang('STUDIO_DASHBOARD_HEADER_COLOUR_EXPLAIN') }}</span></dt>
+			<dd>{{ studio.swatches('header_colour', STUDIO_CHOICES.header_colour, STUDIO_OPTIONS.header_colour) }}</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset>
+		<legend>{{ lang('STUDIO_DASHBOARD_MENU_LEGEND') }}</legend>
+
+		<dl>
+			<dt><label id="sidebar_colour_label" for="sidebar_colour">{{ lang('STUDIO_DASHBOARD_SIDEBAR_COLOUR') ~ lang('COLON') }}</label><br><span>{{ lang('STUDIO_DASHBOARD_SIDEBAR_COLOUR_EXPLAIN') }}</span></dt>
+			<dd>{{ studio.swatches('sidebar_colour', STUDIO_CHOICES.sidebar_colour, STUDIO_OPTIONS.sidebar_colour) }}</dd>
+		</dl>
+		<dl>
+			<dt><label for="sidebar_corner">{{ lang('STUDIO_DASHBOARD_SIDEBAR_CORNER') ~ lang('COLON') }}</label><br><span>{{ lang('STUDIO_DASHBOARD_SIDEBAR_CORNER_EXPLAIN') }}</span></dt>
+			<dd>{{ studio.select('sidebar_corner', STUDIO_CHOICES.sidebar_corner, STUDIO_OPTIONS.sidebar_corner) }}</dd>
+		</dl>
+
+		{# "show_qa_menu" is the option detach_qa the other way round: on = detach_qa 0 (controller\settings) #}
+		<dl>
+			<dt><label for="show_qa_menu">{{ lang('STUDIO_DASHBOARD_SHOW_QA_MENU') ~ lang('COLON') }}</label><br><span>{{ lang('STUDIO_DASHBOARD_SHOW_QA_MENU_EXPLAIN') }}</span></dt>
+			<dd>{{ studio.yes_no('show_qa_menu', not STUDIO_OPTIONS.detach_qa) }}</dd>
+		</dl>
+
+		{# What the quick access settings (this one and the card of the ACP index page) are about, and where it is edited #}
+		<dl class="studio-qa-help">
+			<dt>
+				<strong>{{ lang('STUDIO_DASHBOARD_QA_HELP_GLOBAL_TITLE') }}</strong><br><span>{{ lang('STUDIO_DASHBOARD_QA_HELP_GLOBAL') }}</span>
+				<br><br>
+				<strong>{{ lang('STUDIO_DASHBOARD_QA_HELP_PINS_TITLE') }}</strong><br><span>{{ lang('STUDIO_DASHBOARD_QA_HELP_PINS') }}</span>
+			</dt>
+			{% if U_STUDIO_EDIT_QA %}
+				<dd><a class="button2 studio-btn studio-btn--tonal" href="{{ U_STUDIO_EDIT_QA }}">{{ lang('STUDIO_DASHBOARD_QA_EDIT') }}</a></dd>
+			{% endif %}
+		</dl>
+	</fieldset>
+
+	<fieldset>
+		<legend>{{ lang('STUDIO_DASHBOARD_PALETTE_LEGEND') }}</legend>
+
+		<dl>
+			<dt><label for="palette_settings">{{ lang('STUDIO_DASHBOARD_PALETTE_SETTINGS') ~ lang('COLON') }}</label><br><span>{{ lang('STUDIO_DASHBOARD_PALETTE_SETTINGS_EXPLAIN') }}</span></dt>
+			<dd>{{ studio.yes_no('palette_settings', STUDIO_OPTIONS.palette_settings) }}</dd>
+		</dl>
+
+		<dl>
+			<dt><label for="palette_jumps">{{ lang('STUDIO_DASHBOARD_PALETTE_JUMPS') ~ lang('COLON') }}</label><br><span>{{ lang('STUDIO_DASHBOARD_PALETTE_JUMPS_EXPLAIN') }}</span></dt>
+			<dd>{{ studio.yes_no('palette_jumps', STUDIO_OPTIONS.palette_jumps) }}</dd>
+		</dl>
+
+		<dl>
+			<dt><label for="palette_pins">{{ lang('STUDIO_DASHBOARD_PALETTE_PINS') ~ lang('COLON') }}</label><br><span>{{ lang('STUDIO_DASHBOARD_PALETTE_PINS_EXPLAIN') }}</span></dt>
+			<dd>{{ studio.yes_no('palette_pins', STUDIO_OPTIONS.palette_pins) }}</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset>
+		<legend>{{ lang('STUDIO_DASHBOARD_INDEX_LEGEND') }}</legend>
+
+		{% for name in ['display_pending', 'display_stats', 'remodel_stats', 'display_notes', 'display_qa', 'display_logs', 'display_users'] %}
+			<dl>
+				<dt><label for="{{ name }}">{{ lang('STUDIO_DASHBOARD_' ~ name|upper) ~ lang('COLON') }}</label><br><span>{{ lang('STUDIO_DASHBOARD_' ~ name|upper ~ '_EXPLAIN') }}</span></dt>
+				<dd>{{ studio.yes_no(name, attribute(STUDIO_OPTIONS, name)) }}</dd>
+			</dl>
+		{% endfor %}
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		<legend>{{ lang('SUBMIT') }}</legend>
+		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}">&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}">
+		{{ S_FORM_TOKEN }}
+	</fieldset>
+</form>
+
+{% include 'overall_footer.html' %}

@@ -1,0 +1,259 @@
+{% from '@dsr_modernadminpanel/icons.html' import studio_svg %}
+{% INCLUDECSS '@dsr_modernadminpanel/css/dashboard.css' %}
+
+{# Included at acp_main_notice_after: every element here is a sibling of the core statistics (.lside) that follow #}
+
+{% if S_STUDIO_DISPLAY_PENDING and (studio_pending|length or S_STUDIO_BOARD_DISABLED) %}
+	<div class="studio-pending" id="display_pending">
+		{% if S_STUDIO_BOARD_DISABLED %}
+			<div class="errorbox notice">
+				<p>{{ lang('BOARD_DISABLED') }} <a href="{{ U_STUDIO_BOARD_SETTINGS }}">{{ lang('STUDIO_DASHBOARD_BOARD_SETTINGS') }}</a></p>
+			</div>
+		{% endif %}
+
+		{% if studio_pending|length %}
+			{# Only what is waiting is shown, a tile each; with nothing waiting, one line says so #}
+			{% set studio_waiting = 0 %}
+			{% for item in studio_pending %}
+				{% if item.COUNT > 0 %}{% set studio_waiting = studio_waiting + 1 %}{% endif %}
+			{% endfor %}
+
+			{% if studio_waiting %}
+				<fieldset class="studio-card">
+					<legend>{{ lang('STUDIO_DASHBOARD_PENDING') }}</legend>
+
+					<ul class="studio-pending-list">
+						{% for item in studio_pending %}
+							{% if item.COUNT > 0 %}
+								<li>
+									<a class="studio-pending-item studio-state studio-pending-active" href="{{ item.U_VIEW }}">
+										{{ studio_svg(item.ICON) }}
+										<strong>{{ item.COUNT_FORMATTED|default(item.COUNT) }}</strong>
+										<span>{{ item.TITLE }}</span>
+									</a>
+								</li>
+							{% endif %}
+						{% endfor %}
+					</ul>
+				</fieldset>
+			{% else %}
+				<p class="studio-pending-clear" role="status">
+					{{ studio_svg('check_circle') }}
+					<span>{{ lang('STUDIO_DASHBOARD_PENDING_CLEAR') }}</span>
+				</p>
+			{% endif %}
+		{% endif %}
+	</div>
+{% endif %}
+
+{% if not S_STUDIO_DISPLAY_STATS %}
+	{# Hides the core statistics (css/dashboard.css) #}
+	<div class="studio-stats-hidden hidden"></div>
+{% elseif S_STUDIO_REMODEL_STATS %}
+<div class="studio-stats-remodel studio-stats-hidden" id="remodel_stats">
+	<div class="studio-row">
+		<div>
+			<fieldset class="studio-stats studio-tone-primary">
+				<div class="studio-row">
+					<div>
+						{{ studio_svg('chat_bubble') }}
+						<h5>{{ lang('POSTS') }}</h5>
+					</div>
+					<div>
+						<strong title="{{ lang('NUMBER_POSTS') }}">{{ TOTAL_POSTS }}</strong>
+						<p>
+							<span title="{{ lang('POSTS_PER_DAY') }}">{{ lang('STUDIO_DASHBOARD_PER_DAY', POSTS_PER_DAY) }}</span>
+						</p>
+					</div>
+				</div>
+			</fieldset>
+		</div>
+		<div>
+			<fieldset class="studio-stats studio-tone-secondary">
+				<div class="studio-row">
+					<div>
+						{{ studio_svg('topic') }}
+						<h5>{{ lang('TOPICS') }}</h5>
+					</div>
+					<div>
+						<strong title="{{ lang('NUMBER_TOPICS') }}">{{ TOTAL_TOPICS }}</strong>
+						<p>
+							<span title="{{ lang('TOPICS_PER_DAY') }}">{{ lang('STUDIO_DASHBOARD_PER_DAY', TOPICS_PER_DAY) }}</span>
+						</p>
+					</div>
+				</div>
+			</fieldset>
+		</div>
+		<div>
+			<fieldset class="studio-stats studio-tone-tertiary">
+				<div class="studio-row">
+					<div>
+						{{ studio_svg('person') }}
+						<h5>{{ lang('USERS') }}</h5>
+					</div>
+					<div>
+						<strong title="{{ lang('NUMBER_USERS') }}">{{ TOTAL_USERS }}</strong>
+						<p>
+							<span title="{{ lang('USERS_PER_DAY') }}">{{ lang('STUDIO_DASHBOARD_PER_DAY', USERS_PER_DAY) }}</span>
+						</p>
+					</div>
+				</div>
+			</fieldset>
+		</div>
+		<div>
+			<fieldset class="studio-stats studio-tone-neutral">
+				<div class="studio-row">
+					<div>
+						{{ studio_svg('attach_file') }}
+						<h5>{{ lang('ATTACHMENTS') }}</h5>
+					</div>
+					<div>
+						<strong title="{{ lang('NUMBER_FILES') }}">{{ TOTAL_FILES }}</strong>
+						<p>
+							<span title="{{ lang('FILES_PER_DAY') }}">{{ lang('STUDIO_DASHBOARD_PER_DAY', FILES_PER_DAY) }}</span>
+							{% if TOTAL_ORPHAN > 0 %}
+								<a href="{{ U_ATTACH_ORPHAN }}" title="{{ lang('MORE_INFORMATION') }}">{{ lang('STUDIO_DASHBOARD_ORPHANS', TOTAL_ORPHAN) }}</a>
+							{% else %}
+								<span title="{{ lang('NUMBER_ORPHAN') }}">{{ lang('STUDIO_DASHBOARD_ORPHANS', TOTAL_ORPHAN) }}</span>
+							{% endif %}
+							<span title="{{ lang('UPLOAD_DIR_SIZE') }}">{{ UPLOAD_DIR_SIZE }}</span>
+						</p>
+					</div>
+				</div>
+			</fieldset>
+		</div>
+	</div>
+	<div class="studio-row">
+		<div>
+			<fieldset class="studio-stats studio-tone-secondary">
+				<div class="studio-row">
+					<div>
+						{{ studio_svg('desktop_windows') }}
+						<h5>{{ lang('STUDIO_DASHBOARD_BOARD') }}</h5>
+					</div>
+					<div>
+						<p>
+							<span title="{{ lang('BOARD_STARTED') }}">{{ START_DATE }}</span>
+							{% if S_VERSIONCHECK %}
+								<a href="{{ U_VERSIONCHECK }}" title="{{ lang('MORE_INFORMATION') }}">
+									<strong>{{ BOARD_VERSION }}</strong>
+								</a>
+								<a href="{{ U_VERSIONCHECK_FORCE }}" title="{{ lang('VERSIONCHECK_FORCE_UPDATE') }}" aria-label="{{ lang('VERSIONCHECK_FORCE_UPDATE') }}">
+									{{ studio_svg('refresh', 'studio-icon--inline') }}
+								</a>
+							{% endif %}
+							<span title="{{ lang('PHP_VERSION') }}">{{ PHP_VERSION_INFO }}</span>
+						</p>
+					</div>
+				</div>
+			</fieldset>
+		</div>
+		<div>
+			<fieldset class="studio-stats studio-tone-tertiary">
+				<div class="studio-row">
+					<div>
+						{{ studio_svg('database') }}
+						<h5>{{ lang('ACP_CAT_DATABASE') }}</h5>
+					</div>
+					<div>
+						<p>
+							<span title="{{ lang('DATABASE_SIZE') }}">{{ DBSIZE }}</span>
+							<span title="{{ lang('DATABASE_SERVER_INFO') }}">{{ DATABASE_INFO }}</span>
+						</p>
+					</div>
+				</div>
+			</fieldset>
+		</div>
+		<div>
+			<fieldset class="studio-stats studio-tone-neutral">
+				<div class="studio-row">
+					<div>
+						{{ studio_svg('folder_zip') }}
+						<h5>{{ lang('STUDIO_DASHBOARD_GZIP') }}</h5>
+					</div>
+					<div>
+						<p>
+							<span title="{{ lang('GZIP_COMPRESSION') }}">{{ lang(GZIP_COMPRESSION == lang('ON') ? 'ENABLED' : 'DISABLED') }}</span>
+						</p>
+					</div>
+				</div>
+			</fieldset>
+		</div>
+		<div>
+			<fieldset class="studio-stats studio-tone-primary">
+				<div class="studio-row">
+					<div>
+						{{ studio_svg('contacts') }}
+						<h5>{{ lang('STUDIO_DASHBOARD_AVATARS') }}</h5>
+					</div>
+					<div>
+						<p>
+							<span title="{{ lang('AVATAR_DIR_SIZE') }}">{{ AVATAR_DIR_SIZE }}</span>
+						</p>
+					</div>
+				</div>
+			</fieldset>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+{% if S_STUDIO_DISPLAY_NOTES or S_STUDIO_DISPLAY_QA %}
+	<div class="studio-row">
+		{% if S_STUDIO_DISPLAY_NOTES %}
+			<div id="display_notes">
+				<fieldset class="studio-card">
+					<legend>{{ lang('STUDIO_DASHBOARD_ADMIN_NOTES') }}</legend>
+
+					{% if S_STUDIO_ADMIN_NOTES_EDIT %}
+						<form class="studio-notes-form" method="post" action="{{ U_ACTION }}">
+							<textarea class="inputbox full" id="admin_notes" name="admin_notes" aria-label="{{ lang('STUDIO_DASHBOARD_ADMIN_NOTES') }}">{{ STUDIO_ADMIN_NOTES_EDIT }}</textarea>
+							<p class="studio-notes-explain">{{ lang('STUDIO_DASHBOARD_NOTES_EXPLAIN') }}</p>
+							<fieldset class="quick">
+								<input class="button1 studio-btn studio-btn--filled" id="submit_notes" name="submit_notes" type="submit" value="{{ lang('SUBMIT') }}">
+								<a class="button2 studio-btn studio-btn--tonal" href="{{ U_ACTION }}">{{ lang('CANCEL') }}</a>
+								{{ S_FORM_TOKEN_STUDIO_NOTES }}
+							</fieldset>
+						</form>
+					{% else %}
+						<div class="studio-notes">{{ STUDIO_ADMIN_NOTES }}</div>
+						{% if S_STUDIO_ADMIN_NOTES_CAN_EDIT %}
+							<div class="studio-actions">
+								<a class="studio-icon-button studio-state" href="{{ U_ACTION ~ '&edit_notes=1' }}" title="{{ lang('EDIT') }}" aria-label="{{ lang('EDIT') }}">{{ studio_svg('edit') }}</a>
+							</div>
+						{% endif %}
+					{% endif %}
+				</fieldset>
+			</div>
+		{% endif %}
+
+		{% if S_STUDIO_DISPLAY_QA %}
+			<div id="display_qa">
+				<fieldset class="studio-card">
+					<legend>{{ lang('ACP_QUICK_ACCESS') }}</legend>
+
+					<ul class="studio-qa">
+						{% for category in l_block1 %}
+							{% for subcategory in category.l_block2 %}
+								{% if subcategory.LANGNAME == 'ACP_QUICK_ACCESS' %}
+									{% for item in subcategory.l_block3 %}
+										<li>
+											{{ studio_svg('chevron_right', 'studio-icon--flip') }}
+											<a class="studio-qa__link" href="{{ item.U_TITLE }}">{{ item.L_TITLE }}</a>
+										</li>
+									{% endfor %}
+								{% endif %}
+							{% endfor %}
+						{% endfor %}
+					</ul>
+
+					{% if U_STUDIO_ADMIN_QA %}
+						<div class="studio-actions">
+							<a class="studio-icon-button studio-state" href="{{ U_STUDIO_ADMIN_QA }}" title="{{ lang('EDIT') }}" aria-label="{{ lang('EDIT') }}">{{ studio_svg('edit') }}</a>
+						</div>
+					{% endif %}
+				</fieldset>
+			</div>
+		{% endif %}
+	</div>
+{% endif %}

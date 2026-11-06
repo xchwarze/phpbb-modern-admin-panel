@@ -1,0 +1,377 @@
+/**
+ *
+ * Modern Admin Panel. An extension for the phpBB Forum Software package.
+ *
+ * @copyright (c) 2020, phpBB Studio, https://www.phpbbstudio.com
+ * @copyright (c) 2026, DSR! https://github.com/xchwarze
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+.main > h1,
+.main > h1 + p {
+	display: none;
+}
+
+/*
+ * Cards (Needs attention, admin notes, quick access): outlined cards, 8px, on the surface colour. The outline
+ * is an inset shadow, not a border: a fieldset draws its legend on its border, and here the legend is the first line
+ * of the card. Over the stock fieldset look (content.css), whose selector is long: the :not() chain keeps this one ahead.
+ */
+fieldset.studio-card:not(.display-options):not(.submit-buttons):not(.quick):not(.nobg):not(.tabulated) {
+	margin: 0;
+	padding: 16px;
+	border-radius: var(--md-shape-card);
+	box-shadow: inset 0 0 0 1px var(--md-outline-variant);
+	background: var(--md-surface);
+	color: var(--md-on-surface);
+	font: var(--md-body-medium);
+}
+
+fieldset.studio-card > legend {
+	position: static;
+	float: left;
+	inline-size: 100%;
+	block-size: auto;
+	margin: 0 0 12px;
+	color: var(--md-on-surface);
+	font: var(--md-title-medium);
+}
+
+/* A floated legend is laid out as a normal line inside the card, not drawn on its edge; what follows clears it */
+fieldset.studio-card:not(.submit-buttons) > legend + * {
+	clear: both;
+	margin-block-start: 0;
+}
+
+.studio-card a:link,
+.studio-card a:visited {
+	color: var(--md-primary);
+}
+
+/* The pencil of a card: an icon button at its inline end */
+.studio-actions {
+	position: absolute;
+	inset-block-start: 8px;
+	inset-inline-end: 8px;
+}
+
+.studio-card .studio-actions a.studio-icon-button:link,
+.studio-card .studio-actions a.studio-icon-button:visited {
+	color: var(--md-on-surface-variant);
+}
+
+.studio-stats-hidden {
+	margin-bottom: 8px;
+}
+
+.studio-stats-hidden ~ .lside {
+	display: none;
+}
+
+.studio-pending {
+	margin-block-end: 16px;
+}
+
+/*
+ * Statistics: filled cards, 8px. Each one takes the container colours of a role of the theme
+ * (primary, secondary, tertiary container, or surface container high) and its "on" colour for the text.
+ */
+.studio-stats {
+	block-size: 100%;
+	margin: 0 !important;
+	padding: 16px !important;
+	border-radius: var(--md-shape-card) !important;
+	box-shadow: var(--md-elev-0) !important;
+	font: var(--md-body-medium);
+}
+
+.studio-tone-primary {
+	background: var(--md-primary-container) !important;
+	color: var(--md-on-primary-container) !important;
+}
+
+.studio-tone-secondary {
+	background: var(--md-secondary-container) !important;
+	color: var(--md-on-secondary-container) !important;
+}
+
+.studio-tone-tertiary {
+	background: var(--md-tertiary-container) !important;
+	color: var(--md-on-tertiary-container) !important;
+}
+
+.studio-tone-neutral {
+	background: var(--md-surface-container-high) !important;
+	color: var(--md-on-surface) !important;
+}
+
+.studio-stats h5 {
+	margin: 8px 0 0 2px;
+	font: var(--md-title-medium);
+}
+
+.studio-stats > .studio-row > div:first-child {
+	max-inline-size: 33%;
+}
+
+.studio-stats > .studio-row > div:first-child h5 {
+	white-space: nowrap;
+	hyphens: auto;
+}
+
+/* The icon sits in a rounded tile on the surface colour: 24px icon, 12px of padding */
+.studio-stats > .studio-row > div:first-child > .studio-icon {
+	display: block;
+	padding: 12px;
+	border-radius: 16px;
+	background: var(--md-surface);
+}
+
+.studio-stats > .studio-row > div:last-child {
+	text-align: end;
+	flex: 2;
+}
+
+.studio-stats > .studio-row > div:last-child > strong {
+	display: block;
+	font: var(--md-title-medium);
+	cursor: help;
+}
+
+html:root .studio-stats a:link,
+html:root .studio-stats a:visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+html:root .studio-stats a:hover {
+	color: inherit;
+	text-decoration: none;
+}
+
+.studio-stats p {
+	margin: 8px 0 0;
+	font: var(--md-body-medium);
+}
+
+.studio-stats p > span {
+	display: block;
+	cursor: help;
+}
+
+/* The refresh link of the version, next to its number */
+.studio-stats .studio-icon--inline {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.lside + fieldset:not(.display-options):not(.submit-buttons):not(.quick):not(.nobg):not(.tabulated) {
+	background: transparent;
+	border: none;
+	box-shadow: none;
+	margin: 30px 0;
+	padding: 0;
+	text-align: center;
+}
+
+.lside + fieldset > legend {
+	display: none;
+}
+
+form[id^="action_"][id$="_form"] {
+	border: none;
+	display: inline-block;
+	margin: 0;
+}
+
+form[id^="action_"][id$="_form"] dl {
+	margin: 0;
+}
+
+form[id^="action_"][id$="_form"] dt {
+	border: none;
+	width: 100%;
+}
+
+form[id^="action_"][id$="_form"] dt > br,
+form[id^="action_"][id$="_form"] dt > span {
+	display: none;
+}
+
+/* The label is the visible button; the real one is only hidden visually, so the keyboard reaches it */
+form[id^="action_"][id$="_form"] dl {
+	position: relative;
+}
+
+form[id^="action_"][id$="_form"] dd {
+	position: absolute;
+	opacity: 0;
+	overflow: hidden;
+	width: 1px;
+	height: 1px;
+}
+
+form[id^="action_"][id$="_form"]:focus-within dt > label {
+	outline: 2px solid var(--md-primary);
+	outline-offset: 2px;
+}
+
+/* An outlined button of the theme */
+form[id^="action_"][id$="_form"] dt > label {
+	font: var(--md-label-large);
+	text-align: center;
+	border: 1px solid var(--md-outline);
+	border-radius: var(--md-shape-full);
+	color: var(--md-primary);
+	overflow: hidden;
+	position: relative;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: var(--studio-target);
+	padding: 8px 24px;
+	user-select: none;
+	transition: background-color var(--md-dur-short) var(--md-ease);
+}
+
+form[id^="action_"][id$="_form"] dt > label:hover {
+	background-color: var(--md-primary-container);
+	color: var(--md-on-primary-container);
+}
+
+/*
+ * Needs attention: a grid of equal tiles (the same width, the same height), a small icon, the number big on top and a short label
+ * under it, two lines at most. Only what is waiting has a tile, so every tile carries the accent: the container of the sidebar
+ * colour, with the text colour of that container (contrast of the roles, in both schemes). Nothing waiting: one compact line.
+ */
+.studio-pending-list {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+	grid-auto-rows: 1fr;
+	gap: 12px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.studio-pending-list > li {
+	display: flex;
+	min-inline-size: 0;
+}
+
+.studio-pending-item {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	flex: 1;
+	gap: 2px;
+	min-block-size: 96px;
+	padding: 14px 16px;
+	border: 1px solid transparent;
+	border-radius: var(--md-shape-card);
+	font: var(--md-body-medium);
+}
+
+.studio-pending-item:hover {
+	text-decoration: none;
+}
+
+.studio-pending-item > .studio-icon {
+	margin-block-end: 4px;
+}
+
+.studio-pending-item > strong {
+	font-size: 28px;
+	font-weight: 700;
+	line-height: 1.1;
+	font-variant-numeric: tabular-nums;
+}
+
+.studio-pending-item > span {
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	font-size: 13px;
+	line-height: 18px;
+	overflow-wrap: anywhere;
+}
+
+.studio-card a.studio-pending-active:link,
+.studio-card a.studio-pending-active:visited {
+	background: var(--md-primary-container);
+	color: var(--md-on-primary-container);
+}
+
+.studio-pending-clear {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	padding: 10px 16px;
+	border-radius: var(--md-shape-card);
+	box-shadow: inset 0 0 0 1px var(--md-outline-variant);
+	background: var(--md-surface);
+	color: var(--md-on-surface);
+	font: var(--md-body-medium);
+}
+
+.studio-pending-clear > .studio-icon {
+	color: var(--md-primary);
+}
+
+/** Quick access */
+.studio-qa {
+	margin: 0;
+	list-style: none;
+}
+
+.studio-qa li {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	min-block-size: var(--studio-row);
+}
+
+.studio-qa .studio-icon {
+	color: var(--md-on-surface-variant);
+}
+
+.studio-qa__link {
+	font: var(--md-body-medium);
+}
+
+/** Admin notes */
+.studio-notes {
+	overflow-wrap: anywhere;
+	font: var(--md-body-medium);
+}
+
+.studio-notes-explain {
+	margin: 8px 0 0;
+	color: var(--md-on-surface-variant);
+	font: var(--md-body-medium);
+}
+
+.studio-notes-form fieldset.quick {
+	display: flex;
+	gap: 8px;
+	margin-block-start: 16px;
+}
+
+/* Small screens: the statistics keep two columns, the action buttons take the whole width */
+@media (max-width: 800px) {
+	.studio-stats .studio-row {
+		flex-flow: nowrap;
+	}
+
+	.studio-stats .studio-row > * {
+		flex-basis: 50%;
+	}
+
+	form[id^="action_"][id$="_form"] {
+		display: block !important;
+	}
+}

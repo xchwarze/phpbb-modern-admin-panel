@@ -1,0 +1,14 @@
+{# Runs before the stylesheets, so the page never flashes the wrong layout or the wrong colours. It puts on <html>:
+   - data-studio-sidebar: "expanded" is the menu pinned open, "collapsed" the unpinned icon rail; without a stored
+     choice, wide screens start pinned;
+   - data-studio-choice ("system", "light" or "dark", from localStorage "dsr.ad.theme") and data-studio-theme, the
+     colour scheme in use ("light" or "dark": in system mode, the one of prefers-color-scheme; js/studio.js follows its changes);
+   - the class "studio-js" and the class of the sidebar colour, a known value of the board setting (studio-hue-<colour>): the accent
+     of the content area is derived from it (css/colours.css).
+   Per browser, never sent to the server; js/studio.js keeps it up to date. A Content-Security-Policy would need a hash of this script.
+   g(k) reads a key and, once, moves the one the extension stored under its old name to its new name (dsr.ad.<k>), so
+   administrators keep their choices; js/studio.js moves the other old keys (recents, pins). #}
+<!-- GENERATED INLINE: acp-header.js:BEGIN -->
+<script>(function(i){var t=window;function s(m){var a=null,c="phpbbstudio.ad."+m,u="dsr.ad."+m;try{var d=t.localStorage;a=d.getItem(u),d.getItem(c)!==null&&(a===null&&(a=d.getItem(c),d.setItem(u,a)),d.removeItem(c))}catch(v){}return a}var r=s("sidebar");if(r!=="expanded"&&r!=="collapsed"){var h=t.matchMedia&&t.matchMedia("(min-width:1280px)").matches;r=h?"expanded":"collapsed"}i.setAttribute("data-studio-sidebar",r);var e=s("theme");e!=="light"&&e!=="dark"&&(e="system");var o=e;if(e==="system"){var l=t.matchMedia&&t.matchMedia("(prefers-color-scheme:dark)").matches;o=l?"dark":"light"}i.setAttribute("data-studio-choice",e),i.setAttribute("data-studio-theme",o),i.className+=" studio-js studio-hue-{{ T_STUDIO_SIDEBAR_COLOUR }}"})(document.documentElement);
+</script>
+<!-- GENERATED INLINE: acp-header.js:END -->

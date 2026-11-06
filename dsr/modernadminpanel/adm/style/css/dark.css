@@ -1,0 +1,1257 @@
+/**
+ *
+ * Modern Admin Panel. An extension for the phpBB Forum Software package.
+ *
+ * @copyright (c) 2026, DSR! https://github.com/xchwarze
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+/**
+ * Dark mode of the stock ACP content: the page under the header, drawn by the core stylesheet (admin.css) and by
+ * the restyle of the extension (base, colours, content, pages).
+ * The extension's own UI (palette, cards, stats, settings page) follows the roles of colours.css by itself and is not
+ * restyled here. The two bars are the exception (the "Shell" section): the light scheme paints them with the presets of
+ * the options "sidebar_colour" and "header_colour", the dark scheme with neutral surfaces, and the preset stays as the accent.
+ *
+ * Load order: after every other stylesheet of the extension (event/acp_overall_header_body_before.html).
+ *
+ * Rules:
+ * - every selector starts with html[data-studio-theme="dark"], so the layer is inert in light mode and wins over
+ *   the stock selectors by specificity (the longest ones are fieldset:not():not():not() of content.css, 0,3,1, and
+ *   the permission panel rules of admin.css), not only by order;
+ * - colours are --md-* roles only (colours.css redefines every role for the dark scheme of the theme);
+ * - the surfaces go up in this order: surface (page), container-low (cards, table rows), container (zebra rows),
+ *   container-high (table heads, hover, popups), container-highest (fields, buttons);
+ * - text: on-surface (main), on-surface-variant (secondary); links: primary; borders that carry meaning (fields,
+ *   buttons): outline; plain dividers: outline-variant;
+ * - meaning that the stock ACP carries with a colour: yes = primary (or its container), no = tertiary container,
+ *   never / error = error. Where those roles share a hue in a theme (red, pink, brown), the label or the position
+ *   still tells them apart: filled or outlined, light or dark.
+ * - images (core GIF/PNG icons) stay as they are; the ACP icons are FontAwesome glyphs, coloured by classes below.
+ *
+ * Not restyled on purpose: #menu, #tabs and #page-header (hidden by base.css), the extension's own widgets (they use
+ * roles), the colours an admin picks (group and username colours, inline style on user content), #darken (a black
+ * scrim is right on a dark page), the loading GIF (it already has its own dark plate).
+ */
+/* ===== Page ===== */
+html[data-studio-theme="dark"] {
+	scrollbar-color: var(--md-outline) var(--md-surface);
+}
+
+html[data-studio-theme="dark"],
+html[data-studio-theme="dark"] body {
+	background: var(--md-surface);
+	color: var(--md-on-surface);
+}
+
+/* At 700px and less the stock sheet paints #acp and #content (a light gradient image) */
+html[data-studio-theme="dark"] #wrap,
+html[data-studio-theme="dark"] #page-body,
+html[data-studio-theme="dark"] #acp,
+html[data-studio-theme="dark"] #content,
+html[data-studio-theme="dark"] #main,
+html[data-studio-theme="dark"] .main {
+	background: none;
+}
+
+/* The elements below carry a colour in the stock sheet; p, h3-h5, strong, li and the rest inherit the page text colour */
+html[data-studio-theme="dark"] h1,
+html[data-studio-theme="dark"] h2,
+html[data-studio-theme="dark"] caption,
+html[data-studio-theme="dark"] legend,
+html[data-studio-theme="dark"] #content h1,
+html[data-studio-theme="dark"] #content h2 {
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] hr {
+	border-top-color: var(--md-outline-variant);
+}
+
+html[data-studio-theme="dark"] .error,
+html[data-studio-theme="dark"] .outdated-ext {
+	color: var(--md-error);
+}
+
+html[data-studio-theme="dark"] .success,
+html[data-studio-theme="dark"] .current-ext {
+	color: var(--md-primary);
+}
+
+/* ===== Shell: the sidebar and the header =====
+ * The presets of the sidebar and the header paint nothing in the dark scheme. The sidebar (the pinned menu, the rail and the drawer) is
+ * the surface one step below the page, the header the one above it (container-high, as the menus that open from it), both neutral. The
+ * colour that was chosen stays, as the accent colours.css generates from the sidebar colour for this scheme (--md-primary): the current
+ * module, the icons and the dot of the active path, the focus rings. The tokens a preset sets on its bar (--studio-on, --studio-tint,
+ * --studio-edge, --nav-accent) are set here from roles, so that menu.css and header.css, which read them, need no change.
+ * The settings page paints its swatches with the presets themselves (.studio-bg-<name> on a span): not reached, the rules are on the bars.
+ * A flyout of the rail keeps its own raised surface (--studio-pop, menu.css); the menus of the header (header.css) already take roles.
+ * The header outranks, with its id, the rules a white header already had in this scheme (header.css, colours.css). */
+html[data-studio-theme="dark"] nav.studio-sidebar {
+	--studio-on: var(--md-on-surface);
+	--studio-tint: var(--studio-pop-tint);
+	--studio-edge: var(--md-outline-variant);
+	--nav-accent: var(--md-primary);
+	border-inline-end: 1px solid var(--md-outline-variant);
+	background: var(--md-surface-container-lowest) !important;
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] header.studio-header {
+	--studio-on: var(--md-on-surface);
+	--studio-tint: var(--studio-pop-tint);
+	--studio-edge: var(--md-outline-variant);
+	--nav-accent: var(--md-primary);
+	background: var(--md-surface-container-high) !important;
+	box-shadow: 0 1px 0 var(--md-outline-variant);
+	color: var(--md-on-surface);
+}
+
+/* The rings are the accent, as in the content (base.css gives these two bars the text colour) */
+html[data-studio-theme="dark"] .studio-sidebar :focus-visible,
+html[data-studio-theme="dark"] .studio-header :focus-visible {
+	outline-color: var(--md-primary);
+}
+
+/* The names of the sections are the quiet text; the current module is the container of the accent, with the bar of the accent */
+html[data-studio-theme="dark"] .studio-menu__group > .studio-menu__name {
+	color: var(--md-on-surface-variant);
+}
+
+html[data-studio-theme="dark"] .studio-menu__link[aria-current="page"],
+html[data-studio-theme="dark"] .studio-menu__home[aria-current="page"] {
+	background: var(--md-primary-container);
+	color: var(--md-on-primary-container);
+}
+
+html[data-studio-theme="dark"] .studio-menu__link[aria-current="page"]::before,
+html[data-studio-theme="dark"] .studio-menu__home[aria-current="page"]::before {
+	background: var(--md-primary);
+}
+
+/* The search box: a lighter field in the header, with the edge of the fields of the content */
+html[data-studio-theme="dark"] #studio-header .studio-search > input[type="text"],
+html[data-studio-theme="dark"] #studio-header .studio-search > input[type="text"]:focus {
+	border-color: var(--md-outline);
+	background: var(--md-surface-container-highest);
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] #studio-header .studio-search > input[type="text"]::placeholder,
+html[data-studio-theme="dark"] #studio-header .studio-search > .studio-icon {
+	color: var(--md-on-surface-variant);
+}
+
+html[data-studio-theme="dark"] #studio-header .studio-search__kbd {
+	border-color: var(--md-outline-variant);
+	background: var(--md-surface-container-high);
+	color: var(--md-on-surface-variant);
+}
+
+/* ===== Footer ===== */
+html[data-studio-theme="dark"] #page-footer {
+	background: var(--md-surface-container-low);
+	border-top-color: var(--md-outline-variant);
+	color: var(--md-on-surface-variant);
+}
+
+html[data-studio-theme="dark"] #page-footer .copyright a {
+	color: var(--md-primary);
+}
+
+html[data-studio-theme="dark"] #page-footer .copyright a:hover,
+html[data-studio-theme="dark"] #page-footer .copyright a:active {
+	color: var(--md-on-primary-container);
+}
+
+/* ===== Links =====
+ * Same weight as the stock a:link (0,1,1) plus the :not(), so they win over it by order but give way to every class
+ * based rule of the extension's own widgets (.studio-sidebar a:link, .studio-card a:link, ... are 0,2,1 and more).
+ * The two widget rules of exactly that weight (a plain "a", not a:link) are left out by name. */
+html[data-studio-theme="dark"] :where(a:link, a:visited):not(:where(.studio-crumbs, .studio-search-result) a) {
+	color: var(--md-primary);
+}
+
+html[data-studio-theme="dark"] :where(a:hover, a:active):not(:where(.studio-crumbs, .studio-search-result) a) {
+	color: var(--md-on-primary-container);
+}
+
+/* ===== Panels ===== */
+/* The stock panel is a white card with a shadow, which a dark page does not show: an outlined card instead.
+ * The cards and stat tiles of the extension have their own look, the dashboard action row (.lside + fieldset)
+ * is transparent on purpose. */
+html[data-studio-theme="dark"] fieldset:not(.display-options):not(.submit-buttons):not(.quick):not(.studio-card):not(.studio-stats):not(.lside + fieldset):not(.nobg):not(.tabulated) {
+	background: var(--md-surface-container-low);
+	border: 1px solid var(--md-outline-variant);
+	box-shadow: none;
+}
+
+html[data-studio-theme="dark"] dd {
+	color: var(--md-on-surface-variant);
+}
+
+html[data-studio-theme="dark"] dt label {
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] dd label {
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] dt span,
+html[data-studio-theme="dark"] dt .explain,
+html[data-studio-theme="dark"] .explain {
+	color: var(--md-on-surface-variant);
+}
+
+html[data-studio-theme="dark"] fieldset dt,
+html[data-studio-theme="dark"] fieldset dd {
+	border-color: var(--md-outline-variant);
+}
+
+html[data-studio-theme="dark"] fieldset dl:hover dt,
+html[data-studio-theme="dark"] fieldset dl:hover dd {
+	border-color: var(--md-outline);
+}
+
+html[data-studio-theme="dark"] fieldset dl:hover dt label {
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] fieldset dl dd label:hover {
+	color: var(--md-primary);
+}
+
+/* Small screens: a line between the settings */
+html[data-studio-theme="dark"] fieldset dl {
+	border-bottom-color: var(--md-outline-variant);
+}
+
+/* ===== Tables ===== */
+html[data-studio-theme="dark"] table {
+	background-color: var(--md-surface-container-low);
+	border-color: var(--md-outline-variant);
+}
+
+html[data-studio-theme="dark"] table.type2,
+html[data-studio-theme="dark"] table.type3,
+html[data-studio-theme="dark"] table.responsive {
+	background: none;
+}
+
+html[data-studio-theme="dark"] table tr {
+	background: var(--md-surface-container-low);
+	border-bottom-color: var(--md-outline-variant);
+}
+
+html[data-studio-theme="dark"] table.responsive tr {
+	border-color: var(--md-outline-variant);
+}
+
+html[data-studio-theme="dark"] table th {
+	background: var(--md-table-header);
+	border-bottom-color: var(--md-primary);
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] #main > .main > table.table1:not(.permissions-panel):not(.type2):not(.type3) > thead > tr > th,
+html[data-studio-theme="dark"] #main > .main > form > table.table1:not(.permissions-panel):not(.type2):not(.type3) > thead > tr > th,
+html[data-studio-theme="dark"] #main > .main > fieldset.tabulated > table.table1:not(.permissions-panel):not(.type2):not(.type3) > thead > tr > th,
+html[data-studio-theme="dark"] #main > .main > form > fieldset.tabulated > table.table1:not(.permissions-panel):not(.type2):not(.type3) > thead > tr > th {
+	border-bottom-color: var(--md-outline-variant);
+}
+
+html[data-studio-theme="dark"] table.type2 th,
+html[data-studio-theme="dark"] table.type3 thead th {
+	background: none;
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] table.responsive caption {
+	background: var(--md-surface-container-high);
+	border-color: var(--md-outline-variant);
+	color: var(--md-on-surface);
+}
+
+/* The row classes of the stock sheet, mapped to neutral dark surfaces. */
+html[data-studio-theme="dark"] .row1,
+html[data-studio-theme="dark"] .col2,
+html[data-studio-theme="dark"] .row1a {
+	background-color: var(--md-surface-container-low);
+}
+
+html[data-studio-theme="dark"] .row2,
+html[data-studio-theme="dark"] .col1,
+html[data-studio-theme="dark"] .row1b {
+	background-color: var(--md-surface-container);
+}
+
+html[data-studio-theme="dark"] .row3,
+html[data-studio-theme="dark"] .row2a {
+	background-color: var(--md-surface-container-high);
+}
+
+html[data-studio-theme="dark"] .row4,
+html[data-studio-theme="dark"] .row2b {
+	background-color: var(--md-surface-container-highest);
+}
+
+html[data-studio-theme="dark"] .spacer {
+	background-color: var(--md-outline-variant);
+}
+
+html[data-studio-theme="dark"] tr.row1,
+html[data-studio-theme="dark"] tr.row1a {
+	background: var(--md-surface-container-low);
+}
+
+html[data-studio-theme="dark"] tr.row2,
+html[data-studio-theme="dark"] tr.row1b {
+	background: var(--md-surface-container);
+}
+
+html[data-studio-theme="dark"] tr.row3,
+html[data-studio-theme="dark"] tr.row2a {
+	background: var(--md-surface-container-high);
+}
+
+html[data-studio-theme="dark"] tr.row4,
+html[data-studio-theme="dark"] tr.row2b {
+	background: var(--md-surface-container-highest);
+}
+
+html[data-studio-theme="dark"] table.zebra-table tbody tr:nth-child(odd) {
+	background: var(--md-surface-container);
+}
+
+html[data-studio-theme="dark"] table.zebra-table tbody tr:nth-child(even) {
+	background: var(--md-surface-container-low);
+}
+
+html[data-studio-theme="dark"] table.table1 td.row1,
+html[data-studio-theme="dark"] table.table1 td.row1a,
+html[data-studio-theme="dark"] table.table1 td.col1 {
+	background-color: var(--md-surface-container-low);
+}
+
+html[data-studio-theme="dark"] table.table1 td.row2,
+html[data-studio-theme="dark"] table.table1 td.row1b,
+html[data-studio-theme="dark"] table.table1 td.col2,
+html[data-studio-theme="dark"] table.table1 td.row2a {
+	background-color: var(--md-table-column);
+}
+
+html[data-studio-theme="dark"] table.table1 td.row3 {
+	background-color: var(--md-surface-container-high);
+}
+
+html[data-studio-theme="dark"] table.table1 td.row2b,
+html[data-studio-theme="dark"] table.table1 td.row4 {
+	background-color: var(--md-surface-container-high);
+}
+
+html[data-studio-theme="dark"] table.table1 th.row3 {
+	background-color: var(--md-surface-container);
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] table.table1 th.row4 {
+	background-color: var(--md-surface-container-high);
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] table.table1 tr.big-column > td {
+	background: var(--md-table-section);
+	border-color: var(--md-outline-variant);
+}
+
+/* Keep permission read-state fills above the stock and row-hover paints. */
+html[data-studio-theme="dark"] table.table1 tbody tr:not(.row3):not(.row4):hover,
+html[data-studio-theme="dark"] table.table1 tbody tr:not(.row3):not(.row4):focus-within {
+	background: var(--md-surface-container-high);
+}
+
+html[data-studio-theme="dark"] tr.row-highlight:hover td {
+	background-color: var(--md-surface-container-high);
+}
+
+/* Deactivated rows */
+html[data-studio-theme="dark"] .row-inactive,
+html[data-studio-theme="dark"] .row-inactive a,
+html[data-studio-theme="dark"] .row-inactive strong {
+	color: var(--md-outline);
+}
+
+html[data-studio-theme="dark"] .row-inactive a:hover {
+	color: var(--md-primary);
+}
+
+/* The yes / never cells of permission views and traces carry meaning, so keep their distinct fills above row hover. */
+html[data-studio-theme="dark"] .yes {
+	background-color: var(--md-primary-container);
+	color: var(--md-on-primary-container);
+}
+
+html[data-studio-theme="dark"] .never {
+	background-color: var(--md-error);
+	color: var(--md-on-error);
+}
+
+html[data-studio-theme="dark"] table td.yes {
+	background-color: var(--md-primary-container) !important;
+}
+
+html[data-studio-theme="dark"] table td.never {
+	background-color: var(--md-error) !important;
+}
+
+/* The icons of the lists (FontAwesome glyphs; the move, edit and sync hues of the stock sheet are readable on the
+ * dark surfaces and keep their meaning, delete and disabled move to roles) */
+html[data-studio-theme="dark"] .acp-icon-delete {
+	color: var(--md-error);
+}
+
+html[data-studio-theme="dark"] .acp-icon-disabled {
+	color: var(--md-outline);
+}
+
+/* ===== Fields ===== */
+html[data-studio-theme="dark"] :is(select, textarea, input:not([type]), input[type="text"], input[type="email"], input[type="url"], input[type="number"], input[type="password"], input[type="search"], input[type="tel"], input[type="date"], input[type="time"], input[type="datetime-local"], input[type="file"]):not(:where(.studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *) {
+	background-color: var(--md-surface-container-highest);
+	border-color: var(--md-outline);
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] :is(select, textarea, input:not([type]), input[type="text"], input[type="email"], input[type="url"], input[type="number"], input[type="password"], input[type="search"], input[type="tel"], input[type="date"], input[type="time"], input[type="datetime-local"], input[type="file"]):not(:where(.studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *):hover {
+	background-color: var(--md-surface-container-highest);
+	border-color: var(--md-on-surface-variant);
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] :is(select, textarea, input:not([type]), input[type="text"], input[type="email"], input[type="url"], input[type="number"], input[type="password"], input[type="search"], input[type="tel"], input[type="date"], input[type="time"], input[type="datetime-local"], input[type="file"]):not(:where(.studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *):focus {
+	background-color: var(--md-surface-container-highest);
+	border-color: var(--md-primary);
+	box-shadow: 0 0 0 2px var(--md-primary);
+	color: var(--md-on-surface);
+	outline: none;
+}
+
+/* The chevron of the selects (content.css), in the colour of --md-on-surface-variant of the dark scheme. The rules above only set the
+ * background colour, so the chevron stays. */
+html[data-studio-theme="dark"] select:not([multiple], [size], :where(.studio-palette, .studio-header, .studio-sidebar, .studio-pagebar) *) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23c3c7cc'%3E%3Cpath d='M480-344 240-584l43-43 197 197 197-197 43 43-240 240Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] :is(input, textarea)::placeholder {
+	color: var(--md-on-surface-variant);
+	opacity: 1;
+}
+
+html[data-studio-theme="dark"] input[type="file"]::file-selector-button {
+	background: var(--md-secondary-container);
+	border: 0;
+	border-radius: 4px;
+	color: var(--md-on-secondary-container);
+	cursor: pointer;
+	margin-inline-end: 8px;
+	padding: 4px 12px;
+}
+
+html[data-studio-theme="dark"] option,
+html[data-studio-theme="dark"] optgroup {
+	background-color: var(--md-surface-container-high);
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] option.disabled-option,
+html[data-studio-theme="dark"] select option.disabled {
+	background-color: var(--md-surface-container-low);
+	color: var(--md-outline);
+}
+
+html[data-studio-theme="dark"] input[type="checkbox"],
+html[data-studio-theme="dark"] input[type="radio"] {
+	accent-color: var(--md-primary);
+	background: transparent;
+	color: var(--md-on-surface);
+}
+
+/* ===== Buttons =====
+ * The colours of the buttons are roles in content.css, so they are the same code in light and in dark mode. Only the state that has no
+ * counterpart in light mode stays here. */
+/* Not available: no hover, a quiet face (the stock sheet does the same with a grey text) */
+html[data-studio-theme="dark"] :is(input, select, textarea):disabled,
+html[data-studio-theme="dark"] :is(input, select, textarea):disabled:hover,
+html[data-studio-theme="dark"] input.disabled {
+	background-color: var(--md-surface-container-low);
+	border-color: var(--md-outline-variant);
+	box-shadow: none;
+	color: var(--md-outline);
+	cursor: not-allowed;
+}
+
+/* The icons of the buttons of the forms (content.css) in the colours of the dark scheme: the text colour, the on-primary ink of a filled button
+ * and the error colours. */
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"]):where([type="submit"][name="submit"].button1):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="update"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="save"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="confirm"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="update_details"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="main_submit"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="submituser"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='M378-246 154-470l43-43 181 181 384-384 43 43-427 427Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="add"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="addforum"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="addmodule"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="addreason"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="quickadd"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="create"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="add_extension_check"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="securesubmit"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="submit_add_options"]:not(.studio-btn),
+html[data-studio-theme="dark"] body form[id^="acp_search_index_"]:has(input[name="action"][value="create"]) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html[data-studio-theme="dark"] body form#acp_bbcodes input:is([type="submit"], [type="button"], [type="reset"]):not(#submit):not(.studio-btn),
+html[data-studio-theme="dark"] body form#profile_fields input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html[data-studio-theme="dark"] body form[id^="add_group_position"] input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='M450-450H200v-60h250v-250h60v250h250v60H510v250h-60v-250Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="search"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="filter"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='M796-121 533-384q-30 26-69.96 40.5Q423.08-329 378-329q-108.16 0-183.08-75Q120-479 120-585t75-181q75-75 181.5-75t181 75Q632-691 632-584.85 632-542 618-502q-14 40-42 75l264 262-44 44ZM377-389q81.25 0 138.13-57.5Q572-504 572-585t-56.87-138.5Q458.25-781 377-781q-82.08 0-139.54 57.5Q180-666 180-585t57.46 138.5Q294.92-389 377-389Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="test"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="send"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="send_test_email"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name^="test_"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name$="_test"]:not(.studio-btn),
+html[data-studio-theme="dark"] body form#acp_email input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html[data-studio-theme="dark"] body form#questionnaire-form input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='M120-160v-640l760 320-760 320Zm60-93 544-227-544-230v168l242 62-242 60v167Zm0 0v-457 457Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="preview"]:not(.studio-btn),
+html[data-studio-theme="dark"] body form#users input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html[data-studio-theme="dark"] body form#add_user input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html[data-studio-theme="dark"] body form#groups input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html[data-studio-theme="dark"] body form#group input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='M480.12-330q70.88 0 120.38-49.62t49.5-120.5q0-70.88-49.62-120.38T479.88-670Q409-670 359.5-620.38T310-499.88q0 70.88 49.62 120.38t120.5 49.5Zm-.36-58q-46.76 0-79.26-32.74-32.5-32.73-32.5-79.5 0-46.76 32.74-79.26 32.73-32.5 79.5-32.5 46.76 0 79.26 32.74 32.5 32.73 32.5 79.5 0 46.76-32.74 79.26-32.73 32.5-79.5 32.5Zm.24 188q-146 0-264-83T40-500q58-134 176-217t264-83q146 0 264 83t176 217q-58 134-176 217t-264 83Zm0-300Zm-.17 240Q601-260 702.5-325.5 804-391 857-500q-53-109-154.33-174.5Q601.34-740 480.17-740T257.5-674.5Q156-609 102-500q54 109 155.33 174.5Q358.66-260 479.83-260Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[type="reset"]:not(.studio-btn),
+html[data-studio-theme="dark"] body form#set-permissions input:is([type="submit"], [type="button"], [type="reset"])#reset[name="cancel"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='M451-122q-123-10-207-101t-84-216q0-77 35.5-145T295-695l43 43q-56 33-87 90.5T220-439q0 100 66 173t165 84v60Zm60 0v-60q100-12 165-84.5T741-439q0-109-75.5-184.5T481-699h-20l60 60-43 43-133-133 133-133 43 43-60 60h20q134 0 227 93.5T801-439q0 125-83.5 216T511-122Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="install"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='M480-313 287-506l43-43 120 120v-371h60v371l120-120 43 43-193 193ZM220-160q-24 0-42-18t-18-42v-143h60v143h520v-143h60v143q0 24-18 42t-42 18H220Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="edit"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="submit_edit_options"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='M180-180h44l472-471-44-44-472 471v44Zm-60 60v-128l575-574q8-8 19-12.5t23-4.5q11 0 22 4.5t20 12.5l44 44q9 9 13 20t4 22q0 11-4.5 22.5T823-694L248-120H120Zm659-617-41-41 41 41Zm-105 64-22-22 44 44-22-22Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="enable"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="activate"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name$="_enable"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='m421-298 283-283-46-45-237 237-120-120-45 45 165 166Zm59 218q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-156t86-127Q252-817 325-848.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 82-31.5 155T763-197.5q-54 54.5-127 86T480-80Zm0-60q142 0 241-99.5T820-480q0-142-99-241t-241-99q-141 0-240.5 99T140-480q0 141 99.5 240.5T480-140Zm0-340Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="disable"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="deactivate"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name$="_disable"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-60q61.01 0 117.51-20.5Q654-181 699-220L220-699q-38 46-59 102.17T140-480q0 142.37 98.81 241.19Q337.63-140 480-140Zm259-121q37-45 59-101.49 22-56.5 22-117.51 0-142.38-98.81-241.19T480-820q-60.66 0-116.83 21T261-739l478 478Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="action[apply_all_permissions]"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='M294-242 70-466l43-43 181 181 43 43-43 43Zm170 0L240-466l43-43 181 181 384-384 43 43-427 427Zm0-170-43-43 257-257 43 43-257 257Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name^="action_"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='M320-203v-560l440 280-440 280Zm60-280Zm0 171 269-171-269-171v342Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="next"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="select"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="avatar_local_go"]:not(.studio-btn),
+html[data-studio-theme="dark"] body form#pselect input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[value="Go"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='M686-450H160v-60h526L438-758l42-42 320 320-320 320-42-42 248-248Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="prev"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='m274-450 248 248-42 42-320-320 320-320 42 42-248 248h526v60H274Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="sort"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='M120-240v-60h240v60H120Zm0-210v-60h480v60H120Zm0-210v-60h720v60H120Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="configure"]:not(.studio-btn),
+html[data-studio-theme="dark"] body form#acp_backup:has(select#file) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='m388-80-20-126q-19-7-40-19t-37-25l-118 54-93-164 108-79q-2-9-2.5-20.5T185-480q0-9 .5-20.5T188-521L80-600l93-164 118 54q16-13 37-25t40-18l20-127h184l20 126q19 7 40.5 18.5T669-710l118-54 93 164-108 77q2 10 2.5 21.5t.5 21.5q0 10-.5 21t-2.5 21l108 78-93 164-118-54q-16 13-36.5 25.5T592-206L572-80H388Zm48-60h88l14-112q33-8 62.5-25t53.5-41l106 46 40-72-94-69q4-17 6.5-33.5T715-480q0-17-2-33.5t-7-33.5l94-69-40-72-106 46q-23-26-52-43.5T538-708l-14-112h-88l-14 112q-34 7-63.5 24T306-642l-106-46-40 72 94 69q-4 17-6.5 33.5T245-480q0 17 2.5 33.5T254-413l-94 69 40 72 106-46q24 24 53.5 41t62.5 25l14 112Zm44-210q54 0 92-38t38-92q0-54-38-92t-92-38q-54 0-92 38t-38 92q0 54 38 92t92 38Zm0-130Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="unbansubmit"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='M220-634h390v-96q0-54.17-37.88-92.08-37.88-37.92-92-37.92T388-822.08q-38 37.91-38 92.08h-60q0-79 55.61-134.5 55.6-55.5 134.5-55.5 78.89 0 134.39 55.58Q670-808.85 670-730v96h70q24.75 0 42.38 17.62Q800-598.75 800-574v434q0 24.75-17.62 42.37Q764.75-80 740-80H220q-24.75 0-42.37-17.63Q160-115.25 160-140v-434q0-24.75 17.63-42.38Q195.25-634 220-634Zm0 494h520v-434H220v434Zm260.17-140q31.83 0 54.33-22.03T557-355q0-30-22.67-54.5t-54.5-24.5q-31.83 0-54.33 24.5t-22.5 55q0 30.5 22.67 52.5t54.5 22ZM220-140v-434 434Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="import"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='M450-313v-371L330-564l-43-43 193-193 193 193-43 43-120-120v371h-60ZM220-160q-24 0-42-18t-18-42v-143h60v143h520v-143h60v143q0 24-18 42t-42 18H220Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="addusers"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cpath d='M730-400v-130H600v-60h130v-130h60v130h130v60H790v130h-60Zm-370-81q-66 0-108-42t-42-108q0-66 42-108t108-42q66 0 108 42t42 108q0 66-42 108t-108 42ZM40-160v-94q0-35 17.5-63.5T108-360q75-33 133.34-46.5t118.5-13.5Q420-420 478-406.5T611-360q33 15 51 43t18 63v94H40Zm60-60h520v-34q0-16-9-30.5T587-306q-71-33-120-43.5T360-360q-58 0-107.5 10.5T132-306q-15 7-23.5 21.5T100-254v34Zm260-321q39 0 64.5-25.5T450-631q0-39-25.5-64.5T360-721q-39 0-64.5 25.5T270-631q0 39 25.5 64.5T360-541Zm0-90Zm0 411Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="test"]:not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="send"]:not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="send_test_email"]:not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name^="test_"]:not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name$="_test"]:not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body form#acp_email input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body form#questionnaire-form input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cg transform='matrix(-1 0 0 1 960 0)'%3E%3Cpath d='M120-160v-640l760 320-760 320Zm60-93 544-227-544-230v168l242 62-242 60v167Zm0 0v-457 457Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="next"]:not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="select"]:not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="avatar_local_go"]:not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body form#pselect input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[value="Go"]:not(.studio-btn):dir(rtl) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cg transform='matrix(-1 0 0 1 960 0)'%3E%3Cpath d='M686-450H160v-60h526L438-758l42-42 320 320-320 320-42-42 248-248Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="prev"]:not(.studio-btn):dir(rtl) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23e3e5e8'%3E%3Cg transform='matrix(-1 0 0 1 960 0)'%3E%3Cpath d='m274-450 248 248-42 42-320-320 320-320 42 42-248 248h526v60H274Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"]):where([type="submit"][name="submit"].button1):is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="update"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="save"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="confirm"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="update_details"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="main_submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="submituser"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cpath d='M378-246 154-470l43-43 181 181 384-384 43 43-427 427Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="add"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="addforum"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="addmodule"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="addreason"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="quickadd"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="create"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="add_extension_check"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="securesubmit"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="submit_add_options"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body form[id^="acp_search_index_"]:has(input[name="action"][value="create"]) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body form#acp_bbcodes input:is([type="submit"], [type="button"], [type="reset"]):not(#submit):is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body form#profile_fields input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body form[id^="add_group_position"] input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cpath d='M450-450H200v-60h250v-250h60v250h250v60H510v250h-60v-250Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="search"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="filter"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cpath d='M796-121 533-384q-30 26-69.96 40.5Q423.08-329 378-329q-108.16 0-183.08-75Q120-479 120-585t75-181q75-75 181.5-75t181 75Q632-691 632-584.85 632-542 618-502q-14 40-42 75l264 262-44 44ZM377-389q81.25 0 138.13-57.5Q572-504 572-585t-56.87-138.5Q458.25-781 377-781q-82.08 0-139.54 57.5Q180-666 180-585t57.46 138.5Q294.92-389 377-389Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="test"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="send"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="send_test_email"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name^="test_"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name$="_test"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body form#acp_email input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body form#questionnaire-form input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cpath d='M120-160v-640l760 320-760 320Zm60-93 544-227-544-230v168l242 62-242 60v167Zm0 0v-457 457Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="install"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cpath d='M480-313 287-506l43-43 120 120v-371h60v371l120-120 43 43-193 193ZM220-160q-24 0-42-18t-18-42v-143h60v143h520v-143h60v143q0 24-18 42t-42 18H220Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="edit"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="submit_edit_options"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cpath d='M180-180h44l472-471-44-44-472 471v44Zm-60 60v-128l575-574q8-8 19-12.5t23-4.5q11 0 22 4.5t20 12.5l44 44q9 9 13 20t4 22q0 11-4.5 22.5T823-694L248-120H120Zm659-617-41-41 41 41Zm-105 64-22-22 44 44-22-22Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="enable"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="activate"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name$="_enable"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cpath d='m421-298 283-283-46-45-237 237-120-120-45 45 165 166Zm59 218q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-156t86-127Q252-817 325-848.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 82-31.5 155T763-197.5q-54 54.5-127 86T480-80Zm0-60q142 0 241-99.5T820-480q0-142-99-241t-241-99q-141 0-240.5 99T140-480q0 141 99.5 240.5T480-140Zm0-340Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="disable"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="deactivate"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name$="_disable"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cpath d='M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-60q61.01 0 117.51-20.5Q654-181 699-220L220-699q-38 46-59 102.17T140-480q0 142.37 98.81 241.19Q337.63-140 480-140Zm259-121q37-45 59-101.49 22-56.5 22-117.51 0-142.38-98.81-241.19T480-820q-60.66 0-116.83 21T261-739l478 478Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="action[apply_all_permissions]"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cpath d='M294-242 70-466l43-43 181 181 43 43-43 43Zm170 0L240-466l43-43 181 181 384-384 43 43-427 427Zm0-170-43-43 257-257 43 43-257 257Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name^="action_"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cpath d='M320-203v-560l440 280-440 280Zm60-280Zm0 171 269-171-269-171v342Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="next"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="select"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="avatar_local_go"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body form#pselect input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[value="Go"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cpath d='M686-450H160v-60h526L438-758l42-42 320 320-320 320-42-42 248-248Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="prev"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cpath d='m274-450 248 248-42 42-320-320 320-320 42 42-248 248h526v60H274Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="sort"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cpath d='M120-240v-60h240v60H120Zm0-210v-60h480v60H120Zm0-210v-60h720v60H120Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="configure"]:is([type="submit"], [name="confirm"]):not(.studio-btn),
+html[data-studio-theme="dark"] body form#acp_backup:has(select#file) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cpath d='m388-80-20-126q-19-7-40-19t-37-25l-118 54-93-164 108-79q-2-9-2.5-20.5T185-480q0-9 .5-20.5T188-521L80-600l93-164 118 54q16-13 37-25t40-18l20-127h184l20 126q19 7 40.5 18.5T669-710l118-54 93 164-108 77q2 10 2.5 21.5t.5 21.5q0 10-.5 21t-2.5 21l108 78-93 164-118-54q-16 13-36.5 25.5T592-206L572-80H388Zm48-60h88l14-112q33-8 62.5-25t53.5-41l106 46 40-72-94-69q4-17 6.5-33.5T715-480q0-17-2-33.5t-7-33.5l94-69-40-72-106 46q-23-26-52-43.5T538-708l-14-112h-88l-14 112q-34 7-63.5 24T306-642l-106-46-40 72 94 69q-4 17-6.5 33.5T245-480q0 17 2.5 33.5T254-413l-94 69 40 72 106-46q24 24 53.5 41t62.5 25l14 112Zm44-210q54 0 92-38t38-92q0-54-38-92t-92-38q-54 0-92 38t-38 92q0 54 38 92t92 38Zm0-130Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="unbansubmit"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cpath d='M220-634h390v-96q0-54.17-37.88-92.08-37.88-37.92-92-37.92T388-822.08q-38 37.91-38 92.08h-60q0-79 55.61-134.5 55.6-55.5 134.5-55.5 78.89 0 134.39 55.58Q670-808.85 670-730v96h70q24.75 0 42.38 17.62Q800-598.75 800-574v434q0 24.75-17.62 42.37Q764.75-80 740-80H220q-24.75 0-42.37-17.63Q160-115.25 160-140v-434q0-24.75 17.63-42.38Q195.25-634 220-634Zm0 494h520v-434H220v434Zm260.17-140q31.83 0 54.33-22.03T557-355q0-30-22.67-54.5t-54.5-24.5q-31.83 0-54.33 24.5t-22.5 55q0 30.5 22.67 52.5t54.5 22ZM220-140v-434 434Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="import"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cpath d='M450-313v-371L330-564l-43-43 193-193 193 193-43 43-120-120v371h-60ZM220-160q-24 0-42-18t-18-42v-143h60v143h520v-143h60v143q0 24-18 42t-42 18H220Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="addusers"]:is([type="submit"], [name="confirm"]):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cpath d='M730-400v-130H600v-60h130v-130h60v130h130v60H790v130h-60Zm-370-81q-66 0-108-42t-42-108q0-66 42-108t108-42q66 0 108 42t42 108q0 66-42 108t-108 42ZM40-160v-94q0-35 17.5-63.5T108-360q75-33 133.34-46.5t118.5-13.5Q420-420 478-406.5T611-360q33 15 51 43t18 63v94H40Zm60-60h520v-34q0-16-9-30.5T587-306q-71-33-120-43.5T360-360q-58 0-107.5 10.5T132-306q-15 7-23.5 21.5T100-254v34Zm260-321q39 0 64.5-25.5T450-631q0-39-25.5-64.5T360-721q-39 0-64.5 25.5T270-631q0 39 25.5 64.5T360-541Zm0-90Zm0 411Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="test"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="send"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="send_test_email"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name^="test_"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name$="_test"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body form#acp_email input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body form#questionnaire-form input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cg transform='matrix(-1 0 0 1 960 0)'%3E%3Cpath d='M120-160v-640l760 320-760 320Zm60-93 544-227-544-230v168l242 62-242 60v167Zm0 0v-457 457Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="next"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="select"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="avatar_local_go"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body form#pselect input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[value="Go"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cg transform='matrix(-1 0 0 1 960 0)'%3E%3Cpath d='M686-450H160v-60h526L438-758l42-42 320 320-320 320-42-42 248-248Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="prev"]:is([type="submit"], [name="confirm"]):not(.studio-btn):dir(rtl) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%231b1b1f'%3E%3Cg transform='matrix(-1 0 0 1 960 0)'%3E%3Cpath d='m274-450 248 248-42 42-320-320 320-320 42 42-248 248h526v60H274Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="cancel"]:not([type="reset"]):not(#reset):not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffb4ab'%3E%3Cpath d='m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="cancel"]:not([type="reset"]):not(#reset):not(.studio-btn):hover {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23690005'%3E%3Cpath d='m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="bansubmit"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="disallow"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffb4ab'%3E%3Cpath d='M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-60q61.01 0 117.51-20.5Q654-181 699-220L220-699q-38 46-59 102.17T140-480q0 142.37 98.81 241.19Q337.63-140 480-140Zm259-121q37-45 59-101.49 22-56.5 22-117.51 0-142.38-98.81-241.19T480-820q-60.66 0-116.83 21T261-739l478 478Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="bansubmit"]:not(.studio-btn):hover,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="disallow"]:not(.studio-btn):hover {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23690005'%3E%3Cpath d='M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-60q61.01 0 117.51-20.5Q654-181 699-220L220-699q-38 46-59 102.17T140-480q0 142.37 98.81 241.19Q337.63-140 480-140Zm259-121q37-45 59-101.49 22-56.5 22-117.51 0-142.38-98.81-241.19T480-820q-60.66 0-116.83 21T261-739l478 478Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="delall"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="delmarked"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="action[delete]"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="delete"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="unsecuresubmit"]:not(.studio-btn),
+html[data-studio-theme="dark"] body form#attachments input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn),
+html[data-studio-theme="dark"] body form[id^="acp_search_index_"]:has(input[name="action"][value="delete"]) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffb4ab'%3E%3Cpath d='M261-120q-24.75 0-42.37-17.63Q201-155.25 201-180v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438v-570ZM367-266h60v-399h-60v399Zm166 0h60v-399h-60v399ZM261-750v570-570Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="delall"]:not(.studio-btn):hover,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="delmarked"]:not(.studio-btn):hover,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="action[delete]"]:not(.studio-btn):hover,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="delete"]:not(.studio-btn):hover,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="unsecuresubmit"]:not(.studio-btn):hover,
+html[data-studio-theme="dark"] body form#attachments input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):hover,
+html[data-studio-theme="dark"] body form[id^="acp_search_index_"]:has(input[name="action"][value="delete"]) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):hover {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23690005'%3E%3Cpath d='M261-120q-24.75 0-42.37-17.63Q201-155.25 201-180v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438v-570ZM367-266h60v-399h-60v399Zm166 0h60v-399h-60v399ZM261-750v570-570Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="delete_data"]:not(.studio-btn),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="uninstall"]:not(.studio-btn) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23ffb4ab'%3E%3Cpath d='m361-299 119-121 120 121 47-48-119-121 119-121-47-48-120 121-119-121-48 48 120 121-120 121 48 48ZM261-120q-24 0-42-18t-18-42v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438v-570Zm-438 0v570-570Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="delete_data"]:not(.studio-btn):hover,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="uninstall"]:not(.studio-btn):hover {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%23690005'%3E%3Cpath d='m361-299 119-121 120 121 47-48-119-121 119-121-47-48-120 121-119-121-48 48 120 121-120 121 48 48ZM261-120q-24 0-42-18t-18-42v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438v-570Zm-438 0v570-570Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"]):where([type="submit"][name="submit"].button1):not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="update"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="save"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="confirm"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="update_details"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="main_submit"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="submituser"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='M378-246 154-470l43-43 181 181 384-384 43 43-427 427Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="add"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="addforum"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="addmodule"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="addreason"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="quickadd"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="create"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="add_extension_check"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="securesubmit"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="submit_add_options"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body form[id^="acp_search_index_"]:has(input[name="action"][value="create"]) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body form#acp_bbcodes input:is([type="submit"], [type="button"], [type="reset"]):not(#submit):not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body form#profile_fields input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body form[id^="add_group_position"] input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='M450-450H200v-60h250v-250h60v250h250v60H510v250h-60v-250Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="search"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="filter"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='M796-121 533-384q-30 26-69.96 40.5Q423.08-329 378-329q-108.16 0-183.08-75Q120-479 120-585t75-181q75-75 181.5-75t181 75Q632-691 632-584.85 632-542 618-502q-14 40-42 75l264 262-44 44ZM377-389q81.25 0 138.13-57.5Q572-504 572-585t-56.87-138.5Q458.25-781 377-781q-82.08 0-139.54 57.5Q180-666 180-585t57.46 138.5Q294.92-389 377-389Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="test"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="send"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="send_test_email"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name^="test_"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name$="_test"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body form#acp_email input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body form#questionnaire-form input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='M120-160v-640l760 320-760 320Zm60-93 544-227-544-230v168l242 62-242 60v167Zm0 0v-457 457Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="delall"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="delmarked"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="action[delete]"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="delete"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="unsecuresubmit"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body form#attachments input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body form[id^="acp_search_index_"]:has(input[name="action"][value="delete"]) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='M261-120q-24.75 0-42.37-17.63Q201-155.25 201-180v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438v-570ZM367-266h60v-399h-60v399Zm166 0h60v-399h-60v399ZM261-750v570-570Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="delete_data"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="uninstall"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='m361-299 119-121 120 121 47-48-119-121 119-121-47-48-120 121-119-121-48 48 120 121-120 121 48 48ZM261-120q-24 0-42-18t-18-42v-570h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438v-570Zm-438 0v570-570Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="cancel"]:not([type="reset"]):not(#reset):not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='m249-207-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="preview"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body form#users input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body form#add_user input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body form#groups input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body form#group input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='M480.12-330q70.88 0 120.38-49.62t49.5-120.5q0-70.88-49.62-120.38T479.88-670Q409-670 359.5-620.38T310-499.88q0 70.88 49.62 120.38t120.5 49.5Zm-.36-58q-46.76 0-79.26-32.74-32.5-32.73-32.5-79.5 0-46.76 32.74-79.26 32.73-32.5 79.5-32.5 46.76 0 79.26 32.74 32.5 32.73 32.5 79.5 0 46.76-32.74 79.26-32.73 32.5-79.5 32.5Zm.24 188q-146 0-264-83T40-500q58-134 176-217t264-83q146 0 264 83t176 217q-58 134-176 217t-264 83Zm0-300Zm-.17 240Q601-260 702.5-325.5 804-391 857-500q-53-109-154.33-174.5Q601.34-740 480.17-740T257.5-674.5Q156-609 102-500q54 109 155.33 174.5Q358.66-260 479.83-260Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[type="reset"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body form#set-permissions input:is([type="submit"], [type="button"], [type="reset"])#reset[name="cancel"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='M451-122q-123-10-207-101t-84-216q0-77 35.5-145T295-695l43 43q-56 33-87 90.5T220-439q0 100 66 173t165 84v60Zm60 0v-60q100-12 165-84.5T741-439q0-109-75.5-184.5T481-699h-20l60 60-43 43-133-133 133-133 43 43-60 60h20q134 0 227 93.5T801-439q0 125-83.5 216T511-122Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="install"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='M480-313 287-506l43-43 120 120v-371h60v371l120-120 43 43-193 193ZM220-160q-24 0-42-18t-18-42v-143h60v143h520v-143h60v143q0 24-18 42t-42 18H220Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="edit"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="submit_edit_options"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='M180-180h44l472-471-44-44-472 471v44Zm-60 60v-128l575-574q8-8 19-12.5t23-4.5q11 0 22 4.5t20 12.5l44 44q9 9 13 20t4 22q0 11-4.5 22.5T823-694L248-120H120Zm659-617-41-41 41 41Zm-105 64-22-22 44 44-22-22Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="enable"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="activate"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name$="_enable"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='m421-298 283-283-46-45-237 237-120-120-45 45 165 166Zm59 218q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 31.5-156t86-127Q252-817 325-848.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 82-31.5 155T763-197.5q-54 54.5-127 86T480-80Zm0-60q142 0 241-99.5T820-480q0-142-99-241t-241-99q-141 0-240.5 99T140-480q0 141 99.5 240.5T480-140Zm0-340Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="disable"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="deactivate"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name$="_disable"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="bansubmit"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="disallow"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-60q61.01 0 117.51-20.5Q654-181 699-220L220-699q-38 46-59 102.17T140-480q0 142.37 98.81 241.19Q337.63-140 480-140Zm259-121q37-45 59-101.49 22-56.5 22-117.51 0-142.38-98.81-241.19T480-820q-60.66 0-116.83 21T261-739l478 478Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="action[apply_all_permissions]"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='M294-242 70-466l43-43 181 181 43 43-43 43Zm170 0L240-466l43-43 181 181 384-384 43 43-427 427Zm0-170-43-43 257-257 43 43-257 257Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name^="action_"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='M320-203v-560l440 280-440 280Zm60-280Zm0 171 269-171-269-171v342Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="next"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="select"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="avatar_local_go"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body form#pselect input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[value="Go"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='M686-450H160v-60h526L438-758l42-42 320 320-320 320-42-42 248-248Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="prev"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='m274-450 248 248-42 42-320-320 320-320 42 42-248 248h526v60H274Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="sort"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='M120-240v-60h240v60H120Zm0-210v-60h480v60H120Zm0-210v-60h720v60H120Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="configure"]:not(.studio-btn):disabled,
+html[data-studio-theme="dark"] body form#acp_backup:has(select#file) input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='m388-80-20-126q-19-7-40-19t-37-25l-118 54-93-164 108-79q-2-9-2.5-20.5T185-480q0-9 .5-20.5T188-521L80-600l93-164 118 54q16-13 37-25t40-18l20-127h184l20 126q19 7 40.5 18.5T669-710l118-54 93 164-108 77q2 10 2.5 21.5t.5 21.5q0 10-.5 21t-2.5 21l108 78-93 164-118-54q-16 13-36.5 25.5T592-206L572-80H388Zm48-60h88l14-112q33-8 62.5-25t53.5-41l106 46 40-72-94-69q4-17 6.5-33.5T715-480q0-17-2-33.5t-7-33.5l94-69-40-72-106 46q-23-26-52-43.5T538-708l-14-112h-88l-14 112q-34 7-63.5 24T306-642l-106-46-40 72 94 69q-4 17-6.5 33.5T245-480q0 17 2.5 33.5T254-413l-94 69 40 72 106-46q24 24 53.5 41t62.5 25l14 112Zm44-210q54 0 92-38t38-92q0-54-38-92t-92-38q-54 0-92 38t-38 92q0 54 38 92t92 38Zm0-130Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="unbansubmit"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='M220-634h390v-96q0-54.17-37.88-92.08-37.88-37.92-92-37.92T388-822.08q-38 37.91-38 92.08h-60q0-79 55.61-134.5 55.6-55.5 134.5-55.5 78.89 0 134.39 55.58Q670-808.85 670-730v96h70q24.75 0 42.38 17.62Q800-598.75 800-574v434q0 24.75-17.62 42.37Q764.75-80 740-80H220q-24.75 0-42.37-17.63Q160-115.25 160-140v-434q0-24.75 17.63-42.38Q195.25-634 220-634Zm0 494h520v-434H220v434Zm260.17-140q31.83 0 54.33-22.03T557-355q0-30-22.67-54.5t-54.5-24.5q-31.83 0-54.33 24.5t-22.5 55q0 30.5 22.67 52.5t54.5 22ZM220-140v-434 434Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="import"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='M450-313v-371L330-564l-43-43 193-193 193 193-43 43-120-120v371h-60ZM220-160q-24 0-42-18t-18-42v-143h60v143h520v-143h60v143q0 24-18 42t-42 18H220Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="addusers"]:not(.studio-btn):disabled {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cpath d='M730-400v-130H600v-60h130v-130h60v130h130v60H790v130h-60Zm-370-81q-66 0-108-42t-42-108q0-66 42-108t108-42q66 0 108 42t42 108q0 66-42 108t-108 42ZM40-160v-94q0-35 17.5-63.5T108-360q75-33 133.34-46.5t118.5-13.5Q420-420 478-406.5T611-360q33 15 51 43t18 63v94H40Zm60-60h520v-34q0-16-9-30.5T587-306q-71-33-120-43.5T360-360q-58 0-107.5 10.5T132-306q-15 7-23.5 21.5T100-254v34Zm260-321q39 0 64.5-25.5T450-631q0-39-25.5-64.5T360-721q-39 0-64.5 25.5T270-631q0 39 25.5 64.5T360-541Zm0-90Zm0 411Z'/%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="test"]:not(.studio-btn):disabled:dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="send"]:not(.studio-btn):disabled:dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="send_test_email"]:not(.studio-btn):disabled:dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name^="test_"]:not(.studio-btn):disabled:dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name$="_test"]:not(.studio-btn):disabled:dir(rtl),
+html[data-studio-theme="dark"] body form#acp_email input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):disabled:dir(rtl),
+html[data-studio-theme="dark"] body form#questionnaire-form input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):disabled:dir(rtl) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cg transform='matrix(-1 0 0 1 960 0)'%3E%3Cpath d='M120-160v-640l760 320-760 320Zm60-93 544-227-544-230v168l242 62-242 60v167Zm0 0v-457 457Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="next"]:not(.studio-btn):disabled:dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="select"]:not(.studio-btn):disabled:dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="avatar_local_go"]:not(.studio-btn):disabled:dir(rtl),
+html[data-studio-theme="dark"] body form#pselect input:is([type="submit"], [type="button"], [type="reset"])[name="submit"]:not(.studio-btn):disabled:dir(rtl),
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[value="Go"]:not(.studio-btn):disabled:dir(rtl) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cg transform='matrix(-1 0 0 1 960 0)'%3E%3Cpath d='M686-450H160v-60h526L438-758l42-42 320 320-320 320-42-42 248-248Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+html[data-studio-theme="dark"] body input:is([type="submit"], [type="button"], [type="reset"])[name="prev"]:not(.studio-btn):disabled:dir(rtl) {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238c9197'%3E%3Cg transform='matrix(-1 0 0 1 960 0)'%3E%3Cpath d='m274-450 248 248-42 42-320-320 320-320 42 42-248 248h526v60H274Z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ===== Pagination ===== */
+html[data-studio-theme="dark"] .pagination > a,
+html[data-studio-theme="dark"] .pagination > ul > li > a,
+html[data-studio-theme="dark"] .pagination > ul > li > a:link,
+html[data-studio-theme="dark"] .pagination > ul > li > a:visited {
+	background: var(--md-surface-container-highest);
+	border-color: var(--md-outline-variant);
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] .pagination > a:hover,
+html[data-studio-theme="dark"] .pagination > ul > li > a:hover,
+html[data-studio-theme="dark"] .pagination > ul > li > a:link:hover,
+html[data-studio-theme="dark"] .pagination > ul > li > a:visited:hover {
+	background: var(--md-surface-container-high);
+	border-color: var(--md-outline);
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] .pagination > ul > .active > span {
+	background: var(--md-primary);
+	border-color: var(--md-primary);
+	color: var(--md-on-primary);
+}
+
+html[data-studio-theme="dark"] .pagination > ul > .ellipsis > span {
+	background: none;
+	color: var(--md-on-surface);
+}
+
+/* ===== Boxes =====
+ * The error, notice, success and warning boxes are roles in content.css (container colours, stripe, bold underlined links). */
+html[data-studio-theme="dark"] .requirements_not_met {
+	background-color: var(--md-error);
+}
+
+html[data-studio-theme="dark"] .requirements_not_met dt label,
+html[data-studio-theme="dark"] .requirements_not_met dd p {
+	color: var(--md-on-error);
+}
+
+html[data-studio-theme="dark"] #log-container {
+	background-color: var(--md-surface-container-low);
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] #log-container.show_log_container {
+	border-color: var(--md-outline-variant);
+}
+
+/* ===== Popups: alert, confirm, loading ===== */
+html[data-studio-theme="dark"] .phpbb_alert {
+	background: var(--md-surface-container-high);
+	border: 1px solid var(--md-outline-variant);
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] .alert_title,
+html[data-studio-theme="dark"] #phpbb_confirm > .alert_text > h3 {
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] #phpbb_alert > .alert_text,
+html[data-studio-theme="dark"] #phpbb_confirm > .alert_text > p {
+	color: var(--md-on-surface-variant);
+}
+
+html[data-studio-theme="dark"] .phpbb_alert .alert_close {
+	color: var(--md-outline);
+}
+
+html[data-studio-theme="dark"] .phpbb_alert .alert_close:hover {
+	color: var(--md-error);
+}
+
+/* The loading GIF has a black plate: on a dark page it needs an edge */
+html[data-studio-theme="dark"] #loading_indicator {
+	box-shadow: 0 0 0 1px var(--md-outline-variant);
+}
+
+/* A popup of another extension: senky/pushnotifications (adm/style/settings.html) paints the box of its "how to
+ * encourage users" popup with a hard-coded white background (#pop-up-alternatives .container, 1,1,0). This one is 1,2,1,
+ * so it wins whatever the order. Its headings and links need no rule: they have no colour of their own and take the
+ * text colour set here and the link roles above. */
+html[data-studio-theme="dark"] #pop-up-alternatives .container {
+	background: var(--md-surface-container-high);
+	color: var(--md-on-surface);
+}
+
+/* ===== Permissions ===== */
+html[data-studio-theme="dark"] .permissions-panel {
+	background-color: var(--md-surface-container-high);
+}
+
+html[data-studio-theme="dark"] .permissions-panel table {
+	background-color: var(--md-surface-container-low);
+}
+
+html[data-studio-theme="dark"] .permissions-panel th.permissions-name,
+html[data-studio-theme="dark"] .permissions-panel th.row3,
+html[data-studio-theme="dark"] .permissions-panel th.row4 {
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] .permissions-panel th.row3 {
+	background-color: var(--md-surface-container-high);
+}
+
+html[data-studio-theme="dark"] .permissions-panel th.row4 {
+	background-color: var(--md-surface-container-highest);
+}
+
+html[data-studio-theme="dark"] .permissions-panel td.permissions-yes label:hover {
+	background-color: var(--md-primary-container);
+}
+
+html[data-studio-theme="dark"] .permissions-panel td.permissions-no label:hover {
+	background-color: var(--md-tertiary-container);
+}
+
+html[data-studio-theme="dark"] .permissions-panel td.permissions-never label:hover {
+	background-color: var(--md-on-error);
+}
+
+/* The category tabs are flat chips in the roles in both schemes (content.css); only the colour swatch in them has a rule here */
+html[data-studio-theme="dark"] .permissions-category a span.colour {
+	border-color: var(--md-outline);
+}
+
+html[data-studio-theme="dark"] .permissions-category .activetab span.colour,
+html[data-studio-theme="dark"] .permissions-category .activetab a:hover span.colour {
+	border-color: var(--md-on-primary-container);
+}
+
+html[data-studio-theme="dark"] .permissions-category a:hover span.colour {
+	border-color: var(--md-primary);
+}
+
+/* The preset swatches: yes, custom, never, no */
+html[data-studio-theme="dark"] .permissions-preset-yes span.colour {
+	background-color: var(--md-primary);
+}
+
+html[data-studio-theme="dark"] .permissions-preset-custom span.colour {
+	background-color: var(--md-secondary-container);
+}
+
+html[data-studio-theme="dark"] .permissions-preset-never span.colour {
+	background-color: var(--md-error);
+}
+
+html[data-studio-theme="dark"] .permissions-preset-no span.colour {
+	background-color: var(--md-tertiary-container);
+}
+
+/* Roles menu (a dropdown over the permission panel) and the role tooltips */
+html[data-studio-theme="dark"] .dropdown .dropdown-contents {
+	background: var(--md-surface-container-high);
+	border-color: var(--md-outline-variant);
+	box-shadow: none;
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] .dropdown .pointer {
+	border-color: var(--md-outline-variant) transparent;
+}
+
+html[data-studio-theme="dark"] .dropdown .pointer-inner {
+	border-color: var(--md-surface-container-high) transparent;
+}
+
+html[data-studio-theme="dark"] .roles-options > span {
+	background: var(--md-surface-container-highest);
+	border-color: var(--md-outline);
+	color: var(--md-on-surface);
+	position: relative;
+}
+
+/* The arrow of that menu is a #333 GIF, invisible on a dark field: a CSS triangle in the text colour instead */
+html[data-studio-theme="dark"] .roles-options > span::after {
+	content: "";
+	position: absolute;
+	inset-inline-end: 6px;
+	inset-block-start: 0.85em;
+	border: 4px solid transparent;
+	border-block-start-color: currentColor;
+	border-block-end-width: 0;
+}
+
+html[data-studio-theme="dark"] .roles-highlight {
+	background-color: var(--md-primary-container);
+	color: var(--md-on-primary-container);
+}
+
+html[data-studio-theme="dark"] .tooltip {
+	border-color: var(--md-outline);
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] .tooltip span.top {
+	background: var(--md-surface-container-highest);
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] .tooltip span.bottom {
+	background: var(--md-surface-container-high);
+	color: var(--md-on-surface);
+}
+
+/* ===== Colours set inline by the stock templates =====
+ * acp_main.html paints the version link green (up to date) or red (outdated) with a style attribute, and two
+ * other pages write color: red. An inline style needs !important to be moved; the attribute is matched by its text. */
+html[data-studio-theme="dark"] a[style*="228822" i] {
+	color: var(--md-primary) !important;
+}
+
+html[data-studio-theme="dark"] a[style*="BC2A4D" i],
+html[data-studio-theme="dark"] .username-coloured[style*="BC2A4D" i],
+html[data-studio-theme="dark"] .username-coloured[style*="AA0000" i],
+html[data-studio-theme="dark"] [style*="color: red" i] {
+	color: var(--md-error) !important;
+}
+
+/* ===== Smaller stock parts ===== */
+/* Avatar gallery */
+html[data-studio-theme="dark"] #gallery li {
+	background: var(--md-surface-container-low);
+	border-color: var(--md-outline-variant);
+}
+
+html[data-studio-theme="dark"] #gallery li:hover {
+	background-color: var(--md-surface-container-high);
+}
+
+/* Progress bar (the bar text runs over the track and over the filler: both are dark here) */
+html[data-studio-theme="dark"] #progress-bar {
+	border-color: var(--md-outline);
+}
+
+html[data-studio-theme="dark"] #progress-bar #progress-bar-text {
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] #progress-bar #progress-bar-filler {
+	background-color: var(--md-primary-container);
+	color: var(--md-on-primary-container);
+}
+
+/* Send statistics */
+html[data-studio-theme="dark"] .send-stats-tile {
+	background-color: var(--md-surface-container);
+	box-shadow: none;
+}
+
+html[data-studio-theme="dark"] .send-stats-data-row {
+	background: var(--md-surface-container-low);
+	border-color: var(--md-outline-variant);
+}
+
+html[data-studio-theme="dark"] .send-stats-row > .send-stats-data-row:first-child {
+	background-color: var(--md-secondary-container);
+	color: var(--md-on-secondary-container);
+}
+
+html[data-studio-theme="dark"] .send-stats-settings input[type="checkbox"]:checked + label:before {
+	color: var(--md-primary);
+}
+
+/* Highlighted source code (BBCode previews): the stock colours are meant for white */
+html[data-studio-theme="dark"] .sourcenum {
+	color: var(--md-outline);
+}
+
+html[data-studio-theme="dark"] .syntaxbg,
+html[data-studio-theme="dark"] .syntaxhtml {
+	color: var(--md-on-surface);
+}
+
+html[data-studio-theme="dark"] .syntaxdefault {
+	color: var(--md-primary);
+}
+
+html[data-studio-theme="dark"] .syntaxkeyword {
+	color: var(--md-on-tertiary-container);
+}
+
+html[data-studio-theme="dark"] .syntaxstring {
+	color: var(--md-error);
+}
+
+html[data-studio-theme="dark"] .syntaxcomment {
+	color: var(--md-on-surface-variant);
+}

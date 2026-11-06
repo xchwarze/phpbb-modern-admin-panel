@@ -1,0 +1,73 @@
+{% from '@dsr_modernadminpanel/icons.html' import studio_svg %}
+
+{# The header, sticky: three columns (1fr auto 1fr) so that the search box is centred in the whole header. Start: the menu button
+   (small screens only, where the sidebar is a drawer, js/studio.js). Centre: the search box. End: the colour mode button,
+   notifications and account. The breadcrumbs and the pin-this-page star are in pagebar.html, at the top of the page.
+   Painted with the preset of the header_colour option. #}
+<header class="studio-header studio-bg-{{ T_STUDIO_HEADER_COLOUR }}" id="studio-header">
+	<div class="studio-header__start">
+		<button class="studio-header__menu studio-icon-button" type="button" aria-controls="studio-sidebar" aria-expanded="false" aria-label="{{ lang('STUDIO_DASHBOARD_MENU_OPEN') }}" title="{{ lang('STUDIO_DASHBOARD_MENU_OPEN') }}">
+			{{ studio_svg('menu') }}
+		</button>
+	</div>
+
+	{# Without JavaScript this searches the board settings; with it, typing opens the command palette #}
+	<form class="studio-search" method="post" action="{{ U_STUDIO_ADMIN_DASHBOARD }}" role="search">
+		{{ studio_svg('search') }}
+		<input id="search" name="search" type="text" maxlength="100" placeholder="{{ lang('STUDIO_DASHBOARD_SEARCH_ACP') ~ lang('ELLIPSIS') }}" aria-label="{{ lang('STUDIO_DASHBOARD_SEARCH_ACP') }}" aria-keyshortcuts="Control+K Meta+K /" autocomplete="off">
+		<kbd class="studio-search__kbd" aria-hidden="true">Ctrl K</kbd>
+	</form>
+
+	<div class="studio-nav">
+		{% if S_STUDIO_PREMIUM_ENABLED %}
+			<button class="studio-icon-button studio-premium-trigger" type="button" title="{{ lang('STUDIO_PREMIUM_TOOLTIP') }}" aria-label="{{ lang('STUDIO_PREMIUM_TOOLTIP') }}" aria-haspopup="dialog" aria-controls="studio-premium-dialog" hidden>
+				{{ studio_svg('workspace_premium') }}
+			</button>
+		{% endif %}
+		{# The colour mode: system, light or dark, per browser (js/studio.js). The icon shows the current one; the head script has
+		   put the choice on <html data-studio-choice> before the first paint #}
+		<button class="studio-icon-button studio-mode" type="button" aria-label="{{ lang('STUDIO_DASHBOARD_MODE', lang('STUDIO_DASHBOARD_MODE_SYSTEM')) }}" title="{{ lang('STUDIO_DASHBOARD_MODE', lang('STUDIO_DASHBOARD_MODE_SYSTEM')) }}" data-l-label="{{ lang('STUDIO_DASHBOARD_MODE') }}" data-l-system="{{ lang('STUDIO_DASHBOARD_MODE_SYSTEM') }}" data-l-light="{{ lang('STUDIO_DASHBOARD_MODE_LIGHT') }}" data-l-dark="{{ lang('STUDIO_DASHBOARD_MODE_DARK') }}">
+			{{ studio_svg('brightness_auto', 'studio-mode__icon studio-mode__system') }}
+			{{ studio_svg('light_mode', 'studio-mode__icon studio-mode__light') }}
+			{{ studio_svg('dark_mode', 'studio-mode__icon studio-mode__dark') }}
+		</button>
+
+		{% if S_NOTIFICATIONS_DISPLAY %}
+			<div class="studio-dropdown">
+				<button class="studio-icon-button notification-trigger" id="notification_list_button" type="button" aria-expanded="false" aria-controls="studio-notifications" title="{{ lang('NOTIFICATIONS') }}">
+					{{ studio_svg('notifications') }}
+					<span class="studio-sr">{{ lang('NOTIFICATIONS') }}</span>
+					<strong class="badge{{ not NOTIFICATIONS_COUNT ? ' hidden' }}">{{ NOTIFICATIONS_COUNT }}</strong>
+				</button>
+
+				<div class="studio-dropdown-contents" id="studio-notifications" hidden>
+					<div class="studio-panel studio-notifications">
+						{{ include('@dsr_modernadminpanel/notifications.html') }}
+					</div>
+				</div>
+			</div>
+		{% endif %}
+
+		<div class="studio-dropdown">
+			<button class="studio-icon-button" type="button" aria-expanded="false" aria-controls="studio-user-menu" title="{{ lang('STUDIO_DASHBOARD_ACCOUNT') }}">
+				{% if USER_AVATAR %}
+					{{ USER_AVATAR }}
+				{% else %}
+					{{ studio_svg('account_circle') }}
+				{% endif %}
+				<span class="studio-sr">{{ lang('STUDIO_DASHBOARD_ACCOUNT') }}</span>
+			</button>
+
+			<div class="studio-dropdown-contents" id="studio-user-menu" hidden>
+				<div class="studio-panel">
+					<ul>
+						<li class="studio-panel__user">{{ USERNAME_COLOUR }}</li>
+						<li><a href="{{ U_LOGOUT }}">{{ lang('LOGOUT') }}</a></li>
+						<li><a href="{{ U_ADM_LOGOUT }}">{{ lang('ADM_LOGOUT') }}</a></li>
+						<li><a href="{{ U_INDEX }}">{{ lang('FORUM_INDEX') }}</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>

@@ -1,0 +1,207 @@
+/**
+ *
+ * Modern Admin Panel. An extension for the phpBB Forum Software package.
+ *
+ * @copyright (c) 2026, DSR! https://github.com/xchwarze
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
+/** The extension's own pages: settings (Extensions » Modern Admin Panel) and search */
+/*
+ * Buttons of the settings page and of the notes form: filled (the main action) and tonal
+ * (the other one), 40px tall (48px on touch screens), a full pill. Over the stock button styles (content.css).
+ */
+.studio-btn,
+.studio-btn:hover {
+	display: inline-flex !important;
+	align-items: center;
+	justify-content: center;
+	block-size: var(--studio-target) !important;
+	min-inline-size: 64px;
+	margin: 0;
+	padding: 0 24px !important;
+	border: 0 !important;
+	border-radius: var(--md-shape-full) !important;
+	box-shadow: none;
+	background-image: none;
+	font: var(--md-label-large) !important;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.studio-btn--filled,
+.studio-btn--filled:hover {
+	background-color: var(--md-primary) !important;
+	color: var(--md-on-primary) !important;
+}
+
+.studio-btn--tonal,
+.studio-btn--tonal:hover {
+	background-color: var(--md-secondary-container) !important;
+	color: var(--md-on-secondary-container) !important;
+}
+
+.studio-btn:hover {
+	box-shadow: var(--md-elev-1);
+}
+
+.studio-btn--tonal:link,
+.studio-btn--tonal:visited {
+	color: var(--md-on-secondary-container) !important;
+}
+
+/*
+ * Settings page: the colour presets of the header and the sidebar, as round swatches. Each swatch is painted with the preset itself
+ * (the class studio-bg-<name>, colours.css). The radio is only hidden visually, so the keyboard reaches it and the swatch shows the focus.
+ */
+.studio-swatches {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	max-inline-size: 420px;
+}
+
+.studio-swatch {
+	position: relative;
+	display: inline-block;
+	cursor: pointer;
+}
+
+.studio-swatch > input {
+	position: absolute;
+	opacity: 0;
+	inline-size: 1px;
+	block-size: 1px;
+	margin: 0;
+}
+
+.studio-swatch > span {
+	display: block;
+	inline-size: 32px;
+	block-size: 32px;
+	border: 2px solid var(--md-surface);
+	border-radius: 50%;
+	box-shadow: 0 0 0 1px var(--md-outline);
+}
+
+.studio-swatch > input:checked + span {
+	box-shadow: 0 0 0 3px var(--md-on-surface);
+}
+
+.studio-swatch > input:focus-visible + span {
+	outline: 2px solid var(--md-primary);
+	outline-offset: 4px;
+}
+
+/*
+ * Settings page: Yes/No as a switch (52x32). The two radios of the pair stay under it, so the
+ * form posts the same values; the label of the radio that is not checked covers the switch, so a click on it
+ * flips the pair. Without JavaScript the arrow keys flip the pair, with it the space bar too (js/studio.js).
+ */
+.studio-switch {
+	position: relative;
+	display: inline-block;
+	vertical-align: middle;
+	inline-size: 52px;
+	block-size: 32px;
+}
+
+.studio-switch__track {
+	position: absolute;
+	inset: 0;
+	border: 2px solid var(--md-outline);
+	border-radius: var(--md-shape-full);
+	background: var(--md-surface-container-highest);
+	transition: background-color var(--md-dur-short) linear, border-color var(--md-dur-short) linear;
+}
+
+/* The thumb: 16px when off, 24px when on, in 8px of the track */
+.studio-switch__track::before {
+	content: "";
+	position: absolute;
+	inset-block-start: 50%;
+	inset-inline-start: 6px;
+	inline-size: 16px;
+	block-size: 16px;
+	border-radius: 50%;
+	background: var(--md-outline);
+	transform: translateY(-50%);
+	transition: background-color var(--md-dur-short) linear;
+}
+
+.studio-switch > input[value="1"]:checked ~ .studio-switch__track {
+	border-color: var(--md-primary);
+	background: var(--md-primary);
+}
+
+.studio-switch > input[value="1"]:checked ~ .studio-switch__track::before {
+	inset-inline-start: 22px;
+	inline-size: 24px;
+	block-size: 24px;
+	background: var(--md-on-primary);
+}
+
+.studio-switch > input:focus-visible ~ .studio-switch__track {
+	outline: 2px solid var(--md-primary);
+	outline-offset: 2px;
+}
+
+.studio-switch__label {
+	position: absolute;
+	inset: 0;
+	margin: 0;
+}
+
+.studio-switch > input[value="1"]:checked ~ .studio-switch__on,
+.studio-switch > input[value="0"]:checked ~ .studio-switch__off {
+	pointer-events: none;
+}
+
+/* Search page */
+.studio-search-results ul {
+	margin: 0;
+	list-style: none;
+}
+
+.studio-search-results ul ul {
+	margin-inline-start: 16px;
+}
+
+.studio-search-result {
+	margin-block-end: 8px;
+}
+
+.studio-search-result > a > strong {
+	display: block;
+}
+
+.studio-search-result > a > span {
+	display: block;
+	color: var(--md-on-surface-variant);
+	font: var(--md-body-medium);
+}
+
+.studio-search-result > a {
+	text-decoration: none;
+	color: var(--md-on-surface);
+}
+
+.studio-search-result > a:hover > strong {
+	text-decoration: underline;
+}
+
+/* A setting opened from the search results (acp_board) */
+.studio-search-highlight {
+	padding: 16px 8px;
+	border: 2px solid var(--md-primary);
+	border-radius: var(--md-shape-card);
+	background: var(--md-surface);
+}
+
+.studio-search-highlight dt {
+	padding-inline-end: 8px;
+}
+
+.studio-search-highlight dt > label {
+	font-size: 15px;
+}

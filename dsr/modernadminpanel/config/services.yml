@@ -1,0 +1,120 @@
+parameters:
+    dsr.modernadminpanel.params:
+        # The shape of the rows of the menu: full is the default (square rows, edge to edge), css/menu.css has a rule for squared (8px) and for rounded (stadium rows)
+        corners:
+            - 'full'
+            - 'squared'
+            - 'rounded'
+        # The presets of the header and the sidebar colour, in the order of the settings page: css/colours.css has a --bg-<name>
+        # and a studio-bg-<name> for each, and the sidebar colour a studio-hue-<name> (the accent of the content area)
+        colours:
+            - 'phpbb'
+            - 'blue-light'
+            - 'dark-blue'
+            - 'purple-indigo'
+            - 'purple-dark'
+            - 'purple-orange'
+            - 'pink-orange'
+            - 'orange-light'
+            - 'pink-light'
+            - 'green-cyan'
+            - 'red'
+            - 'purple'
+            - 'violet'
+            - 'indigo'
+            - 'cyan'
+            - 'teal'
+            - 'blue'
+            - 'orange'
+            - 'white'
+            - 'black'
+
+services:
+    dsr.modernadminpanel.controller:
+        class: dsr\modernadminpanel\controller\admin
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@template_context'
+            - '@dsr.modernadminpanel.jumps'
+            - '@language'
+            - '@path_helper'
+            - '@request'
+            - '@dsr.modernadminpanel.search_capture'
+            - '@template'
+            - '%dsr.modernadminpanel.params%'
+
+    dsr.modernadminpanel.listener:
+        class: dsr\modernadminpanel\event\listener
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@config_text'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@language'
+            - '@log'
+            - '@notification_manager'
+            - '@dsr.modernadminpanel.text_formatter.parser'
+            - '@dsr.modernadminpanel.text_formatter.renderer'
+            - '@request'
+            - '@dsr.modernadminpanel.search_capture'
+            - '@template'
+            - '@user'
+            - '@text_formatter.utils'
+            - '%core.table_prefix%'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%dsr.modernadminpanel.params%'
+            - '@dsr.modernadminpanel.premium'
+        tags: [{ name: event.listener }]
+
+    dsr.modernadminpanel.settings:
+        class: dsr\modernadminpanel\controller\settings
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.table_prefix%'
+            - '%core.adm_relative_path%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%dsr.modernadminpanel.params%'
+
+    dsr.modernadminpanel.premium:
+        class: dsr\modernadminpanel\controller\premium
+
+    dsr.modernadminpanel.jumps:
+        class: dsr\modernadminpanel\helper\jumps
+        arguments:
+            - '@dbal.conn'
+            - '@language'
+            - '@user'
+            - '%core.table_prefix%'
+            - '%core.root_path%'
+            - '%core.adm_relative_path%'
+            - '%core.php_ext%'
+
+    dsr.modernadminpanel.search_capture:
+        class: dsr\modernadminpanel\helper\search_capture
+
+    # The listener is built on every ACP page, but only the dashboard renders
+    # the admin notes and only saving them parses. Lazy proxies of the core
+    # services avoid loading the s9e parser and renderer everywhere else.
+    dsr.modernadminpanel.text_formatter.parser:
+        class: phpbb\textformatter\s9e\parser
+        lazy: true
+        factory: ['@service_container', 'get']
+        arguments: ['text_formatter.parser']
+
+    dsr.modernadminpanel.text_formatter.renderer:
+        class: phpbb\textformatter\s9e\renderer
+        lazy: true
+        factory: ['@service_container', 'get']
+        arguments: ['text_formatter.renderer']
