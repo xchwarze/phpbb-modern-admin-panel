@@ -2,7 +2,7 @@
 	"name": "dsr/modernadminpanel",
 	"type": "phpbb-extension",
 	"description": "Modern Admin Panel",
-	"homepage": "https://github.com/xchwarze",
+	"homepage": "https://github.com/xchwarze/phpbb-modern-admin-panel",
 	"version": "2.0.0",
 	"time": "2026-11-01",
 	"license": "GPL-2.0-only",
@@ -24,6 +24,12 @@
 	},
 	"extra": {
 		"display-name": "Modern Admin Panel",
+		"version-check": {
+			"host": "raw.githubusercontent.com",
+			"directory": "/xchwarze/phpbb-modern-admin-panel/master",
+			"filename": "/last_ext_version.json",
+			"ssl": true
+		},
 		"soft-require": {
 			"phpbb/phpbb": ">=3.3.0,<4.1@dev"
 		}

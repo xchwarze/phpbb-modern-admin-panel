@@ -1,0 +1,11 @@
+{
+  "stable": {
+    "2.0": {
+      "current": "2.0.0",
+      "announcement": "https://github.com/xchwarze/phpbb-modern-admin-panel/releases/tag/v2.0.0",
+      "download": "https://github.com/xchwarze/phpbb-modern-admin-panel/releases/download/v2.0.0/dsr_modernadminpanel_2.0.0.zip",
+      "eol": null,
+      "security": false
+    }
+  }
+}

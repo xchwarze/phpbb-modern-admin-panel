@@ -38,6 +38,12 @@ ACP modules. It creates no additional database table.
 
 ## Update
 
+phpBB's extension manager checks the public `last_ext_version.json` feed over
+HTTPS and offers the matching release download. This is update detection, not
+automatic code installation. No GitHub token is needed on the board. The feed
+must be publicly accessible; a private repository cannot serve this check to
+ordinary phpBB installations.
+
 1. Back up the board and read the release notes.
 2. Disable **Modern Admin Panel**. **Do not select Delete data when updating.**
 3. Replace the files in `ext/dsr/modernadminpanel/` with the new release.
