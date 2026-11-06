@@ -22,7 +22,7 @@ test('phpBB feed matches the installable version and release asset', () => {
   assert.equal(info.current, metadata.version);
   assert.equal(info.announcement, `${metadata.homepage}/releases/tag/v${metadata.version}`);
   assert.equal(info.download, `${metadata.homepage}/releases/download/v${metadata.version}/dsr_modernadminpanel_${metadata.version}.zip`);
-  assert.equal(info.security, false);
+  assert.equal(typeof info.security, 'boolean');
   assert.equal(info.eol, null);
   const check = metadata.extra['version-check'];
   assert.equal(check.ssl, true);

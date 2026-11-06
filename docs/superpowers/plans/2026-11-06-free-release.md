@@ -43,13 +43,17 @@ Composer strict validation uses `--no-check-version`: phpBB requires the version
 field, unlike ordinary Packagist packages. CI's other PHP versions remain unverified locally.
 
 ### 3. Release packaging
-- [ ] Add a test asserting ZIP file list and runtime bytes match tracked files.
-- [ ] Confirm the archive test rejects the current unfiltered repository archive.
-- [ ] Add export exclusions and local artifact ignores.
-- [ ] Add a release command rejecting dirty trees and mismatched version tags.
-- [ ] Add tag CI that reruns checks, validates the ZIP, and uploads a release asset.
-- [ ] Document release commands; run all checks and package validation.
-- [ ] Commit packaging, workflow, tests, and release instructions together.
+- [x] Add a test asserting ZIP file list and runtime bytes match tracked files.
+- [x] Confirm the archive test rejects the current unfiltered repository archive.
+- [x] Add export exclusions and local artifact ignores.
+- [x] Add a release command rejecting dirty trees and mismatched version tags.
+- [x] Add tag CI that reruns checks, validates the ZIP, and uploads a release asset.
+- [x] Document release commands; run all checks and package validation.
+- [x] Commit packaging, workflow, tests, and release instructions together.
+
+The initial unfiltered ZIP failed the archive test as expected. The package
+fixture now verifies successful packaging, altered bytes, missing licence,
+tracked/untracked changes, and incorrect or stale version tags.
 
 ### 4. Final verification
 - [ ] Review the complete diff and run all checks against committed files.

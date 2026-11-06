@@ -1,0 +1,7 @@
+* text=auto eol=lf
+
+# GitHub source archives and release ZIPs contain only the installable extension.
+/* export-ignore
+/dsr -export-ignore
+/dsr/* export-ignore
+/dsr/modernadminpanel -export-ignore
