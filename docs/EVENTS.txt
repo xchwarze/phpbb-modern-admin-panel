@@ -1,0 +1,304 @@
+Modern Admin Panel 2.0.0: events and endpoint
+
+For phpBB 3.3.x. This file lists the event the extension dispatches, the core events and template
+events it uses, the HTTP endpoint behind the palette's searches (settings, forums, groups, users) and the
+actions the palette lists. The listener is event/listener.php, the endpoint is controller/admin.php, the
+lookups of users, forums and groups are in helper/jumps.php and what each administrator may use is decided in
+helper/palette.php.
+
+Paths in this document are relative to dsr/modernadminpanel/ in the repository,
+or ext/dsr/modernadminpanel/ on an installed board.
+
+
+1. PHP event dispatched by this extension
+=========================================
+
+dsr.modernadminpanel.menu_icons
+-----------------------------
+Since:      2.0.0
+Dispatched: listener::get_menu_icons(), called by listener::assign_shell_vars() on every ACP page.
+Purpose:    Add or change the icons of the sidebar and of the command palette.
+
+Variables
+  icons (array)   Module langname => icon name.
+
+  The key is the langname of a module as stored in the modules table (module_langname), for
+  a tab (for example ACP_CAT_GENERAL), a group or a module. It does not depend on the language
+  of the board. The value is the name of an icon of the sprite adm/style/images/icons.svg: the
+  part after "studio-i-" of a <symbol id="studio-i-NAME"> (Material Symbols, for example
+  "rocket_launch", "forum", "tune", "star").
+
+Name rules
+  After the event the extension keeps an entry only when
+  - the key and the value are both strings,
+  - the value matches /^[a-z0-9_-]+\z/ (lower case letters, digits, "_" and "-", nothing
+    else, not even a trailing new line), and
+  - the sprite has a symbol with that name.
+  Every other entry is dropped without a message and its module gets a letter badge, the first
+  letter of its title. The names are printed into attributes, which is why they are checked.
+  "rocket_launch" and "star-fill" are kept. "Rocket", "fa-rocket" (a Font Awesome name),
+  "not_in_the_sprite" and "x\" onmouseover=\"y" are dropped.
+
+Which icon a section gets (the sections are the l_block2 rows of the menu)
+  The first of these that has one, for each section, by its langname:
+  1. the extension's own map (core's sections, and the extensions it knows: ACP_CAT_GENERAL,
+     ACP_BOARD_CONFIGURATION, ACP_SEO_METADATA ...);
+  2. this event: whatever a listener adds to "icons", which also changes or replaces an entry of
+     the map (the event runs after the map is built);
+  3. a guess from words, only for a section that has no icon after 1 and 2 (its icon was not
+     given, or the one given was dropped by the name rules above). It reads the translated
+     title of the section, its langname, and the vendor and name of its extension (read from the
+     module_basename of its modules: "\dsr\discord_link\acp\acp_module" gives
+     "dsr discord link"), in that order, against the ordered keyword table
+     listener::ICON_WORDS (Spanish and English words, whole words or word beginnings, case and
+     accents ignored; the first row that matches wins: "Spam Guard" is shield, "Discord Link" is
+     forum, "OAuth" is login, "Ultimate Blog" is article);
+  4. the generic extension icon, which menu.html draws for a section that still has none.
+  Whatever the source, an icon that is not a symbol of the sprite is never used. A listener that
+  wants a particular icon for its section does not need to do anything about the guess: giving
+  the icon in this event is enough, it is used as it is.
+
+Where the icons show
+  The sidebar draws the icon of a tab (on the rail) and the icon of every section (in its row,
+  and in the row of a section that has a single module: that row is the section's, named and
+  drawn as the section, and it links to the module). Modules have no icon in the menu. The
+  palette draws, on every module row, the most specific icon it finds: the module's own, then
+  its group's, then its tab's, else the letter badge of the tab. The sprite cannot be extended
+  from outside: pick one of its icons, or let the module have the badge.
+
+Example (an event listener of another extension)
+
+  // config/services.yml
+  vendor.ext.listener:
+      class: vendor\ext\event\listener
+      tags: [{ name: event.listener }]
+
+  // event/listener.php
+  public static function getSubscribedEvents()
+  {
+      return ['dsr.modernadminpanel.menu_icons' => 'add_menu_icons'];
+  }
+
+  public function add_menu_icons(\phpbb\event\data $event)
+  {
+      $icons = $event['icons'];
+      $icons['ACP_FOO_TITLE'] = 'rocket_launch';
+      $event['icons'] = $icons;
+  }
+
+
+2. Core PHP events the extension listens to
+===========================================
+
+core.adm_page_header_after   ->   listener::assign_shell_vars()
+  Runs on every ACP page.
+  - Adds the header "X-Frame-Options: SAMEORIGIN" to http_headers, unless one of that name is
+    already set.
+  - Assigns the template variables of the shell: the 5 latest unread notifications (when
+    load_notifications and allow_board_notifications are on), the avatar and name of the
+    administrator, the colours and the menu entry shape (T_STUDIO_HEADER_COLOUR, T_STUDIO_SIDEBAR_COLOUR,
+    T_STUDIO_SIDEBAR_CORNER: known values, printed as class names), the palette's endpoint
+    (U_STUDIO_PALETTE_SEARCH, see section 4) and S_STUDIO_PALETTE_USERS, the palette's actions (the
+    studio_actions block, see section 5), the dashboard switches, the menu icons (after the event
+    of section 1), the user id, the site name and the URL of the ACP search page.
+  - On the ACP index, removes the core admin log block and the inactive users block when the
+    options "Show the admin log" or "Show inactive users" are off.
+
+core.acp_main_notice   ->   listener::handle_dashboard()
+  Runs on the ACP index only. Saves the admin notes (needs a_board and a valid form key; adds
+  an admin log entry; redirects), prepares the notes for display or for editing, the quick
+  access link (needs a_modules) and the counts of "Needs attention", and assigns the dashboard
+  template variables.
+
+core.acp_board_config_edit_add   ->   listener::capture_search_settings()
+  Used by the ACP search. While controller\admin reads the settings of the board configuration
+  pages it stores the display_vars of each page (in helper/search_capture) and throws
+  admin_dashboard_exception, so that acp_board stops before it saves or renders anything. At any
+  other time it does nothing.
+
+core.build_config_template   ->   listener::restyle_yes_no_settings()
+  Replaces the template of the "radio" settings (the Yes/No pairs) with labels that can be
+  styled. Other setting types are left alone.
+
+core.modify_module_row   ->   listener::collect_module_row()
+  Core runs it for every module of the menu it builds, a category before its modules (includes/
+  functions_module.php, list_modules()). In the ACP only (ADMIN_START is defined: the UCP and
+  the MCP build the same kind of tree and are left alone) the listener keeps, for each section
+  (depth 1, a category), its langname and translated title, and the module_basename of the
+  modules in it (depth 2). That is all the guess of the icon of a section reads (section 1, "Which
+  icon a section gets"). It changes nothing in the row.
+
+
+3. ACP template events the extension uses
+=========================================
+
+The templates are in adm/style/event/.
+
+acp_overall_header_head_append   (acp_overall_header_head_append.html)
+  A small inline script in <head>, before the stylesheets. Before the first paint it sets on
+  <html>:
+  - data-studio-sidebar="expanded|collapsed", from localStorage "dsr.ad.sidebar" or,
+    with no stored choice, from the width of the window (1280px or more: expanded);
+  - data-studio-choice="system|light|dark", from localStorage "dsr.ad.theme" (no value
+    is system), and data-studio-theme="light|dark", the scheme in use (in system mode the one of
+    prefers-color-scheme);
+  - the classes "studio-js" and "studio-hue-<colour>" (the sidebar colour of the board: the accent of
+    the content area is derived from it, see css/colours.css).
+  It also moves the two keys that the extension stored under its old name (the sidebar and the theme key,
+  see the README) to dsr.ad.sidebar and dsr.ad.theme, once: the old key is copied when the new one is not
+  set, then deleted. js/studio.js moves the other old keys (the recent and pinned modules).
+  A Content-Security-Policy needs a hash of this script, one per sidebar colour.
+
+acp_overall_header_body_before   (acp_overall_header_body_before.html)
+  Includes the stylesheets, one INCLUDECSS per file (dark.css last), and js/studio.js, then the
+  icon sprite (images/icons.svg, inline, once per page) and the templates menu.html (sidebar),
+  header.html, pagebar.html and palette.html.
+
+acp_main_notice_after   (acp_main_notice_after.html)
+  Includes dashboard.html: "Needs attention", the statistics, the admin notes and the quick
+  access list. dashboard.css is included by that template.
+
+acp_simple_header_head_append   (acp_simple_header_head_append.html)
+  The popup windows of the ACP (whois, permission trace, progress bar, ...) use core's
+  simple_header.html, which has no sidebar and no header. This template gives them the colour mode:
+  an inline script that sets data-studio-choice and data-studio-theme on <html> the way the script
+  of acp_overall_header_head_append does (same localStorage key "dsr.ad.theme", with the same move of
+  the old key, system mode follows prefers-color-scheme), the class "studio-hue-<colour>", and the
+  stylesheets tokens.css, colours.css and dark.css. Nothing of the shell is added: no sprite, no script.
+  The sidebar colour is only known on the pages that run adm_page_header(); a popup without it uses the
+  default accent (purple-indigo).
+
+acp_overall_footer_after   (acp_overall_footer_after.html)
+  An inline script that checks, once the page has loaded, that js/studio.js started (it sets
+  window.dsrAdmin when it has). If it did not (blocked, a script error, a stale cache), it
+  takes the class "studio-js" off <html>, so the rules for a page without JavaScript apply instead
+  of a layout that needs the script: a plain menu above the page, the header search as a form.
+  The event comes before the scripts of the page in core's footer, which is why the check waits
+  for the load event.
+
+
+4. Palette endpoint: settings, forums, groups and users
+=======================================================
+
+Since:    2.0.0
+Handled:  controller\admin::handle() (the studio_palette branch), through the ACP module
+          -dsr-modernadminpanel-acp-main_module, mode general.
+Purpose:  Answer what the command palette types: the board settings, forums and groups that
+          match a text, and the users whose name starts with it after an "@".
+
+Request (GET only, read-only)
+  index.php?i=-dsr-modernadminpanel-acp-main_module&mode=general&studio_palette=1
+           &hash=<link hash>&q=<text>&sid=<session id>
+
+  - hash:  generate_link_hash('studio_palette'), checked with check_link_hash().
+  - The URL without q is built by listener::assign_shell_vars() and given to the page as
+    U_STUDIO_PALETTE_SEARCH. It is empty when no search is on for the administrator (see "What is on"
+    below), and palette.html then leaves out data-endpoint, so the palette sends no request.
+    S_STUDIO_PALETTE_USERS (data-users) is set when the administrator may look up users.
+    S_STUDIO_PALETTE_PINS is the option "Show the pinned modules in the search (Ctrl+K)" (palette_pins):
+    when it is off palette.html writes data-no-pins and js/studio.js leaves the group of pinned modules
+    out of the list shown before anything is typed (the pins stay in the sidebar; the recent modules
+    are not affected).
+  - js/studio.js adds "&q=" and the text, URL-encoded, and the header "Accept: application/json".
+    It does so after 250ms without typing, from 3 characters on, or, for a text that starts with "@"
+    (and only with data-users), from "@" and 2 characters. It drops a request in flight when the text
+    changes or the palette closes.
+
+What is on (palette::features(), the same function the listener uses for the URL)
+  settings   option "Show settings in the search (Ctrl+K)" (palette_settings) and a_board or a_server
+  users      option "Show users, forums, groups and actions in the search (Ctrl+K)" (palette_jumps) and a_user
+  forums     palette_jumps and a_forum
+  groups     palette_jumps and a_group
+  A kind that is not on is not looked up, whatever is typed, and its key is not in the answer.
+
+Checks, in this order
+  1. Method: anything but GET is answered 405.
+  2. The link hash is valid and at least one kind is on for the administrator: else 403.
+  3. The text: trimmed. A text longer than 100 characters gives an empty answer (nothing is searched).
+     - Starting with "@": users only. The name after the "@" (leading white space removed) must have 2
+       characters or more once cleaned the way core cleans user names (utf8_clean_string), else
+       nothing is searched. Settings, forums and groups are not searched for such a text, with or
+       without a_user.
+     - Any other text: shorter than 3 characters, or without a word of 3 characters or more, gives an
+       empty answer. Words are split on white space and compared in lower case (duplicates removed).
+       The settings use all the words (any word matches, more words first). Forums and groups need
+       every word (the first 5) in the name.
+
+Answers: always JSON, with "Content-Type: application/json; charset=UTF-8", "Cache-Control:
+no-store" and "X-Content-Type-Options: nosniff".
+
+  405   {"error":"method_not_allowed"}      with "Allow: GET"
+  403   {"error":"forbidden"}
+  500   {"error":"server_error"}            the answer could not be encoded as JSON
+  200   {"results":[...],"truncated":false}
+        plus "users", "forums" and "groups" (each a list) for the kinds that were looked up
+
+  - results: the settings, at most 20 ({"title","explain","group","url"}; truncated is true when
+    there were more). A title that matches comes before a setting that only its explanation matches,
+    then more matching words first, then the order of the pages. results is always a list, empty when the
+    settings were not searched.
+  - users, forums, groups: at most 10 each, each {"title","url"}, nothing else.
+    - users: username_clean LIKE 'prefix%' (a prefix: the index of the users table is used), ordered
+      by username_clean. Bots and the guest user are left out; founders are left out when the
+      administrator is not a founder (core refuses to open them). url: i=acp_users&mode=overview&u=<id>.
+    - forums: the lower-cased name contains every word. url: the edit link of core's forum list,
+      i=acp_forums&mode=manage&parent_id=<parent>&f=<id>&action=edit.
+    - groups: the name the board shows contains every word (the special groups are stored under a
+      language key and matched on their translation). Groups that only founders manage
+      (group_founder_manage) are left out for other administrators. url:
+      i=acp_groups&mode=manage&action=edit&g=<id>.
+  - title, explain and group are plain text: scripts, styles and tags stripped, entities
+    decoded, control characters removed, white space collapsed; the names (users, forums, groups) and
+    the titles are cut at 120 characters and explain at 200, with an ellipsis.
+  - url is built on the server with append_sid() and a plain "&". For a setting it opens the page
+    (acp_board, one mode) with the setting highlighted (studio_search=<setting> and the #anchor).
+  - Pages searched for the settings: a_board gives the board settings, features, avatar, message,
+    post, signature, feed and registration pages; a_server gives authentication, email, cookie, load,
+    server and security. Settings that the page does not draw are not listed.
+  - Only the names, titles and explanations are used: never the values of a setting, and of a user
+    never anything but the name and the id (no e-mail address, IP address, password or any other
+    column is read). Nothing is written (no database change, no log entry, no setting).
+  - The JSON is encoded with JSON_HEX_TAG and anything else the request printed is discarded.
+
+How the palette treats the answer
+  - Rows are built with textContent. A row whose url is not a page of the board (another origin)
+    is dropped, and so is a row without a title or url. Sections come in this order: Settings, Forums,
+    Groups, Users (a section with no row is not drawn).
+  - An expired ACP session: phpBB answers with its HTML login page instead of JSON. The palette
+    cannot parse it and shows its error line ("The search failed." in English), the same as for any
+    status other than 200 or an answer without a "results" array. The module list stays as it was.
+    See remoteSearch in adm/style/js/studio.js.
+  - An answer that arrives after the text has changed, or after the palette was closed, is ignored.
+  - Choosing a row only follows its link. The palette sends no other request.
+
+
+5. Palette actions
+==================
+
+Since:    2.0.0
+Purpose:  List, in the command palette, the ACP actions the administrator may use.
+
+The actions are plain links to ACP pages, built on the server by listener::assign_palette() from
+palette::actions() into the block studio_actions and printed by palette.html as a hidden list
+(ul.studio-palette__actions). js/studio.js reads that list and filters it as it filters the modules
+(every typed word in the title); a link to another origin is dropped. They are listed only with
+the option "Show users, forums, groups and actions in the search (Ctrl+K)" on, never when the text starts with "@", and only
+to an administrator who has the permission core asks for.
+
+  Action                              Link                                               Needs
+  Purge the cache                     i=acp_main&mode=main&action=purge_cache            a_board
+  Reset the board's start date        i=acp_main&mode=main&action=date                   a_board
+  Resynchronise statistics            i=acp_main&mode=main&action=stats                  a_board
+  Reset most users ever online        i=acp_main&mode=main&action=online                 a_board
+  Resynchronise post counts           i=acp_main&mode=main&action=user                   a_board
+  Resynchronise dotted topics         i=acp_main&mode=main&action=db_track               a_board
+  Purge all sessions                  i=acp_main&mode=main&action=purge_sessions         a_board and a founder
+  View the admin log                  i=acp_logs&mode=admin                              a_viewlogs
+  Disable the board                   i=acp_board&mode=settings&studio_search=board_disable#board_disable   a_board
+
+The maintenance actions are the ones of the Overview page (includes/acp/acp_main.php of phpBB 3.3.19):
+the same action names, and the same rule for who sees them (the block needs a_board, "purge sessions"
+a founder). Core answers such a link with its confirmation box and changes nothing until it is
+confirmed, with its own confirm key, so the extension adds no request of its own that changes state
+and the palette cannot trigger one by itself. "Disable the board" is not an action: it opens the board
+settings at the setting, which is highlighted, and nothing changes until the administrator saves.
