@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
-import { cpSync, mkdtempSync, mkdirSync, rmSync, writeFileSync, existsSync } from 'node:fs';
+import { cpSync, mkdtempSync, mkdirSync, rmSync, writeFileSync, existsSync, readFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { test } from 'node:test';
@@ -17,6 +17,10 @@ test('release command packages a clean tag and rejects dirty trees or wrong tags
     git('config', 'user.email', 'package-test@example.invalid');
     git('config', 'commit.gpgsign', 'false');
     cpSync(path.join(root, 'dsr'), path.join(fixture, 'dsr'), { recursive: true });
+    const composerFile = path.join(fixture, 'dsr/modernadminpanel/composer.json');
+    const metadata = JSON.parse(readFileSync(composerFile));
+    metadata.version = '9.8.7'; // Exercise a future release independently of the repository version.
+    writeFileSync(composerFile, JSON.stringify(metadata));
     for (const file of ['.gitattributes', '.gitignore', 'tests/archive.php']) {
       mkdirSync(path.dirname(path.join(fixture, file)), { recursive: true });
       if (existsSync(path.join(root, file))) cpSync(path.join(root, file), path.join(fixture, file));
@@ -24,11 +28,12 @@ test('release command packages a clean tag and rejects dirty trees or wrong tags
     writeFileSync(path.join(fixture, 'README.md'), 'Not part of the installable ZIP.\n');
     git('add', '.');
     git('commit', '--quiet', '-m', 'Fixture');
-    git('tag', 'v2.0.0');
-    let result = run('--tag', 'v2.0.0');
+    const tag = `v${metadata.version}`;
+    git('tag', tag);
+    let result = run('--tag', tag);
     assert.equal(result.status, 0, result.stdout + result.stderr);
-    assert.ok(existsSync(path.join(fixture, 'dist/dsr_modernadminpanel_2.0.0.zip')));
-    const archive = path.join(fixture, 'dist/dsr_modernadminpanel_2.0.0.zip');
+    const archive = path.join(fixture, `dist/dsr_modernadminpanel_${metadata.version}.zip`);
+    assert.ok(existsSync(archive));
     execFileSync('php', ['-r', '$zip = new ZipArchive(); $zip->open($argv[1]); $zip->addFromString("dsr/modernadminpanel/ext.php", "corrupt"); $zip->close();', archive]);
     let check = spawnSync('php', ['tests/archive.php', archive], { cwd: fixture, encoding: 'utf8' });
     assert.notEqual(check.status, 0);
@@ -53,7 +58,7 @@ test('release command packages a clean tag and rejects dirty trees or wrong tags
     assert.match(result.stderr, /Working tree must be clean/);
     git('add', '.');
     git('commit', '--quiet', '-m', 'Advance fixture');
-    result = run('--tag', 'v2.0.0');
+    result = run('--tag', tag);
     assert.notEqual(result.status, 0);
     assert.match(result.stderr, /Tag must point to HEAD/);
   } finally {

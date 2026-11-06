@@ -56,5 +56,12 @@ fixture now verifies successful packaging, altered bytes, missing licence,
 tracked/untracked changes, and incorrect or stale version tags.
 
 ### 4. Final verification
-- [ ] Review the complete diff and run all checks against committed files.
-- [ ] Report commit IDs and any remaining publication steps.
+- [x] Review the complete diff and run all checks against committed files.
+- [x] Report commit IDs and any remaining publication steps.
+
+Final review found a hard-coded test-fixture version that would block future
+releases. A `9.8.7` fixture reproduced the failure, then passed after deriving
+its tag and ZIP filename from its metadata. No runtime behavior changed.
+The actual 2.0.0 ZIP contains 50 files matching the committed runtime byte for
+byte. Live public feed, remote CI, and phpBB/browser installation checks remain
+publication prerequisites; no push, tag, or release was performed here.
