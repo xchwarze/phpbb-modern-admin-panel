@@ -1,5 +1,6 @@
 /dist/
 /.superpowers/
+/.playwright-mcp/
 /.idea/
 /.vscode/
 .DS_Store
