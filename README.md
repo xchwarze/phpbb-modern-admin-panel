@@ -49,8 +49,6 @@ The extension directory is the canonical runtime. This repository does not conta
 
 ## Support
 
-Maintainers: see [checks and release packaging](docs/RELEASING.md).
-
 Report reproducible bugs and feature requests in [GitHub Issues](https://github.com/xchwarze/phpbb-modern-admin-panel/issues). Include the phpBB version, PHP version, browser, installed ACP-related extensions, and steps to reproduce. Do not include passwords, API keys, session URLs, or private board data.
 
 ## Credits and licence
