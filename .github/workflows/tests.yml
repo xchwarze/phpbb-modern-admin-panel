@@ -6,7 +6,6 @@ on:
       - '**'
   pull_request:
   workflow_dispatch:
-  workflow_call:
 
 permissions:
   contents: read
@@ -25,10 +24,16 @@ jobs:
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: ${{ matrix.php }}
-          extensions: zip
           coverage: none
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '24'
-      - run: node tools/check.mjs
+      - name: PHP syntax
+        run: find dsr/modernadminpanel tests -name '*.php' -print0 | xargs -0 -n 1 php -l
+      - name: Bundled JavaScript syntax
+        run: node --check dsr/modernadminpanel/adm/style/js/studio.js
+      - name: Helper and translation checks
+        run: php tests/helpers.php
+      - name: Metadata, assets, and documentation checks
+        run: node --test tests/repository.test.mjs
       - run: composer validate --strict --no-check-version --no-check-publish --no-check-lock dsr/modernadminpanel/composer.json
