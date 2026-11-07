@@ -2,6 +2,10 @@
 
 **A free, full-width Administration Control Panel for phpBB 3.3.** Modern Admin Panel provides a responsive navigation system, command palette, configurable colour themes, and a configurable dashboard. Everything in this repository belongs to the install-ready free edition. No asset build or Node.js installation is required on your forum.
 
+![Modern Admin Panel dashboard with statistics cards and an expanded sidebar](docs/assets/dashboard-light.png)
+
+*A real phpBB installation, with private server details hidden. Explore [compact navigation](docs/FEATURES.md#sidebar), the [command palette](docs/FEATURES.md#command-palette), and [dark mode](docs/FEATURES.md#colour-mode).*
+
 ## Highlights
 
 - **A more navigable ACP:** hierarchical sidebar with Home, expandable tabs and sections, a pinned 264px menu or 64px icon rail, rail flyouts, and a touch-friendly drawer on screens up to 800px. The current page and its path stay visible, including a dot when a containing tab or section is closed.

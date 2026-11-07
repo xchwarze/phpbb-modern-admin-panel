@@ -19,6 +19,10 @@ What version 2.0.0 does, as it works now. Where a setting is meant, it is one of
 ## Sidebar
 The ACP menu is a sidebar of one list, painted with the sidebar colour: **Home**, then one collapsible row per tab of the ACP (General, Forums, and so on), each with its sections and their modules. Only the modules the administrator may open are in it. It is 264px wide. Nothing is painted when a level opens (no block, no container): the indentation shows the hierarchy.
 
+![Compact icon rail with the General flyout and its Quick access section open](assets/compact-menu-flyout.png)
+
+*Unpin the sidebar to keep a 64px icon rail. Open a category to reach its sections and modules without expanding the whole sidebar.*
+
 - **Home.** A row like the tabs: the home icon, a bold label and a chevron. The label goes to the ACP front page; the chevron opens the **pinned modules**, the shortcuts the administrator chose, which are the children of Home: plain rows, one per module. Home opens by itself only on the front page, where it is the current entry: on any other page only the path of the current page is open on load, pins or not (pinning a page does not open it either). With nothing pinned its panel only holds a hint about the star. The front page module of core is not listed a second time in the General tab: Home is it, and the command palette finds it as "Home".
 - **Pinning a module.** On a module page the page bar has a star (see [Page bar](#page-bar)). One click pins the module under Home and the list updates at once, another unpins it. Up to 12 modules can be pinned. An extension with one visible menu item uses the extension name; with several items it uses “Extension › Item”. The same labels identify extension modules in the command palette. Core module titles stay unchanged. Pins are kept in the browser (see the [privacy notes](README.md#privacy-and-security)).
 - **Three levels.** **A tab** is a row of 40px with its icon (20px), a bold label and a chevron that turns when it opens; one tab is open at a time, and the one that holds the current page is open when the page loads. **A section** is an accordion row indented under its tab: the same icon, its name as a small uppercase label (up to two lines in its row, so that names that start alike can be told apart) and a smaller chevron; it opens and closes its modules, one section is open at a time in each tab, and the section that holds the current page is open when the page loads. A section with a single module is a row of the section, not of its module: the icon and the **name of the section**, no chevron. The title of a module of an extension is usually as generic as "Settings", so several rows would read the same; the name of the section is, for an extension, usually the extension's own name. The row links to the module, and its tooltip reads "Section › Module" (for example "Spam Guard › Settings"). This is so for every section with one module, those of core included. Favourites and the command palette use the extension-aware labels described above; breadcrumbs retain phpBB's module hierarchy. **A module** is plain text, with no icon, on one line, indented under the name of its section, along a thin guide line. A name that appears three times (the section "Board configuration", the module "Board configuration" under it, and its copy in Quick access) is a row with a chevron, a row and a row, and can be told apart. A module that core lists under more than one category opens with the category it was chosen in (the sidebar writes the right `icat` in the link), so the right category and breadcrumbs light up. The palette and the pins use the same links.
@@ -31,6 +35,13 @@ The ACP menu is a sidebar of one list, painted with the sidebar colour: **Home**
 - **Motion.** Only the chevrons turn (120ms). With reduced motion nothing moves.
 - **Drawer.** On screens up to 800px wide the sidebar is a drawer, hidden until the menu button of the header opens it. It closes with its close button, the backdrop, Esc, Ctrl/Cmd+B or by choosing a module. While it is open the page behind it cannot be reached with the keyboard, the mouse or a screen reader, and focus goes to the current module. The drawer is the pinned menu: the same Home, tabs, sections and modules.
 - The board name is the title of the sidebar and links to the ACP front page.
+
+<details>
+<summary>See the mobile navigation drawer</summary>
+
+![Mobile navigation drawer with extension icons and the current module highlighted](assets/mobile-navigation.png)
+
+</details>
 
 ## Header and search box
 The header is 56px high and always sticks to the top. It gets a stronger shadow once the page is scrolled. It is painted with the **header colour** (see [Colours](#colours)); the search box stays white on every colour. From the start to the end it holds:
@@ -47,6 +58,8 @@ A slim row at the top of the page content, under the header. It has the **breadc
 
 ## Command palette
 Open it with Ctrl/Cmd+K, with `/` when you are not typing in a field, or by clicking or typing in the search box of the header. It is a dialog with one text field.
+
+![Command palette finding the Avatar settings module and matching individual settings](assets/command-palette.png)
 
 - **Nothing typed:** the pinned modules, then the recent ones (the last 8 visited, not counting the current page). With the search setting "Show the pinned modules" off, the pinned modules are not listed here (the pins go on working in the sidebar menu, under Home, the recent ones stay, and typing still finds a pinned module like any other).
 - **Modules:** typing filters the modules of the sidebar as you type. Case and accents are ignored. Every word must be in the title or in the path (tab › group). Modules whose title starts with the first word come first, then those whose title contains all words, then the rest, each in menu order. Up to 50 are listed. Each row shows the icon, the title and the path.
@@ -65,6 +78,8 @@ Open it with Ctrl/Cmd+K, with `/` when you are not typing in a field, or by clic
 The header button cycles through **System**, **Light** and **Dark**, and its label and tooltip name the mode in use. In System mode the ACP follows the colour scheme of the operating system, live. The choice is kept in the browser, applied before the first paint, and followed by other tabs. It works together with the colours. In light mode the header and the sidebar have the colours that were chosen. In dark mode they take neutral dark surfaces, whatever colours were chosen: the sidebar a little darker than the content area, the header a little lighter. The chosen colours then give only the accent (the current module, the icons of its path, the dot, links and focus rings).
 
 Dark mode covers the stock ACP content (tables, forms, buttons, message boxes, pagination, permission pages, popups). The surfaces and text come from a neutral dark scheme, and the accent from the sidebar colour (a lighter variant of it for the dark surfaces).
+
+![Modern Admin Panel settings in dark mode with neutral surfaces and a purple accent](assets/dark-mode.png)
 
 ## Colours
 Two board settings, each offering 20 presets shown as round swatches on the settings page:

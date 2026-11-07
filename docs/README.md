@@ -36,6 +36,14 @@ compilation step, or separate authoring project to install. Enabling the
 extension adds `admin_dashboard_*` settings, a welcome admin note, and its two
 ACP modules. It creates no additional database table.
 
+### Configure the appearance
+
+Choose header and sidebar colours from the presets, then select the menu shape
+and dashboard options under **Extensions → Modern Admin Panel → Settings**.
+Colour mode and personal favourites stay in each administrator's browser.
+
+![Modern Admin Panel settings with colour presets and sidebar options](assets/appearance-settings.png)
+
 ## Update
 
 phpBB's extension manager checks the public `last_ext_version.json` feed over
