@@ -55,7 +55,7 @@ jobs:
           path: epv
           persist-credentials: false
       - name: Install EPV dependencies
-        run: php composer.phar install --no-interaction --prefer-dist --no-progress
+        run: composer install --no-interaction --prefer-dist --no-progress
         working-directory: epv
       - name: Validate extension with EPV
         run: php src/EPV.php run --dir="$GITHUB_WORKSPACE/dsr/modernadminpanel"

@@ -34,6 +34,8 @@ test('CI runs EPV against the installable extension', () => {
   const workflow = read('.github/workflows/tests.yml');
   assert.match(workflow, /epv:\n\s+runs-on: ubuntu-latest/);
   assert.match(workflow, /php-version: '8\.3'/);
+  assert.match(workflow, /run: composer install --no-interaction --prefer-dist --no-progress/);
+  assert.doesNotMatch(workflow, /run: php composer\.phar install/);
   assert.match(workflow, /php src\/EPV\.php run --dir="\$GITHUB_WORKSPACE\/dsr\/modernadminpanel"/);
 });
 
