@@ -167,10 +167,16 @@ class jumps
 	 */
 	public function groups(array $words): array
 	{
+		$where = '(group_type = ' . GROUP_SPECIAL . ' OR ' . $this->name_matches('group_name', $words) . ')';
+
+		if ((int) $this->user->data['user_type'] !== USER_FOUNDER)
+		{
+			$where .= ' AND group_founder_manage = 0';
+		}
+
 		$sql = 'SELECT group_id, group_name, group_type
 				FROM ' . $this->table_prefix . 'groups
-				WHERE (group_type = ' . GROUP_SPECIAL . ' OR ' . $this->name_matches('group_name', $words) . ')
-					' . ((int) $this->user->data['user_type'] === USER_FOUNDER ? '' : 'AND group_founder_manage = 0') . '
+				WHERE ' . $where . '
 				ORDER BY group_type DESC, group_name';
 		$result = $this->db->sql_query_limit($sql, self::SCAN);
 

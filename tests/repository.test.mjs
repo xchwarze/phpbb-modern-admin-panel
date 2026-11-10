@@ -39,6 +39,12 @@ test('CI runs EPV against the installable extension', () => {
   assert.match(workflow, /php src\/EPV\.php run --dir="\$GITHUB_WORKSPACE\/dsr\/modernadminpanel"/);
 });
 
+test('EPV SQL query check finds no potential injection in jumps helper', () => {
+  const source = read(`${runtime}/helper/jumps.php`);
+  const groups = source.slice(source.indexOf('public function groups'), source.indexOf('\n\t/**\n\t * One result'));
+  assert.doesNotMatch(groups, /WHERE[^;$]+[=<>]+[^;]+("|') \. \$/m);
+});
+
 test('namespaced template and bundled asset references exist', () => {
   const style = `${runtime}/adm/style`;
   let references = 0;
