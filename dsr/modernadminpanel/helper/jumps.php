@@ -87,7 +87,7 @@ class jumps
 	public function users(string $name): array
 	{
 		// Core cleans the HTML-escaped name when it stores username_clean (the request class escapes what is typed)
-		$prefix = utf8_clean_string(htmlspecialchars($name, ENT_COMPAT, 'UTF-8'));
+		$prefix = utf8_clean_string(utf8_htmlspecialchars($name, ENT_COMPAT, 'UTF-8'));
 
 		// Nothing to anchor the match on: without it "LIKE '%'" would list the first users of the board
 		if ($prefix === '')
@@ -229,11 +229,19 @@ class jumps
 	 */
 	protected function name_matches(string $column, array $words): string
 	{
+		$columns = ['forum_name' => 'forum_name', 'group_name' => 'group_name'];
+
+		if (!isset($columns[$column]))
+		{
+			return '1 = 0';
+		}
+
+		$column = $columns[$column];
 		$conditions = [];
 
 		foreach (array_slice($words, 0, self::WORDS) as $word)
 		{
-			$word = htmlspecialchars($word, ENT_COMPAT, 'UTF-8');
+			$word = utf8_htmlspecialchars($word, ENT_COMPAT, 'UTF-8');
 			$conditions[] = $this->db->sql_lower_text($column) . ' ' . $this->db->sql_like_expression($this->db->get_any_char() . $word . $this->db->get_any_char());
 		}
 

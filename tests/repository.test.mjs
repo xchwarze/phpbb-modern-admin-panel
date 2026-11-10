@@ -30,6 +30,13 @@ test('phpBB feed matches the installable version and release asset', () => {
     'https://raw.githubusercontent.com/xchwarze/phpbb-modern-admin-panel/master/last_ext_version.json');
 });
 
+test('CI runs EPV against the installable extension', () => {
+  const workflow = read('.github/workflows/tests.yml');
+  assert.match(workflow, /epv:\n\s+runs-on: ubuntu-latest/);
+  assert.match(workflow, /php-version: '8\.3'/);
+  assert.match(workflow, /php src\/EPV\.php run --dir="\$GITHUB_WORKSPACE\/dsr\/modernadminpanel"/);
+});
+
 test('namespaced template and bundled asset references exist', () => {
   const style = `${runtime}/adm/style`;
   let references = 0;

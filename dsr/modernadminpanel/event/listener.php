@@ -663,7 +663,7 @@ class listener implements EventSubscriberInterface
 	 */
 	protected function notes_text(string $notes): string
 	{
-		return htmlspecialchars($this->utils->unparse($notes), ENT_COMPAT);
+		return utf8_htmlspecialchars($this->utils->unparse($notes), ENT_COMPAT);
 	}
 
 	/**

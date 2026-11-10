@@ -362,7 +362,9 @@ class admin
 			$this->send_header($header);
 		}
 
-		echo $body;
+		$this->template->assign_var('STUDIO_PALETTE_JSON', $body);
+		$this->template->set_filenames(['body' => '@dsr_modernadminpanel/palette_json.html']);
+		$this->template->display('body');
 
 		$this->finish();
 	}
