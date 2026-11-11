@@ -68,6 +68,7 @@ services:
             - '%core.php_ext%'
             - '%dsr.modernadminpanel.params%'
             - '@dsr.modernadminpanel.premium'
+            - '@controller.helper'
         tags: [{ name: event.listener }]
 
     dsr.modernadminpanel.settings:

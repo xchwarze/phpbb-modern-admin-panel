@@ -28,6 +28,9 @@ class listener implements EventSubscriberInterface
 	/** @var \phpbb\config\config */
 	protected $config;
 
+	/** @var \phpbb\controller\helper */
+	protected $controller_helper;
+
 	/** @var \phpbb\config\db_text */
 	protected $config_text;
 
@@ -136,11 +139,13 @@ class listener implements EventSubscriberInterface
 		string $root_path,
 		string $php_ext,
 		array $params,
-		\dsr\modernadminpanel\controller\premium $premium
+		\dsr\modernadminpanel\controller\premium $premium,
+		\phpbb\controller\helper $controller_helper
 	)
 	{
 		$this->auth				= $auth;
 		$this->config			= $config;
+		$this->controller_helper = $controller_helper;
 		$this->config_text		= $config_text;
 		$this->db				= $db;
 		$this->dispatcher		= $dispatcher;
@@ -446,7 +451,7 @@ class listener implements EventSubscriberInterface
 	/**
 	 * Give the command palette its endpoint and its actions.
 	 *
-	 * The endpoint (controller\admin) is a read-only JSON request checked by a link hash. Its URL is only given
+	 * The endpoint is a read-only JSON route checked by a link hash. Its URL is only given
 	 * when at least one search is on for this administrator (palette::features()): otherwise the palette sends
 	 * no request. The actions are plain links, listed only when the administrator may use them.
 	 *
@@ -456,14 +461,9 @@ class listener implements EventSubscriberInterface
 	protected function assign_palette(array $options): void
 	{
 		$features = palette::features($this->auth, $options);
-		$admin_index = "{$this->admin_path}index.{$this->php_ext}";
-
 		$this->template->assign_vars([
-			'U_STUDIO_PALETTE_SEARCH'	=> in_array(true, $features, true) ? append_sid($admin_index, [
-				'i'				=> '-dsr-modernadminpanel-acp-main_module',
-				'mode'			=> 'general',
-				'studio_palette'	=> 1,
-				'hash'			=> generate_link_hash('studio_palette'),
+			'U_STUDIO_PALETTE_SEARCH'	=> in_array(true, $features, true) ? $this->controller_helper->route('dsr_modernadminpanel_palette', [
+				'hash' => generate_link_hash('studio_palette'),
 			], false) : '',
 			'S_STUDIO_PALETTE_USERS'	=> $features['users'],
 			'S_STUDIO_PALETTE_PINS'		=> $options['palette_pins'],

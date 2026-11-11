@@ -12,7 +12,7 @@
 namespace dsr\modernadminpanel\acp;
 
 /**
- * Modern Admin Panel: ACP search module (the header search box and the command palette endpoint, both in controller\admin)
+ * Modern Admin Panel: ACP search module (the header search box in controller\admin)
  */
 class main_module
 {
@@ -29,7 +29,7 @@ class main_module
 	public $module_path;
 
 	/**
-	 * Show the ACP search page, or answer the palette request (which ends the request).
+	 * Show the ACP search page.
 	 *
 	 * @return void
 	 */

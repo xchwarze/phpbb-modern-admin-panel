@@ -13,9 +13,10 @@ namespace dsr\modernadminpanel\controller;
 
 use dsr\modernadminpanel\helper\options;
 use dsr\modernadminpanel\helper\palette;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
- * Modern Admin Panel: the ACP search page (the header search box without JavaScript) and the command palette endpoint
+ * Modern Admin Panel: the ACP search page (the header search box without JavaScript) and the command palette response
  */
 class admin
 {
@@ -113,21 +114,12 @@ class admin
 	}
 
 	/**
-	 * Handle the ACP search page (the search box in the header, posted) and the command palette request
-	 * (a JSON GET, see palette()). Both only read.
+	 * Handle the ACP search page (the search box in the header, posted). This only reads.
 	 *
 	 * @return void
 	 */
 	public function handle(): void
 	{
-		if ($this->request->is_set('studio_palette'))
-		{
-			// Answers and ends the request: no template, no page
-			$this->send_palette();
-
-			return;
-		}
-
 		if ($this->request->is_set_post('search'))
 		{
 			$this->search_page();
@@ -322,14 +314,13 @@ class admin
 	}
 
 	/**
-	 * Handle the command palette request (GET only, JSON). Ends the request.
+	 * Handle the command palette request (GET only, JSON).
 	 *
-	 * The response is built by palette_response(), so that it can be tested
-	 * without sending anything: this method only sends it.
+	 * The output buffer prevents search callbacks from contaminating the JSON response.
 	 *
-	 * @return void
+	 * @return JsonResponse
 	 */
-	protected function send_palette(): void
+	public function palette_response_action(): JsonResponse
 	{
 		// Whatever the search code (or an extension's listener) prints must not end up in the JSON
 		ob_start();
@@ -343,46 +334,44 @@ class admin
 			ob_end_clean();
 		}
 
-		$body = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG);
+		$headers = array_merge([
+			'Content-Type' => 'application/json; charset=UTF-8',
+			'Cache-Control' => 'no-store',
+			'X-Content-Type-Options' => 'nosniff',
+		], $headers);
 
-		if ($body === false)
+		try
 		{
-			$status = 500;
-			$headers = [];
-			$body = '{"error":"server_error"}';
+			$response = new JsonResponse(null, $status, $headers);
+			$response->setEncodingOptions(JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG);
+			$response->setData($data);
+		}
+		catch (\Exception $e)
+		{
+			$response = new JsonResponse(['error' => 'server_error'], 500, [
+				'Content-Type' => 'application/json; charset=UTF-8',
+				'Cache-Control' => 'no-store',
+				'X-Content-Type-Options' => 'nosniff',
+			]);
 		}
 
-		$this->send_status($status);
-		$this->send_header('Content-Type: application/json; charset=UTF-8');
-		$this->send_header('Cache-Control: no-store');
-		$this->send_header('X-Content-Type-Options: nosniff');
-
-		foreach ($headers as $header)
-		{
-			$this->send_header($header);
-		}
-
-		$this->template->assign_var('STUDIO_PALETTE_JSON', $body);
-		$this->template->set_filenames(['body' => '@dsr_modernadminpanel/palette_json.html']);
-		$this->template->display('body');
-
-		$this->finish();
+		return $response;
 	}
 
 	/**
-	 * The palette's answer: status code, data to encode and extra headers.
+	 * The palette's answer: status code, data to encode and response headers.
 	 *
 	 * 405 for anything but GET. 403 when the link hash is wrong or no search is on for this administrator
 	 * (see palette::features()). Else 200 with the (possibly empty) matches. Nothing is written anywhere,
 	 * no config value is read out, and only plain-text names, titles and links leave.
 	 *
-	 * @return array	[int status, array data, string[] extra headers]
+	 * @return array	[int status, array data, array response headers]
 	 */
 	protected function palette_response(): array
 	{
 		if ($this->request->server('REQUEST_METHOD', '') !== 'GET')
 		{
-			return [405, ['error' => 'method_not_allowed'], ['Allow: GET']];
+			return [405, ['error' => 'method_not_allowed'], ['Allow' => 'GET']];
 		}
 
 		$features = palette::features($this->auth, options::read($this->config, $this->params));
@@ -534,46 +523,6 @@ class admin
 		}
 
 		return $count;
-	}
-
-	/**
-	 * Send the HTTP status code.
-	 *
-	 * @param int		$status		The status code
-	 * @return void
-	 */
-	protected function send_status(int $status): void
-	{
-		http_response_code($status);
-	}
-
-	/**
-	 * Send an HTTP header (replacing one of the same name).
-	 *
-	 * @param string	$header		The header line
-	 * @return void
-	 */
-	protected function send_header(string $header): void
-	{
-		header($header, true);
-	}
-
-	/**
-	 * End the request after the response was sent (the only exit of the palette).
-	 *
-	 * @return void
-	 */
-	protected function finish(): void
-	{
-		if (function_exists('garbage_collection'))
-		{
-			garbage_collection();
-		}
-
-		exit_handler();
-
-		// exit_handler() only returns when a phpBB hook took the exit over
-		exit;
 	}
 
 	/**

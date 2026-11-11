@@ -1,0 +1,3 @@
+dsr_modernadminpanel_palette:
+    path: /modernadminpanel/palette
+    defaults: { _controller: dsr.modernadminpanel.controller:palette_response_action }
