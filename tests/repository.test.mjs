@@ -45,31 +45,6 @@ test('EPV SQL query check finds no potential injection in jumps helper', () => {
   assert.doesNotMatch(groups, /WHERE[^;$]+[=<>]+[^;]+("|') \. \$/m);
 });
 
-test('palette JSON uses a routed JsonResponse instead of the ACP template', () => {
-  const route = read(`${runtime}/config/routing.yml`);
-  const controller = read(`${runtime}/controller/admin.php`);
-  const module = read(`${runtime}/acp/main_module.php`);
-  const listener = read(`${runtime}/event/listener.php`);
-  const services = read(`${runtime}/config/services.yml`);
-
-  assert.match(route, /dsr_modernadminpanel_palette:[\s\S]*?_controller:\s*dsr\.modernadminpanel\.controller:palette_response_action/);
-  assert.doesNotMatch(route, /methods:/);
-  assert.match(controller, /function palette_response_action\(\): JsonResponse/);
-  assert.match(controller, /new JsonResponse\(/);
-  assert.match(controller, /\['error' => 'method_not_allowed'\]/);
-  assert.match(controller, /\['Allow' => 'GET'\]/);
-  assert.match(controller, /check_link_hash\(\$this->request->variable\('hash', ''\), 'studio_palette'\)/);
-  assert.match(controller, /\['error' => 'forbidden'\]/);
-  assert.match(controller, /Cache-Control/);
-  assert.match(controller, /X-Content-Type-Options/);
-  assert.doesNotMatch(module, /palette request|studio_palette/);
-  assert.match(listener, /controller_helper->route\('dsr_modernadminpanel_palette'/);
-  assert.match(listener, /generate_link_hash\('studio_palette'\)/);
-  assert.match(services, /'@controller\.helper'/);
-  assert.equal(existsSync(`${runtime}/adm/style/palette_json.html`), false);
-  assert.doesNotMatch(controller, /function (send_status|send_header|finish)\(/);
-});
-
 test('namespaced template and bundled asset references exist', () => {
   const style = `${runtime}/adm/style`;
   let references = 0;

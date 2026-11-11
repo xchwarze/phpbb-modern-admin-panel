@@ -461,6 +461,8 @@ class listener implements EventSubscriberInterface
 	protected function assign_palette(array $options): void
 	{
 		$features = palette::features($this->auth, $options);
+		$admin_index = "{$this->admin_path}index.{$this->php_ext}";
+
 		$this->template->assign_vars([
 			'U_STUDIO_PALETTE_SEARCH'	=> in_array(true, $features, true) ? $this->controller_helper->route('dsr_modernadminpanel_palette', [
 				'hash' => generate_link_hash('studio_palette'),

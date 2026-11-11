@@ -11,6 +11,35 @@ permissions:
   contents: read
 
 jobs:
+  functional:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.3'
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite3, pdo_sqlite, intl, gd, exif
+          coverage: none
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: phpbb/phpbb
+          ref: 3.3.x
+          path: phpbb-src
+          persist-credentials: false
+      - name: Install extension into phpBB test board
+        run: |
+          mkdir -p phpbb-src/phpBB/ext/dsr
+          cp -a dsr/modernadminpanel phpbb-src/phpBB/ext/dsr/
+      - name: Prepare phpBB functional test environment
+        working-directory: phpbb-src
+        run: .github/setup-phpbb.sh sqlite3 8.3 0
+      - name: Run extension functional tests
+        working-directory: phpbb-src
+        run: phpBB/vendor/bin/phpunit -c phpBB/ext/dsr/modernadminpanel/phpunit.xml.dist
+
   checks:
     runs-on: ubuntu-latest
     strategy:
