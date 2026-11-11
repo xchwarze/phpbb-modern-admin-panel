@@ -11,6 +11,8 @@
 /**
  * @group functional
  */
+namespace dsr\modernadminpanel\tests\functional;
+
 class dsr_modernadminpanel_palette_test extends \phpbb_functional_test_case
 {
 	static protected function setup_extensions()

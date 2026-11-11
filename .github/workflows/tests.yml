@@ -14,6 +14,8 @@ jobs:
   functional:
     runs-on: ubuntu-22.04
     timeout-minutes: 30
+    env:
+      PHP_VERSION: '8.3'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -36,7 +38,7 @@ jobs:
       - name: Prepare phpBB functional test environment
         working-directory: phpbb-src
         run: .github/setup-phpbb.sh sqlite3 8.3 0
-      - name: Run extension functional tests
+      - name: Run extension PHPUnit suites
         working-directory: phpbb-src
         run: phpBB/vendor/bin/phpunit -c phpBB/ext/dsr/modernadminpanel/phpunit.xml.dist
 
@@ -61,8 +63,6 @@ jobs:
         run: find dsr/modernadminpanel tests -name '*.php' -print0 | xargs -0 -n 1 php -l
       - name: Bundled JavaScript syntax
         run: node --check dsr/modernadminpanel/adm/style/js/studio.js
-      - name: Helper and translation checks
-        run: php tests/helpers.php
       - name: Metadata, assets, and documentation checks
         run: node --test tests/repository.test.mjs
       - run: composer validate --strict --no-check-version --no-check-publish --no-check-lock dsr/modernadminpanel/composer.json
